@@ -1,0 +1,12 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# Claude Code workspace
+.claude/
+
+# Netlify CLI local state (if it gets used later)
+.netlify/

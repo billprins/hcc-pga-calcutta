@@ -1,0 +1,12 @@
+# Netlify config for the HCC PGA Calcutta tracker.
+# Pure static site: no build command, publish the repo root.
+
+[build]
+  publish = "."
+
+# Long cache for static assets is overkill (only have index.html), but cap HTML caching
+# short so live-scoring deploys propagate quickly.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

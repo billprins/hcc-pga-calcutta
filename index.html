@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hillwood CC · 2026 PGA Championship Calcutta</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
+    .hero-stripe { height: 6px; background: #C9A84C; }
+    .hero-inner { padding: 2rem 1.5rem 1.5rem; text-align: center; background: #0d1728; border-bottom: 1px solid #C9A84C; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.18em; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .hero-title { font-size: 30px; color: #fff; font-weight: normal; letter-spacing: 0.02em; margin-bottom: 0.3rem; }
+    .hero-title span { color: #C9A84C; }
+    .hero-sub { font-size: 13px; color: #7a8faf; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 1rem; }
+    .hero-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; padding-bottom: 1.5rem; }
+    .hbadge { font-size: 11px; padding: 4px 12px; border-radius: 20px; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; border: 1px solid rgba(201,168,76,0.4); color: #C9A84C; background: rgba(201,168,76,0.08); }
+    .hbadge.muted { border-color: rgba(255,255,255,0.15); color: #8fa3c0; background: rgba(255,255,255,0.05); }
+    .ticker { background: #C9A84C; padding: 6px 1rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; color: #0d1728; display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+    .t-dot { width: 6px; height: 6px; border-radius: 50%; background: #0d1728; opacity: 0.35; display: inline-block; margin-right: 6px; }
+    .content { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .sec { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; white-space: nowrap; }
+    .sec-head { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 0.8rem; padding-bottom: 8px; border-bottom: 1px solid #1e3050; }
+    .sec-line { flex: 1; height: 1px; background: #1e3050; }
+    .cut-card { background: #152035; border: 1px solid rgba(201,168,76,0.5); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .cut-side { display: flex; flex-direction: column; gap: 4px; min-width: 120px; }
+    .cut-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .cut-val { font-size: 36px; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; line-height: 1; }
+    .cut-info { flex: 1; min-width: 220px; }
+    .cut-rule { font-size: 13px; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; margin-bottom: 4px; }
+    .cut-line { font-size: 12px; color: #7a8faf; font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; }
+    .cut-line b { color: #c8d4e8; font-weight: 500; }
+    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.5rem; }
+    .sc { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem 1.1rem; }
+    .sc.gb { border-color: rgba(201,168,76,0.5); }
+    .sc-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 6px; }
+    .sc-val { font-size: 24px; color: #fff; }
+    .sc-val.g { color: #C9A84C; }
+    .sc-sub { font-size: 11px; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 3px; }
+    .nerds-panel { background: #0f2215; border: 1px solid #2a5a35; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .np-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid #1e4028; }
+    .np-icon { width: 40px; height: 40px; border-radius: 50%; background: #1a4028; border: 1px solid #2a5a35; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .np-title { font-size: 18px; color: #4fc87a; }
+    .np-sub { font-size: 12px; color: #3a7a50; font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 2px; }
+    .ng { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    .nc { background: #0d1e12; border: 1px solid #1e4028; border-radius: 8px; overflow: hidden; }
+    .nc-head { background: #111f14; padding: 0.7rem 0.9rem 0.6rem; border-bottom: 1px solid #1a3520; }
+    .nc-head-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .nc-team { font-size: 15px; color: #C9A84C; }
+    .nc-grp { font-size: 10px; color: #3a7a50; font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 2px; }
+    .nc-cost { font-size: 10px; color: #5a9a70; font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 1px; font-weight: 500; }
+    .nc-score-block { text-align: right; }
+    .nc-score-lbl { font-size: 9px; color: #3a6a48; font-family: 'Helvetica Neue', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .nc-score { font-size: 18px; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; color: #3a5a45; }
+    .nc-score.u { color: #4fc87a; } .nc-score.o { color: #e05a5a; }
+    .nc-col-labels { display: flex; justify-content: space-between; padding: 3px 0.9rem; border-bottom: 1px solid #0f2016; }
+    .nc-col-lbl { font-size: 9px; color: #2a5a38; font-family: 'Helvetica Neue', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; }
+    .nc-golfer-block { border-bottom: 1px solid #111a14; }
+    .nc-golfer-block:last-child { border-bottom: none; }
+    .nc-golfer-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0.9rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; gap: 8px; cursor: pointer; user-select: none; }
+    .nc-golfer-row:hover { background: #0f2518; }
+    .nc-golfer-name { color: #6aaa88; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nc-golfer-name.hl { color: #a0e0c0; font-weight: 500; }
+    .nc-tee-col { text-align: right; flex-shrink: 0; }
+    .nc-tee-time { font-size: 11px; color: #7acce8; }
+    .nc-tee-tv { font-size: 10px; color: #4a7060; margin-top: 1px; }
+    .nc-golfer-score { font-size: 13px; font-weight: 500; min-width: 30px; text-align: right; flex-shrink: 0; color: #3a5a45; }
+    .nc-golfer-score.u { color: #4fc87a; } .nc-golfer-score.o { color: #e05a5a; } .nc-golfer-score.e { color: #5a7090; }
+    .expand-arrow { font-size: 10px; color: #3a6a48; margin-left: 4px; transition: transform 0.2s; display: inline-block; }
+    .expand-arrow.open { transform: rotate(180deg); }
+    .scorecard-wrap { display: none; background: #091510; border-top: 1px solid #1a3020; padding: 6px 0.9rem 8px; overflow-x: auto; }
+    .scorecard-wrap.open { display: block; }
+    .scorecard { border-collapse: collapse; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; width: 100%; min-width: 480px; }
+    .scorecard th { background: #0f2018; color: #3a7a50; text-align: center; padding: 3px 4px; font-weight: 500; font-size: 10px; border: 1px solid #1a3020; }
+    .scorecard th.label { text-align: left; padding-left: 6px; }
+    .scorecard td { text-align: center; padding: 3px 4px; border: 1px solid #1a3020; color: #6aaa88; vertical-align: middle; }
+    .scorecard td.label { text-align: left; padding-left: 6px; color: #3a6a48; font-size: 10px; }
+    .scorecard td.par-row { color: #3a5a45; font-size: 10px; }
+    .scorecard td.section { background: #0d1c14; color: #2a5a38; font-size: 10px; font-weight: 500; }
+    .scorecard td.total { font-weight: 500; color: #8ac8a8; background: #0d1c14; }
+    .hole-score { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; font-size: 11px; font-weight: 500; }
+    .eagle { background: #1a4a1a; color: #4fc87a; border-radius: 50%; border: 2px solid #4fc87a; }
+    .birdie { color: #4fc87a; border-radius: 50%; border: 1.5px solid #4fc87a; }
+    .par-score { color: #6aaa88; }
+    .bogey { color: #e05a5a; border: 1.5px solid #e05a5a; border-radius: 2px; }
+    .dbl-bogey { background: #3a1010; color: #e05a5a; border: 1.5px solid #e05a5a; border-radius: 2px; }
+    .hole-blank { color: #2a4a30; }
+    .sc-legend { display: flex; gap: 12px; align-items: center; padding: 4px 0 6px; flex-wrap: wrap; }
+    .sc-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #3a6a48; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .leg-eg { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #4fc87a; background: #1a4a1a; display: inline-block; }
+    .leg-bi { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #4fc87a; display: inline-block; }
+    .leg-bo { width: 14px; height: 14px; border: 1.5px solid #e05a5a; border-radius: 2px; display: inline-block; }
+    .leg-db { width: 14px; height: 14px; border: 1.5px solid #e05a5a; border-radius: 2px; background: #3a1010; display: inline-block; }
+    .nc-footer { background: #0a1810; border-top: 1px solid #1a3520; padding: 0.45rem 0.9rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .pill { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; display: inline-block; }
+    .pill-feat { background: #1a2510; color: #8ac860; border: 1px solid #2a4020; }
+    .nc-payout-label { font-size: 10px; color: #3a6a48; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .nc-payout-val { font-size: 13px; color: #4fc87a; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+    .syn-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 8px; margin-bottom: 1.5rem; }
+    .syc { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 0.8rem 1rem; }
+    .syc.nr { background: #0f2215; border-color: #2a5a35; }
+    .syc-n { font-size: 13px; color: #8fa3c0; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 4px; }
+    .syc-n.g { color: #4fc87a; }
+    .syc-s { font-size: 11px; color: #3a5070; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .syc-p { font-size: 20px; color: #fff; margin: 4px 0 2px; }
+    .syc-net { font-size: 11px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #4a6080; }
+    .ft { width: 100%; border-collapse: collapse; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .ft th { text-align: left; padding: 7px 8px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #3a5070; border-bottom: 1px solid #1e3050; font-weight: 500; }
+    .ft th.r, .ft td.r { text-align: right; }
+    .ft td { padding: 7px 8px; border-bottom: 1px solid #111e30; vertical-align: middle; color: #8fa3c0; }
+    .ft tr.nr td { background: #0f1f14; }
+    .ft tr:hover td { background: #192840; }
+    .ft tr.nr:hover td { background: #102018; }
+    .ft tr.sc-row td { padding: 0; border-top: none; background: #070f08; }
+    .ft tr.sc-row.nr-sc td { background: #070f08; }
+    .pip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 500; }
+    .p1{background:#C9A84C;color:#0d1728;} .p2{background:#8fa3c0;color:#0d1728;} .p3{background:#8a6a3a;color:#fff;} .pn{background:#1e3050;color:#5a7090;}
+    .sp { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+    .sp-n{background:#1a4028;color:#4fc87a;border:1px solid #2a5a35;}
+    .sp-ph{background:#0d2040;color:#5a9fd4;border:1px solid #1a4060;}
+    .sp-ro{background:#2a1a05;color:#d4944a;border:1px solid #4a3010;}
+    .sp-jd{background:#2a0d1a;color:#d45a8a;border:1px solid #4a1a30;}
+    .sp-wdc{background:#1a1040;color:#8a7ad4;border:1px solid #2a2060;}
+    .sp-bv{background:#2a1008;color:#d47050;border:1px solid #4a2010;}
+    .role-hl{font-size:10px;color:#C9A84C;font-family:'Helvetica Neue',Arial,sans-serif;margin-left:5px;}
+    .role-p{font-size:10px;color:#3a5070;font-family:'Helvetica Neue',Arial,sans-serif;margin-left:5px;}
+    .role-p.nr{color:#3a7a50;}
+    .sc-toggle-btn{font-size:10px;color:#3a6a80;font-family:'Helvetica Neue',Arial,sans-serif;cursor:pointer;background:none;border:none;padding:0;margin-left:6px;vertical-align:middle;}
+    .ft-sc-wrap{display:none;overflow-x:auto;padding:6px 8px 8px;background:#070f14;}
+    .ft-sc-wrap.open{display:block;}
+    .tv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:1.5rem;}
+    .tvd{background:#152035;border:1px solid #1e3050;border-radius:8px;padding:0.8rem 1rem;}
+    .tvd-name{font-size:12px;color:#C9A84C;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:500;margin-bottom:6px;}
+    .tvd-slot{font-size:11px;color:#6a8aaa;font-family:'Helvetica Neue',Arial,sans-serif;padding:3px 0;border-bottom:1px solid #1a2a40;}
+    .tvd-slot:last-child{border-bottom:none;}
+    .tvd-slot b{color:#9ab5cc;}
+    .pt-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .pt{width:100%;border-collapse:collapse;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;}
+    .pt th{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#3a5070;padding:6px 8px;border-bottom:1px solid #1e3050;font-weight:500;}
+    .pt th.r{text-align:right;} .pt td{padding:7px 8px;border-bottom:1px solid #111e30;color:#8fa3c0;} .pt td.r{text-align:right;} .pt td.g{color:#C9A84C;font-weight:500;}
+    .fn{font-size:12px;color:#7a8faf;font-family:'Helvetica Neue',Arial,sans-serif;margin-top:10px;line-height:1.6;}
+    .footer{text-align:center;padding:1.5rem 1rem 0;font-size:11px;color:#3a5070;font-family:'Helvetica Neue',Arial,sans-serif;border-top:1px solid #1e3050;margin-top:2rem;}
+    .rbtn{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:7px 18px;border-radius:6px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;cursor:pointer;margin-top:0.75rem;}
+    .ab{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(79,200,122,0.12);color:#4fc87a;border:1px solid rgba(79,200,122,0.3);font-family:'Helvetica Neue',Arial,sans-serif;margin-left:8px;}
+    @media(max-width:600px){.stat-row{grid-template-columns:repeat(2,1fr);}.pt-wrap{grid-template-columns:1fr;}.hero-title{font-size:22px;}.cut-card{flex-direction:column;align-items:flex-start;gap:0.5rem;}}
+  </style>
+</head>
+<body>
+
+<div class="hero-stripe"></div>
+<div class="hero-inner">
+  <div class="hero-eyebrow">Hillwood Country Club · Nashville, TN</div>
+  <div class="hero-title">2026 PGA Championship <span>Calcutta</span></div>
+  <div class="hero-sub">Aronimink Golf Club · Newtown Square, PA · May 14–17, 2026</div>
+  <div class="hero-badges">
+    <span class="hbadge">$50,650 total pot</span>
+    <span class="hbadge">40 groups · 6 syndicates</span>
+    <span class="hbadge muted">108th PGA Championship</span>
+    <span class="hbadge muted">Nerds: 8 groups · 32 golfers</span>
+  </div>
+</div>
+<div class="ticker">
+  <span><span class="t-dot"></span>First tee Thu May 14, 5:45 AM CT</span>
+  <span><span class="t-dot"></span>Auto-refreshes every 5 min during play</span>
+  <span><span class="t-dot"></span>Last updated: <span id="last-upd">—</span></span>
+</div>
+
+<div class="content">
+
+  <div class="sec-head"><span class="sec">Projected cutline</span><div class="sec-line"></div></div>
+  <div class="cut-card">
+    <div class="cut-side">
+      <div class="cut-lbl">Projected cut</div>
+      <div class="cut-val" id="cut-val">—</div>
+    </div>
+    <div class="cut-info">
+      <div class="cut-rule">Top 70 + ties after R2</div>
+      <div class="cut-line" id="cut-line">Awaiting enough scores to project</div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="sc gb"><div class="sc-lbl">Nerds invested</div><div class="sc-val g">$9,000</div><div class="sc-sub">8 groups · 32 golfers</div></div>
+    <div class="sc"><div class="sc-lbl">Total pot</div><div class="sc-val">$50,650</div><div class="sc-sub">40 groups · 6 syndicates</div></div>
+    <div class="sc gb"><div class="sc-lbl">Nerd golfers above cut</div><div class="sc-val g" id="cut-stat">32 / 32</div><div class="sc-sub" id="cut-sub">Pre-tournament · all active</div></div>
+    <div class="sc"><div class="sc-lbl">Nerds pot share</div><div class="sc-val">17.8%</div><div class="sc-sub">by dollars invested</div></div>
+  </div>
+
+  <div class="sec-head"><span class="sec">Nerds syndicate · tee times &amp; TV</span><div class="sec-line"></div></div>
+  <div class="nerds-panel">
+    <div class="np-head">
+      <div class="np-icon">🤓</div>
+      <div>
+        <div class="np-title">Nerds Syndicate</div>
+        <div class="np-sub">8 groups · $9,000 invested · 32 golfers · Click any golfer to expand scorecard · All times CT</div>
+      </div>
+    </div>
+    <div class="ng" id="nerds-grid"></div>
+  </div>
+
+  <div class="sec-head"><span class="sec">Broadcast schedule</span><div class="sec-line"></div></div>
+  <div class="tv-grid">
+    <div class="tvd"><div class="tvd-name">Thursday, May 14 — Round 1</div><div class="tvd-slot">5:45 AM – 11 AM <b>ESPN+</b></div><div class="tvd-slot">11 AM – 6 PM <b>ESPN</b></div><div class="tvd-slot">6 – 7 PM <b>ESPN2</b></div></div>
+    <div class="tvd"><div class="tvd-name">Friday, May 15 — Round 2</div><div class="tvd-slot">5:45 AM – 11 AM <b>ESPN+</b></div><div class="tvd-slot">11 AM – 7 PM <b>ESPN</b></div></div>
+    <div class="tvd"><div class="tvd-name">Saturday, May 16 — Round 3</div><div class="tvd-slot">7 – 9 AM <b>ESPN / ESPN+</b></div><div class="tvd-slot">9 AM – noon <b>ESPN</b></div><div class="tvd-slot">Noon – 6 PM <b>CBS / Paramount+</b></div></div>
+    <div class="tvd"><div class="tvd-name">Sunday, May 17 — Final Round</div><div class="tvd-slot">7 – 9 AM <b>ESPN / ESPN+</b></div><div class="tvd-slot">9 AM – noon <b>ESPN</b></div><div class="tvd-slot">Noon – 6 PM <b>CBS / Paramount+</b></div></div>
+  </div>
+
+  <div class="sec-head"><span class="sec">Syndicate standings</span><div class="sec-line"></div></div>
+  <div class="syn-grid" id="syn-grid"></div>
+
+  <div class="sec-head"><span class="sec">Full field · individual golfer standings</span><div class="sec-line"></div></div>
+  <div style="overflow-x:auto;margin-bottom:1.5rem;">
+    <table class="ft">
+      <thead><tr>
+        <th style="width:34px">Pos</th>
+        <th>Golfer</th>
+        <th>Syndicate</th>
+        <th class="r">Score</th>
+        <th class="r">Cost (group)</th>
+        <th class="r">Tee time</th>
+        <th class="r">Watch on</th>
+        <th class="r">Proj. payout</th>
+      </tr></thead>
+      <tbody id="field-body"></tbody>
+    </table>
+  </div>
+
+  <div class="sec-head"><span class="sec">Payout structure</span><div class="sec-line"></div></div>
+  <div class="pt-wrap">
+    <table class="pt"><thead><tr><th>Place</th><th class="r">% of pot</th><th class="r">Payout</th></tr></thead><tbody>
+      <tr><td><span class="pip p1" style="font-size:10px;">1</span> 1st</td><td class="r">22%</td><td class="r g">$11,143</td></tr>
+      <tr><td><span class="pip p2" style="font-size:10px;">2</span> 2nd</td><td class="r">15%</td><td class="r g">$7,598</td></tr>
+      <tr><td><span class="pip p3" style="font-size:10px;">3</span> 3rd</td><td class="r">12%</td><td class="r g">$6,078</td></tr>
+      <tr><td>4th</td><td class="r">10%</td><td class="r g">$5,065</td></tr>
+      <tr><td>5th</td><td class="r">8%</td><td class="r g">$4,052</td></tr>
+      <tr><td>6th</td><td class="r">7%</td><td class="r g">$3,546</td></tr>
+    </tbody></table>
+    <table class="pt"><thead><tr><th>Place</th><th class="r">% of pot</th><th class="r">Payout</th></tr></thead><tbody>
+      <tr><td>7th</td><td class="r">6%</td><td class="r g">$3,039</td></tr>
+      <tr><td>8th</td><td class="r">5%</td><td class="r g">$2,533</td></tr>
+      <tr><td>9th</td><td class="r">4%</td><td class="r g">$2,026</td></tr>
+      <tr><td>10th</td><td class="r">4%</td><td class="r g">$2,026</td></tr>
+      <tr><td>11th</td><td class="r">3%</td><td class="r g">$1,520</td></tr>
+      <tr><td>12th</td><td class="r">2%</td><td class="r g">$1,013</td></tr>
+      <tr><td>Low PGA Pro *</td><td class="r">2%</td><td class="r g">$1,013</td></tr>
+    </tbody></table>
+  </div>
+  <div class="fn">* PGA Pro must make the cut to be eligible. If no cut is made, 2% splits between 11th and 12th place.</div>
+
+  <div class="footer">
+    Hillwood Country Club · Nashville, TN · 2026 PGA Championship Calcutta<br>
+    <span style="margin-top:4px;display:inline-block;">Scores via live lookup <span class="ab">auto-refresh every 5 min</span></span><br>
+    <button class="rbtn" onclick="loadScores()">↻ Refresh now</button>
+  </div>
+
+</div>
+
+<script>
+const POT = 50650;
+const PAYOUTS = [0.22,0.15,0.12,0.10,0.08,0.07,0.06,0.05,0.04,0.04,0.03,0.02,0.02];
+const PARS = [4,4,3,4,5,4,3,4,4,4,5,3,4,4,3,4,5,4];
+const FRONT_PAR = PARS.slice(0,9).reduce((a,b)=>a+b,0);
+const BACK_PAR  = PARS.slice(9).reduce((a,b)=>a+b,0);
+const TOTAL_PAR = FRONT_PAR + BACK_PAR;
+
+// --- Live data config ---------------------------------------------------
+// ESPN's public golf leaderboard. With no event param it returns the current/upcoming tournament,
+// which during PGA Championship week (May 14-17, 2026) is the right event.
+const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+// If a host/CDN blocks ESPN via CORS (or you want to use the deeper site.web.api endpoint
+// reliably), set PROXY_URL to a tiny relay (Cloudflare Worker / Vercel function) that accepts
+// ?url=<encoded-target> and re-emits the body with Access-Control-Allow-Origin: *.
+// Leave blank to call ESPN directly.
+const PROXY_URL = '';
+function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; }
+
+// Canonical key for matching ESPN's displayName against our roster. Strips punctuation,
+// hyphens, suffixes, etc., so 'J.J. Spaun', 'JJ Spaun' and 'Jj Spaun' all collide on 'jjspaun'.
+// Avoids the last-word collisions that bit the old code (Cameron Smith vs Jordan L. Smith,
+// Si Woo Kim vs Michael Kim).
+function nameKey(n){ return (n||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+
+// ESPN uses a player's preferred shortened name for some golfers; map ESPN's key -> roster key
+// so live data lands under the canonical name our roster uses.
+const nameAliases = {
+  'mattmccarty': 'matthewmccarty',
+  'nicoechavarria': 'nicolasechavarria',
+};
+
+function tvForDate(d){
+  const wd = d.toLocaleString('en-US', { timeZone:'America/Chicago', weekday:'short' });
+  const h24 = parseInt(d.toLocaleString('en-US', { timeZone:'America/Chicago', hour:'numeric', hour12:false }), 10);
+  if(wd==='Thu'||wd==='Fri') return h24<11?'ESPN+':(h24<18?'ESPN':'ESPN2');
+  if(wd==='Sat'||wd==='Sun'){
+    if(h24<9) return 'ESPN+/ESPN';
+    if(h24<12) return 'ESPN';
+    return 'CBS';
+  }
+  return '—';
+}
+
+// Convert an ESPN competitor object into a display-ready tee-time struct.
+// status.period anchors to the CURRENT/just-finished round; ESPN publishes future-round
+// tee times under linescores[i].teeTime ahead of time, so when a golfer finishes a round we
+// advance the label/time to their next scheduled tee.
+function buildTTFromCompetitor(c){
+  const status=c?.status;
+  if(!status) return null;
+  const day=['Thu','Fri','Sat','Sun'];
+  const period=status.period||1;
+  const state=(status.type?.state||'').toLowerCase();
+  const fmt=d=>d.toLocaleTimeString('en-US',{timeZone:'America/Chicago',hour:'numeric',minute:'2-digit',hour12:true});
+
+  if(state==='post'){
+    const next=(c.linescores||[]).find(ls=>(ls.period||0)>period && ls.teeTime);
+    if(next){
+      const np=next.period;
+      const d=new Date(next.teeTime);
+      return { label:`${day[np-1]||`R${np}`} R${np}`, time:fmt(d), tv:tvForDate(d) };
+    }
+    return { label:`${day[period-1]||`R${period}`} R${period}`, time:'Final', tv:'—' };
+  }
+  const label=`${day[period-1]||`R${period}`} R${period}`;
+  if(state==='in'){
+    const thru=status.thru ?? status.displayThru;
+    return { label, time: thru!=null ? `Thru ${thru}` : 'On course', tv:'—' };
+  }
+  if(status.teeTime){
+    const d=new Date(status.teeTime);
+    return { label, time:fmt(d), tv:tvForDate(d) };
+  }
+  return { label, time:'—', tv:'—' };
+}
+
+function parseRelScore(v){
+  if(v===undefined||v===null) return null;
+  if(typeof v==='number') return v;
+  const s=String(v).trim().toUpperCase();
+  if(!s) return null;
+  if(s==='E'||s==='EVEN') return 0;
+  if(['MC','CUT','WD','DQ','DNS','-'].includes(s)) return null;
+  const m=s.match(/^([+-]?)(\d+)$/);
+  if(!m) return null;
+  return m[1]==='-' ? -parseInt(m[2],10) : parseInt(m[2],10);
+}
+
+const teeTimes = {
+  'schauffele':{thu:'7:29 AM',fri:'12:54 PM'},'reitan':{thu:'7:13 AM',fri:'12:38 PM'},
+  'brennan':{thu:'6:18 AM',fri:'11:43 AM'},'blanchet':{thu:'5:45 AM',fri:'11:10 AM'},
+  'henley':{thu:'6:45 AM',fri:'12:10 PM'},'detry':{thu:'7:24 AM',fri:'12:49 PM'},
+  'rodgers':{thu:'7:35 AM',fri:'1:00 PM'},'higa':{thu:'7:35 AM',fri:'1:00 PM'},
+  'hatton':{thu:'7:29 AM',fri:'12:54 PM'},'berger':{thu:'6:56 AM',fri:'12:21 PM'},
+  'holt':{thu:'6:23 AM',fri:'11:48 AM'},'donald':{thu:'11:48 AM',fri:'6:23 AM'},
+  'scott':{thu:'6:56 AM',fri:'12:21 PM'},'johnson':{thu:'11:10 AM',fri:'5:45 AM'},
+  'echavarria':{thu:'11:26 AM',fri:'6:01 AM'},'polland':{thu:'11:26 AM',fri:'6:01 AM'},
+  'fowler':{thu:'7:18 AM',fri:'12:43 PM'},'coody':{thu:'12:27 PM',fri:'7:02 AM'},
+  'higgo':{thu:'6:18 AM',fri:'11:43 AM'},'shattuck':{thu:'5:45 AM',fri:'11:10 AM'},
+  'lowry':{thu:'7:07 AM',fri:'12:32 PM'},'mccarty':{thu:'6:29 AM',fri:'11:54 AM'},
+  'glover':{thu:'6:40 AM',fri:'12:05 PM'},'jones':{thu:'7:46 AM',fri:'1:11 PM'},
+  'bridgeman':{thu:'7:02 AM',fri:'12:27 PM'},'fox':{thu:'7:35 AM',fri:'1:00 PM'},
+  'grillo':{thu:'12:27 PM',fri:'7:02 AM'},'block':{thu:'11:10 AM',fri:'5:45 AM'},
+  'day':{thu:'6:34 AM',fri:'11:59 AM'},'pendrith':{thu:'6:01 AM',fri:'11:26 AM'},
+  'saddier':{thu:'6:51 AM',fri:'12:16 PM'},'mcclure':{thu:'8:02 AM',fri:'1:27 PM'},
+};
+
+function getTVForTime(t){if(!t||t==='TBD')return t==='TBD'?'ESPN/CBS':'—';const[tp,per]=t.split(' ');const h=parseInt(tp);const h24=per==='PM'&&h!==12?h+12:(per==='AM'&&h===12?0:h);return h24<11?'ESPN+':'ESPN';}
+function getActiveTT(name){
+  // Prefer live tee/status data from ESPN; fall back to the hardcoded estimates if unavailable.
+  const live = liveTT[nameKey(name)];
+  if (live) return live;
+  const k=name.toLowerCase().split(' ').pop();
+  const tt=teeTimes[k];
+  if(!tt)return{time:'—',tv:'—',label:'Thu R1'};
+  const now=new Date();
+  if(now<new Date('2026-05-14T23:59:00-04:00'))return{time:tt.thu||'—',tv:getTVForTime(tt.thu),label:'Thu R1'};
+  if(now<new Date('2026-05-15T23:59:00-04:00'))return{time:tt.fri||'—',tv:getTVForTime(tt.fri),label:'Fri R2'};
+  if(now<new Date('2026-05-16T23:59:00-04:00'))return{time:'TBD',tv:'ESPN/CBS',label:'Sat R3'};
+  return{time:'TBD',tv:'ESPN/CBS',label:'Sun R4'};
+}
+
+const nerdsGroups = [
+  {num:6, leader:"Xander Schauffele",lastName:"Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],bid:2800,featured:false,lowPro:false},
+  {num:13,leader:"Russell Henley",   lastName:"Henley",    partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],           bid:1050,featured:false,lowPro:true},
+  {num:19,leader:"Tyrrell Hatton",   lastName:"Hatton",    partners:["Daniel Berger","Ian Holt","Luke Donald"],                 bid:950, featured:false,lowPro:false},
+  {num:23,leader:"Adam Scott",       lastName:"Scott",     partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],      bid:750, featured:false,lowPro:false},
+  {num:24,leader:"Rickie Fowler",    lastName:"Fowler",    partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],      bid:1500,featured:false,lowPro:false},
+  {num:30,leader:"Shane Lowry",      lastName:"Lowry",     partners:["Matthew McCarty","Lucas Glover","Jared Jones"],           bid:600, featured:false,lowPro:false},
+  {num:33,leader:"Jacob Bridgeman",  lastName:"Bridgeman", partners:["Ryan Fox","Emiliano Grillo","Michael Block"],             bid:900, featured:false,lowPro:false},
+  {num:35,leader:"Jason Day",        lastName:"Day",       partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],        bid:450, featured:true, lowPro:false},
+];
+
+const allGroups = [
+  {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
+  {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
+  {num:3,leader:"Jon Rahm",partners:["Michael Thorbjornsen","Matt Wallace"],syndicate:"Beaver",bid:2500},
+  {num:4,leader:"Cameron Young",partners:["Keegan Bradley","Hao-Tong Li"],syndicate:"JD",bid:3300},
+  {num:5,leader:"Bryson DeChambeau",partners:["Corey Conners","Ricky Castillo","Andy Sullivan"],syndicate:"Phil",bid:2500},
+  {num:6,leader:"Xander Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],syndicate:"Nerds",bid:2800},
+  {num:7,leader:"Matt Fitzpatrick",partners:["Alex Fitzpatrick","Max Greyserman","Joe Highsmith"],syndicate:"Robbie",bid:2500},
+  {num:8,leader:"Ludvig Aberg",partners:["Sudarshan Yellamaraju","Christiaan Bezuidenhout","Travis Smyth"],syndicate:"Robbie",bid:2700},
+  {num:9,leader:"Tommy Fleetwood",partners:["Harry Hall","Stephan Jaeger","Adam Schenk"],syndicate:"Beaver",bid:1200},
+  {num:10,leader:"Collin Morikawa",partners:["Sungjae Im","Rasmus Neergaard-Petersen","Davis Riley"],syndicate:"Phil",bid:1500},
+  {num:11,leader:"Brooks Koepka",partners:["Alexander Noren","Aldrich Potgieter","Brian Campbell"],syndicate:"Phil",bid:1500},
+  {num:12,leader:"Justin Rose",partners:["Sahith Theegala","Andrew Novak","Martin Kaymer"],syndicate:"WDC",bid:1200},
+  {num:13,leader:"Russell Henley",partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],syndicate:"Nerds",bid:1050},
+  {num:14,leader:"Si Woo Kim",partners:["Marco Penge","Daniel Hillier","Padraig Harrington"],syndicate:"JD",bid:700},
+  {num:15,leader:"Justin Thomas",partners:["Sam Stevens","Max McGreevy","Jordan Gumberg"],syndicate:"Robbie",bid:1100},
+  {num:16,leader:"Robert MacIntyre",partners:["Wyndham Clark","Chris Kirk","Jason Dufner"],syndicate:"WDC",bid:800},
+  {num:17,leader:"Viktor Hovland",partners:["Alex Smalley","Billy Horschel","Shaun Micheel"],syndicate:"Phil",bid:1000},
+  {num:18,leader:"Patrick Cantlay",partners:["Keith Mitchell","Casey Jarvis","Jimmy Walker"],syndicate:"JD",bid:950},
+  {num:19,leader:"Tyrrell Hatton",partners:["Daniel Berger","Ian Holt","Luke Donald"],syndicate:"Nerds",bid:950},
+  {num:20,leader:"Jordan Spieth",partners:["Ryan Gerard","John Parry","Y.E. Yang"],syndicate:"Robbie",bid:800},
+  {num:21,leader:"Sam Burns",partners:["Nick Taylor","William Mouw","Austin Hurt"],syndicate:"JD",bid:1050},
+  {num:22,leader:"Hideki Matsuyama",partners:["Rasmus Hojgaard","Steven Fisk","Ben Kern"],syndicate:"Robbie",bid:800},
+  {num:23,leader:"Adam Scott",partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],syndicate:"Nerds",bid:750},
+  {num:24,leader:"Rickie Fowler",partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],syndicate:"Nerds",bid:1500},
+  {num:25,leader:"Chris Gotterup",partners:["Aaron Rai","John Keefer","Bryce Fisher"],syndicate:"WDC",bid:800},
+  {num:26,leader:"Patrick Reed",partners:["Jordan L. Smith","Austin Smotherman","Chris Gabriele"],syndicate:"WDC",bid:950},
+  {num:27,leader:"Min Woo Lee",partners:["Angel Ayora Fanegas","Matthias Schmid","Derek Berg"],syndicate:"Robbie",bid:450},
+  {num:28,leader:"Ben Griffin",partners:["Bud Cauley","Sami Valimaki","Francisco Bide"],syndicate:"JD",bid:700},
+  {num:29,leader:"Sepp Straka",partners:["Brandt Snedeker","Andrew Putnam","Garrett Sapp"],syndicate:"Beaver",bid:900},
+  {num:30,leader:"Shane Lowry",partners:["Matthew McCarty","Lucas Glover","Jared Jones"],syndicate:"Nerds",bid:600},
+  {num:31,leader:"Akshay Bhatia",partners:["Jayden Trey Schaper","Daniel Brown","Jesse Droemer"],syndicate:"Robbie",bid:500},
+  {num:32,leader:"Maverick McNealy",partners:["Brian Harman","Jhonattan Vegas","Mark Geddes"],syndicate:"Robbie",bid:500},
+  {num:33,leader:"Jacob Bridgeman",partners:["Ryan Fox","Emiliano Grillo","Michael Block"],syndicate:"Nerds",bid:900},
+  {num:34,leader:"Joaquin Niemann",partners:["J.T. Poston","Mikael Lindberg","Michael Kartrude"],syndicate:"Beaver",bid:400},
+  {num:35,leader:"Jason Day",partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],syndicate:"Nerds",bid:450},
+  {num:36,leader:"J.J. Spaun",partners:["Michael Kim","Bernd Wiesberger","Ryan Lenahan"],syndicate:"Robbie",bid:950},
+  {num:37,leader:"Kurt Kitayama",partners:["Ryo Hisatsune","Elvis Smylie","Ryan Vermeer"],syndicate:"Phil",bid:600},
+  {num:38,leader:"Harris English",partners:["Denny McCarthy","Kota Kaneko","Timothy Wiseman"],syndicate:"Phil",bid:550},
+  {num:39,leader:"Nicolai Hojgaard",partners:["Max Homa","Stewart Cink","Tyler Collet"],syndicate:"Beaver",bid:950},
+  {num:40,leader:"Gary Woodland",partners:["Cameron Smith","David Lipsky","Zach Haynes"],syndicate:"Robbie",bid:600},
+];
+
+const synSpend={Nerds:9000,Phil:11050,Robbie:10900,JD:6700,WDC:7050,Beaver:5950};
+const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
+let liveScores={}, scorecards={}, liveTT={}, tournamentStarted=false;
+let projectedCutline=null, cutInsideCount=0, cutFieldCount=0;
+
+function getScore(name){const v=liveScores[nameKey(name)];return v===undefined?null:v;}
+function fmtScoreCell(s){if(s===null)return'<span style="color:#3a5a45">—</span>';if(s===0)return'<span style="color:#8fa3c0">E</span>';if(s<0)return`<span style="color:#4fc87a">${s}</span>`;return`<span style="color:#e05a5a">+${s}</span>`;}
+function getBest(g){let best=null;for(const p of[g.leader,...g.partners]){const s=getScore(p);if(s!==null&&(best===null||s<best))best=s;}return best;}
+function sc(s){return s===null?'e':s<0?'u':s>0?'o':'e';}
+function ss(s){return s===null?'—':s===0?'E':s<0?String(s):'+'+s;}
+
+function computeSynPayouts(){
+  const synPayouts={Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
+  const sorted=[...allGroups].map(g=>({...g,best:getBest(g)}));
+  sorted.sort((a,b)=>{if(a.best===null&&b.best===null)return 0;if(a.best===null)return 1;if(b.best===null)return -1;return a.best-b.best;});
+  sorted.forEach((g,i)=>{if(i<PAYOUTS.length)synPayouts[g.syndicate]+=Math.round(POT*PAYOUTS[i]);});
+  return synPayouts;
+}
+
+function holeClass(s,par){if(!s)return'hole-blank';const d=s-par;if(d<=-2)return'eagle';if(d===-1)return'birdie';if(d===0)return'par-score';if(d===1)return'bogey';return'dbl-bogey';}
+
+function buildScorecard(name,rounds){
+  const legend=`<div class="sc-legend"><span class="sc-legend-item"><span class="leg-eg"></span>Eagle</span><span class="sc-legend-item"><span class="leg-bi"></span>Birdie</span><span class="sc-legend-item" style="color:#6aaa88;font-size:10px;">— Par</span><span class="sc-legend-item"><span class="leg-bo"></span>Bogey</span><span class="sc-legend-item"><span class="leg-db"></span>Dbl+</span></div>`;
+  const hdr=`<tr><th class="label">Rnd</th>${[1,2,3,4,5,6,7,8,9].map(h=>`<th>${h}</th>`).join('')}<th class="section">Out</th>${[10,11,12,13,14,15,16,17,18].map(h=>`<th>${h}</th>`).join('')}<th class="section">In</th><th class="section">Tot</th></tr>`;
+  const parRow=`<tr><td class="label par-row">Par</td>${PARS.slice(0,9).map(p=>`<td class="par-row">${p}</td>`).join('')}<td class="section par-row">${FRONT_PAR}</td>${PARS.slice(9).map(p=>`<td class="par-row">${p}</td>`).join('')}<td class="section par-row">${BACK_PAR}</td><td class="section par-row">${TOTAL_PAR}</td></tr>`;
+  const rl=['R1','R2','R3','R4'];
+  let body='';let hasData=false;
+  if(rounds)rounds.forEach((holes,ri)=>{
+    if(!holes)return;hasData=true;
+    const f=holes.slice(0,9),b=holes.slice(9);
+    const ft=f.reduce((a,x)=>a+(x||0),0),bt=b.reduce((a,x)=>a+(x||0),0),tot=ft+bt;
+    const vs=v=>v===0?'E':v>0?'+'+v:String(v);
+    body+=`<tr><td class="label" style="color:#7acce8;">${rl[ri]}</td>${f.map((s,i)=>`<td><span class="hole-score ${holeClass(s,PARS[i])}">${s||''}</span></td>`).join('')}<td class="total">${ft||''}<br><span style="font-size:9px;color:#4a7060;">${ft?vs(ft-FRONT_PAR):''}</span></td>${b.map((s,i)=>`<td><span class="hole-score ${holeClass(s,PARS[9+i])}">${s||''}</span></td>`).join('')}<td class="total">${bt||''}<br><span style="font-size:9px;color:#4a7060;">${bt?vs(bt-BACK_PAR):''}</span></td><td class="total" style="color:#C9A84C;">${tot||''}<br><span style="font-size:9px;">${tot?vs(tot-TOTAL_PAR):''}</span></td></tr>`;
+  });
+  if(!hasData)body=`<tr><td class="label" style="color:#2a5a38;">—</td>${Array(19).fill('<td class="hole-blank">·</td>').join('')}<td class="hole-blank">·</td></tr>`;
+  return legend+`<div style="overflow-x:auto;padding:4px 0;"><table class="scorecard"><thead>${hdr}${parRow}</thead><tbody>${body}</tbody></table></div>`;
+}
+
+function getSCData(name){return scorecards[nameKey(name)]||null;}
+
+function renderNerdsGrid(){
+  const grid=document.getElementById('nerds-grid');grid.innerHTML='';
+  for(const g of nerdsGroups){
+    const best=getBest(g);
+    const groupIdx=allGroups.findIndex(ag=>ag.num===g.num);
+    const pct=PAYOUTS[Math.min(groupIdx,PAYOUTS.length-1)];
+    const payout=Math.round(POT*pct);
+    const members=[{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))];
+    const div=document.createElement('div');div.className='nc';
+    const blocks=members.map((m,mi)=>{
+      const s=getScore(m.name),tt=getActiveTT(m.name),uid=`nc-${g.num}-${mi}`;
+      return `<div class="nc-golfer-block"><div class="nc-golfer-row" onclick="toggleNcSc('${uid}')"><span class="nc-golfer-name${m.isHl?' hl':''}">${m.name} <span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="nc-tee-col"><div class="nc-tee-time">${tt.label} · ${tt.time}</div><div class="nc-tee-tv">${tt.tv}</div></div><div class="nc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
+    }).join('');
+    div.innerHTML=`<div class="nc-head"><div class="nc-head-top"><div><div class="nc-team">Team ${g.lastName}</div><div class="nc-grp">Group #${g.num}${g.lowPro?' · Low PGA Pro eligible':''}</div><div class="nc-cost">Group cost: $${g.bid.toLocaleString()}</div></div><div class="nc-score-block"><div class="nc-score-lbl">Best score</div><div class="nc-score ${sc(best)}">${ss(best)}</div></div></div></div><div class="nc-col-labels"><span class="nc-col-lbl">Golfer (tap to expand scorecard)</span><span style="display:flex;gap:24px;"><span class="nc-col-lbl">Tee time · network</span><span class="nc-col-lbl">Score</span></span></div>${blocks}<div class="nc-footer"><div>${g.featured?'<span class="pill pill-feat">ESPN+ Featured group</span>':''}</div><div><div class="nc-payout-label">Projected payout</div><div class="nc-payout-val">→ $${payout.toLocaleString()} (${Math.round(pct*100)}%)</div></div></div>`;
+    grid.appendChild(div);
+  }
+}
+
+function toggleNcSc(uid){const w=document.getElementById(uid),a=document.getElementById('arr-'+uid);if(!w)return;const o=w.classList.toggle('open');if(a)a.classList.toggle('open',o);}
+
+function renderField(){
+  const individuals=[];
+  allGroups.forEach((g,gi)=>{
+    const pct=PAYOUTS[Math.min(gi,PAYOUTS.length-1)];
+    const payout=Math.round(POT*pct);
+    [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))].forEach(m=>{
+      const tt=getActiveTT(m.name);
+      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,payout,score:getScore(m.name),isNerds:g.syndicate==='Nerds',teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
+    });
+  });
+  individuals.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  const tbody=document.getElementById('field-body');tbody.innerHTML='';
+  individuals.forEach((ind,i)=>{
+    const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isN=ind.isNerds,ftUid=`ft-sc-${i}`;
+    const tr=document.createElement('tr');if(isN)tr.className='nr';
+    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span><span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${isN?'#4fc87a':'#8fa3c0'};font-weight:${isN?'500':'400'};">$${ind.payout.toLocaleString()}</td>`;
+    tbody.appendChild(tr);
+    const scTr=document.createElement('tr');scTr.className=isN?'sc-row nr-sc':'sc-row';
+    scTr.innerHTML=`<td colspan="8"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
+    tbody.appendChild(scTr);
+  });
+  renderSyndicates(computeSynPayouts());
+  updateCutStat();
+  renderCutline();
+}
+
+function toggleFtSc(uid,btn){const el=document.getElementById(uid);if(!el)return;const o=el.classList.toggle('open');btn.textContent=o?'▴ scorecard':'▾ scorecard';}
+
+function renderSyndicates(synPayouts){
+  const order=['Nerds','Phil','Robbie','WDC','JD','Beaver'].sort((a,b)=>(synPayouts[b]||0)-(synPayouts[a]||0));
+  const grid=document.getElementById('syn-grid');grid.innerHTML='';
+  order.forEach(s=>{
+    const proj=synPayouts[s]||0,net=proj-synSpend[s],isN=s==='Nerds';
+    const d=document.createElement('div');d.className=`syc${isN?' nr':''}`;
+    d.innerHTML=`<div class="syc-n${isN?' g':''}">${isN?'🤓 ':''}${s}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${proj?'$'+proj.toLocaleString():'—'}</div><div class="syc-net">${proj?(net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>'):'awaiting play'}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+function nerdsInsideCut(){
+  if(projectedCutline===null) return null;
+  const all=nerdsGroups.flatMap(g=>[g.leader,...g.partners]);
+  return all.filter(n=>{const s=getScore(n);return s!==null && s<=projectedCutline;}).length;
+}
+
+function updateCutStat(){
+  const all=nerdsGroups.flatMap(g=>[g.leader,...g.partners]),total=all.length;
+  const stat=document.getElementById('cut-stat'),sub=document.getElementById('cut-sub');
+  if(!tournamentStarted){stat.textContent=total+' / '+total;sub.textContent='Pre-tournament · all active';return;}
+  const inside=nerdsInsideCut();
+  if(inside===null){
+    const withScores=all.filter(n=>getScore(n)!==null).length;
+    stat.textContent=withScores+' / '+total;sub.textContent='In play · cut not projected yet';
+  }else{
+    stat.textContent=inside+' / '+total;sub.textContent='Inside projected cut';
+  }
+}
+
+function renderCutline(){
+  const v=document.getElementById('cut-val'),line=document.getElementById('cut-line');
+  if(!v||!line) return;
+  if(!tournamentStarted){
+    v.textContent='—'; line.textContent='Tournament not yet underway'; return;
+  }
+  if(projectedCutline===null){
+    v.textContent='—'; line.textContent=`Awaiting more scores · ${cutFieldCount} of 156 in`; return;
+  }
+  v.textContent = projectedCutline===0 ? 'E' : (projectedCutline>0 ? '+'+projectedCutline : String(projectedCutline));
+  const nIn=nerdsInsideCut();
+  line.innerHTML=`<b>${cutInsideCount}</b> golfers currently at or under · <b>${nIn==null?'—':nIn}</b> of 32 Nerds inside`;
+}
+
+// Pull per-hole stroke counts out of ESPN's per-player summary response.
+// ESPN shape: rounds[i].period is the round number (1-4); each linescores[j].period
+// is the HOLE number (1-18). Critically, golfers who tee off on #10 return holes 10-18
+// first, then 1-9 — so we must place each stroke by its hole number, not array index.
+function extractRounds(playerSummary){
+  const out=[null,null,null,null];
+  try{
+    const rounds=playerSummary.rounds
+      || playerSummary.athlete?.rounds
+      || playerSummary.competitor?.rounds
+      || playerSummary.scorecards
+      || [];
+    rounds.forEach(r=>{
+      const rIdx=((r.period||r.round||r.roundNumber||1)-1);
+      if(rIdx<0||rIdx>3) return;
+      const cells=r.linescores||r.holes||r.scores||[];
+      if(!cells.length) return;
+      const holes=new Array(18).fill(null);
+      cells.forEach(h=>{
+        if(!h||typeof h!=='object') return;
+        const hole=h.period||h.holeNumber||h.hole;
+        const v=h.value??h.score??h.strokes??h.displayValue;
+        const n=parseInt(v,10);
+        if(hole>=1&&hole<=18&&!isNaN(n)) holes[hole-1]=n;
+      });
+      if(holes.some(x=>x!==null)) out[rIdx]=holes;
+    });
+  }catch(_){}
+  return out;
+}
+
+async function fetchScorecard(eventId, athleteId){
+  // Best-known public endpoint for per-hole detail. If your host blocks site.web.api.espn.com
+  // via CORS, set PROXY_URL above and this will route through it automatically.
+  const url=`https://site.web.api.espn.com/apis/site/v2/sports/golf/pga/leaderboard/${eventId}/competitorsummary/${athleteId}`;
+  const r=await fetch(viaProxy(url),{cache:'no-store'});
+  if(!r.ok) throw new Error('scorecard HTTP '+r.status);
+  return r.json();
+}
+
+async function loadScores(){
+  const lu=document.getElementById('last-upd');
+  lu.textContent='fetching...';
+  try{
+    const res=await fetch(viaProxy(ESPN_LEADERBOARD_URL),{cache:'no-store'});
+    if(!res.ok) throw new Error('leaderboard HTTP '+res.status);
+    const data=await res.json();
+    const event=(data.events||[])[0];
+    if(!event) throw new Error('no active event in leaderboard response');
+    const comp=(event.competitions||[])[0]||{};
+    const state=(comp.status?.type?.state||'').toLowerCase();
+    tournamentStarted = state==='in' || state==='post';
+
+    const newScores={};
+    const newTT={};
+    const athleteIds={};
+    // Helper: write a value under the ESPN key AND, if aliased, the roster key too.
+    const writeBoth=(map,key,val)=>{ map[key]=val; const a=nameAliases[key]; if(a) map[a]=val; };
+    for(const c of (comp.competitors||[])){
+      const ath=c.athlete||{};
+      const key=nameKey(ath.displayName||ath.fullName||ath.shortName||'');
+      if(!key) continue;
+      const desc=(c.status?.type?.description||'').toUpperCase();
+      const missedCut = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
+      // Always record tee-time/status (so WD/CUT players still surface their situation), but skip scores for them.
+      const tt=buildTTFromCompetitor(c);
+      if(tt) writeBoth(newTT,key,tt);
+      if(missedCut) continue;
+      const rel=parseRelScore(c.score?.displayValue ?? c.score);
+      if(rel!==null) writeBoth(newScores,key,rel);
+      if(ath.id) writeBoth(athleteIds,key,ath.id);
+    }
+    liveScores=newScores;
+    liveTT=newTT;
+
+    // Compute projected cutline from the raw competitor list (no alias dupes here).
+    // PGA Championship cut = top 70 + ties after R2. Mid-tournament we just project off current scores.
+    const fieldScores=[];
+    for(const c of (comp.competitors||[])){
+      const desc=(c.status?.type?.description||'').toUpperCase();
+      if(desc.includes('CUT')||desc.includes('WD')||desc.includes('WITHDR')||desc.includes('DISQ')) continue;
+      const rel=parseRelScore(c.score?.displayValue ?? c.score);
+      if(rel!==null) fieldScores.push(rel);
+    }
+    fieldScores.sort((a,b)=>a-b);
+    cutFieldCount=fieldScores.length;
+    projectedCutline = fieldScores.length>=70 ? fieldScores[69] : null;
+    cutInsideCount = projectedCutline===null ? 0 : fieldScores.filter(s=>s<=projectedCutline).length;
+
+    // Per-hole scorecards for Nerds golfers (32 max). Failures are non-fatal — totals still render.
+    const eventId=event.id;
+    const newCards={};
+    if(eventId){
+      const nerdsNames=nerdsGroups.flatMap(g=>[g.leader,...g.partners]);
+      await Promise.all(nerdsNames.map(async fullName=>{
+        const k=nameKey(fullName);
+        // athleteIds is populated under the roster key (via writeBoth + aliases), so a direct
+        // lookup here is sufficient even if ESPN's displayName differs.
+        const aid=athleteIds[k];
+        if(!aid) return;
+        try{
+          const sd=await fetchScorecard(eventId,aid);
+          const rounds=extractRounds(sd);
+          if(rounds.some(r=>r&&r.length)) newCards[k]=rounds;
+        }catch(_){ /* swallow per-player failures */ }
+      }));
+    }
+    scorecards=newCards;
+
+    lu.textContent=new Date().toLocaleTimeString();
+  }catch(e){
+    console.warn('loadScores failed:',e);
+    lu.textContent='unable to fetch scores';
+  }
+  renderNerdsGrid();
+  renderField();
+}
+
+// Init
+renderNerdsGrid();
+renderField();
+loadScores();
+setInterval(loadScores,300000); // refresh every 5 min
+</script>
+</body>
+</html>

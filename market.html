@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hillwood CC · Mark-to-Market · 2026 PGA Calcutta</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
+    .hero-stripe { height: 6px; background: #C9A84C; }
+    .hero-inner { padding: 1.5rem 1.5rem 1rem; text-align: center; background: #0d1728; border-bottom: 1px solid #C9A84C; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.18em; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .hero-title { font-size: 26px; color: #fff; font-weight: normal; letter-spacing: 0.02em; margin-bottom: 0.3rem; }
+    .hero-title span { color: #C9A84C; }
+    .hero-sub { font-size: 12px; color: #7a8faf; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 1rem; }
+    .nav { background: #08111e; border-bottom: 1px solid #1e3050; padding: 0.5rem 1rem; text-align: center; }
+    .nav a { display: inline-block; padding: 6px 16px; margin: 0 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #7a8faf; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .nav a:hover { background: #152035; color: #c8d4e8; }
+    .nav a.active { color: #C9A84C; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); }
+    .content { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .sec { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; white-space: nowrap; }
+    .sec-head { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 0.8rem; padding-bottom: 8px; border-bottom: 1px solid #1e3050; }
+    .sec-line { flex: 1; height: 1px; background: #1e3050; }
+    .intro { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.2); border-left: 3px solid #C9A84C; border-radius: 4px; padding: 0.9rem 1.1rem; margin-bottom: 1.25rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #b0c0d8; line-height: 1.6; }
+    .intro b { color: #C9A84C; font-weight: 500; }
+    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .sc { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 0.9rem 1.1rem; }
+    .sc.gb { border-color: rgba(201,168,76,0.5); }
+    .sc-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 6px; }
+    .sc-val { font-size: 22px; color: #fff; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .sc-val.g { color: #C9A84C; }
+    .sc-val.up { color: #4fc87a; }
+    .sc-val.dn { color: #e05a5a; }
+    .sc-sub { font-size: 11px; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 3px; }
+    .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .ctrl-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; margin-right: 4px; }
+    .ctrl-btn { background: #152035; border: 1px solid #1e3050; color: #8fa3c0; padding: 5px 12px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; cursor: pointer; border-radius: 4px; letter-spacing: 0.04em; }
+    .ctrl-btn:hover { background: #1c2a45; color: #c8d4e8; }
+    .ctrl-btn.active { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.4); color: #C9A84C; }
+    .mkt-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+    .mkt { width: 100%; border-collapse: collapse; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; min-width: 720px; }
+    .mkt th { text-align: left; padding: 7px 8px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #3a5070; border-bottom: 1px solid #1e3050; font-weight: 500; }
+    .mkt th.r, .mkt td.r { text-align: right; }
+    .mkt td { padding: 7px 8px; border-bottom: 1px solid #111e30; vertical-align: middle; color: #8fa3c0; }
+    .mkt tr.nr td { background: #0f1f14; }
+    .mkt tr:hover td { background: #192840; }
+    .mkt tr.nr:hover td { background: #102018; }
+    .mkt tr.exp-row td { padding: 0; border-top: none; background: #070f14; }
+    .grp-cell { display: flex; align-items: center; gap: 8px; }
+    .grp-num { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 4px; background: #1e3050; color: #7a8faf; font-size: 10px; font-weight: 500; }
+    .grp-num.nr { background: #1a4028; color: #4fc87a; }
+    .grp-head { color: #c8d4e8; font-weight: 500; font-size: 13px; }
+    .grp-head.nr { color: #c8efd4; }
+    .grp-best { font-size: 10px; color: #5a7090; margin-top: 1px; }
+    .grp-best.nr { color: #3a7a50; }
+    .sp { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+    .sp-n{background:#1a4028;color:#4fc87a;border:1px solid #2a5a35;}
+    .sp-ph{background:#0d2040;color:#5a9fd4;border:1px solid #1a4060;}
+    .sp-ro{background:#2a1a05;color:#d4944a;border:1px solid #4a3010;}
+    .sp-jd{background:#2a0d1a;color:#d45a8a;border:1px solid #4a1a30;}
+    .sp-wdc{background:#1a1040;color:#8a7ad4;border:1px solid #2a2060;}
+    .sp-bv{background:#2a1008;color:#d47050;border:1px solid #4a2010;}
+    .score-pill { display: inline-block; min-width: 32px; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; text-align: center; background: #1a2840; }
+    .score-pill.u { color: #4fc87a; background: rgba(79,200,122,0.1); }
+    .score-pill.o { color: #e05a5a; background: rgba(224,90,90,0.1); }
+    .score-pill.e { color: #c8d4e8; }
+    .score-pill.none { color: #5a7090; background: #131e30; }
+    .rank-chip { font-size: 10px; color: #7a8faf; }
+    .rank-chip.cash { color: #C9A84C; }
+    .pl-up { color: #4fc87a; font-weight: 500; }
+    .pl-dn { color: #e05a5a; font-weight: 500; }
+    .pl-flat { color: #5a7090; }
+    .mult { font-size: 10px; color: #5a7090; margin-left: 3px; }
+    .mult.up { color: #4fc87a; }
+    .mult.dn { color: #e05a5a; }
+    .expand-btn { font-size: 10px; color: #3a6a80; cursor: pointer; background: none; border: none; padding: 0; margin-left: 4px; }
+    .exp-content { display: none; padding: 6px 10px 8px 38px; background: #050a10; }
+    .exp-content.open { display: block; }
+    .exp-golfer { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 11px; gap: 8px; }
+    .exp-name { color: #8fa3c0; }
+    .exp-name.hl { color: #c8d4e8; font-weight: 500; }
+    .exp-score { color: #5a7090; font-size: 11px; }
+    .exp-score.u { color: #4fc87a; }
+    .exp-score.o { color: #e05a5a; }
+    .exp-score.e { color: #c8d4e8; }
+    .footer{text-align:center;padding:1.5rem 1rem 0;font-size:11px;color:#3a5070;font-family:'Helvetica Neue',Arial,sans-serif;border-top:1px solid #1e3050;margin-top:2rem;}
+    .rbtn{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:7px 18px;border-radius:6px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;cursor:pointer;margin-top:0.75rem;}
+    .ab{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(79,200,122,0.12);color:#4fc87a;border:1px solid rgba(79,200,122,0.3);font-family:'Helvetica Neue',Arial,sans-serif;margin-left:8px;}
+    @media(max-width:600px){.stat-row{grid-template-columns:repeat(2,1fr);}.hero-title{font-size:20px;}}
+  </style>
+</head>
+<body>
+
+<div class="hero-stripe"></div>
+<div class="hero-inner">
+  <div class="hero-eyebrow">Hillwood Country Club · 2026 PGA Championship Calcutta</div>
+  <div class="hero-title">Secondary <span>Mark-to-Market</span></div>
+  <div class="hero-sub">Group-level implied values for negotiating buy/sell of shares · Last updated: <span id="last-upd">—</span></div>
+</div>
+<div class="nav">
+  <a href="index.html">Leaderboard</a>
+  <a href="market.html" class="active">Market</a>
+</div>
+
+<div class="content">
+
+  <div class="intro">
+    <b>How to read this:</b> every group's "implied value" is the payout it would earn if the tournament ended right now — i.e., its current rank's prize money. <b>P/L</b> is implied value minus what the syndicate paid at auction. A group well outside top 12 has zero implied value, but the share isn't worthless — it just means current odds are below break-even. Use these numbers as the floor of a negotiation, not a guaranteed price; final settlement is between buyer and seller.
+  </div>
+
+  <div class="stat-row">
+    <div class="sc gb"><div class="sc-lbl">Total notional</div><div class="sc-val g" id="stat-notional">—</div><div class="sc-sub">sum of all groups' implied values</div></div>
+    <div class="sc"><div class="sc-lbl">Total invested</div><div class="sc-val">$50,650</div><div class="sc-sub">auction pot</div></div>
+    <div class="sc gb"><div class="sc-lbl">Biggest mover ↑</div><div class="sc-val up" id="stat-up">—</div><div class="sc-sub" id="stat-up-sub">—</div></div>
+    <div class="sc"><div class="sc-lbl">Biggest mover ↓</div><div class="sc-val dn" id="stat-dn">—</div><div class="sc-sub" id="stat-dn-sub">—</div></div>
+  </div>
+
+  <div class="controls">
+    <span class="ctrl-lbl">Sort</span>
+    <button class="ctrl-btn active" data-sort="pl">P/L ↓</button>
+    <button class="ctrl-btn" data-sort="mult">Multiplier ↓</button>
+    <button class="ctrl-btn" data-sort="value">Implied $ ↓</button>
+    <button class="ctrl-btn" data-sort="cost">Cost ↓</button>
+    <button class="ctrl-btn" data-sort="grp">Group #</button>
+    <span class="ctrl-lbl" style="margin-left:1rem;">Filter</span>
+    <button class="ctrl-btn active" data-filter="all">All groups</button>
+    <button class="ctrl-btn" data-filter="nerds">Nerds only</button>
+    <button class="ctrl-btn" data-filter="cash">Currently cashing</button>
+  </div>
+
+  <div class="mkt-wrap">
+    <table class="mkt">
+      <thead><tr>
+        <th>Group</th>
+        <th>Syndicate</th>
+        <th class="r">Cost</th>
+        <th>Best score</th>
+        <th class="r">Rank</th>
+        <th class="r">Implied $</th>
+        <th class="r">P/L</th>
+      </tr></thead>
+      <tbody id="mkt-body"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    Hillwood Country Club · 2026 PGA Championship Calcutta · Mark-to-Market<br>
+    <span style="margin-top:4px;display:inline-block;">Implied values derived from live ESPN ranks <span class="ab">auto-refresh every 5 min</span></span><br>
+    <button class="rbtn" onclick="loadScores()">↻ Refresh now</button>
+  </div>
+
+</div>
+
+<script>
+// ============================================================================
+// Constants & helpers — kept locally so this page has zero shared-state risk
+// with index.html. The auction data won't change so duplication is fine.
+// ============================================================================
+const POT = 50650;
+const PAYOUTS = [0.22,0.15,0.12,0.10,0.08,0.07,0.06,0.05,0.04,0.04,0.03,0.02,0.02];
+// Last entry is the Low Pro payout in the rules, but the deployed leaderboard
+// treats it as a 13th placement payout. Match that behaviour here for parity.
+
+const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+const PROXY_URL = '';
+function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; }
+
+function nameKey(n){
+  return (n||'')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g,'')
+    .replace(/ø/g,'o').replace(/æ/g,'ae').replace(/œ/g,'oe')
+    .replace(/ð/g,'d').replace(/þ/g,'th').replace(/ß/g,'ss').replace(/đ/g,'d')
+    .replace(/[^a-z0-9]/g,'');
+}
+const nameAliases = {
+  'mattmccarty':'matthewmccarty',
+  'nicoechavarria':'nicolasechavarria',
+};
+function parseRelScore(v){
+  if(v===undefined||v===null) return null;
+  if(typeof v==='number') return v;
+  const s=String(v).trim().toUpperCase();
+  if(!s) return null;
+  if(s==='E'||s==='EVEN') return 0;
+  if(['MC','CUT','WD','DQ','DNS','-'].includes(s)) return null;
+  const m=s.match(/^([+-]?)(\d+)$/);
+  if(!m) return null;
+  return m[1]==='-' ? -parseInt(m[2],10) : parseInt(m[2],10);
+}
+function fmtDollars(n){ return '$'+Math.round(n).toLocaleString(); }
+function fmtRel(s){ return s===null?'—':s===0?'E':s<0?String(s):'+'+s; }
+function fmtPL(p){ if(p===0) return '<span class="pl-flat">$0</span>'; if(p>0) return `<span class="pl-up">+${fmtDollars(p)}</span>`; return `<span class="pl-dn">-${fmtDollars(Math.abs(p))}</span>`; }
+function sc(s){ return s===null?'none':s<0?'u':s>0?'o':'e'; }
+const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
+
+// ============================================================================
+// Auction roster (mirrors index.html allGroups)
+// ============================================================================
+const allGroups = [
+  {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
+  {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
+  {num:3,leader:"Jon Rahm",partners:["Michael Thorbjornsen","Matt Wallace"],syndicate:"Beaver",bid:2500},
+  {num:4,leader:"Cameron Young",partners:["Keegan Bradley","Hao-Tong Li"],syndicate:"JD",bid:3300},
+  {num:5,leader:"Bryson DeChambeau",partners:["Corey Conners","Ricky Castillo","Andy Sullivan"],syndicate:"Phil",bid:2500},
+  {num:6,leader:"Xander Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],syndicate:"Nerds",bid:2800},
+  {num:7,leader:"Matt Fitzpatrick",partners:["Alex Fitzpatrick","Max Greyserman","Joe Highsmith"],syndicate:"Robbie",bid:2500},
+  {num:8,leader:"Ludvig Aberg",partners:["Sudarshan Yellamaraju","Christiaan Bezuidenhout","Travis Smyth"],syndicate:"Robbie",bid:2700},
+  {num:9,leader:"Tommy Fleetwood",partners:["Harry Hall","Stephan Jaeger","Adam Schenk"],syndicate:"Beaver",bid:1200},
+  {num:10,leader:"Collin Morikawa",partners:["Sungjae Im","Rasmus Neergaard-Petersen","Davis Riley"],syndicate:"Phil",bid:1500},
+  {num:11,leader:"Brooks Koepka",partners:["Alexander Noren","Aldrich Potgieter","Brian Campbell"],syndicate:"Phil",bid:1500},
+  {num:12,leader:"Justin Rose",partners:["Sahith Theegala","Andrew Novak","Martin Kaymer"],syndicate:"WDC",bid:1200},
+  {num:13,leader:"Russell Henley",partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],syndicate:"Nerds",bid:1050},
+  {num:14,leader:"Si Woo Kim",partners:["Marco Penge","Daniel Hillier","Padraig Harrington"],syndicate:"JD",bid:700},
+  {num:15,leader:"Justin Thomas",partners:["Sam Stevens","Max McGreevy","Jordan Gumberg"],syndicate:"Robbie",bid:1100},
+  {num:16,leader:"Robert MacIntyre",partners:["Wyndham Clark","Chris Kirk","Jason Dufner"],syndicate:"WDC",bid:800},
+  {num:17,leader:"Viktor Hovland",partners:["Alex Smalley","Billy Horschel","Shaun Micheel"],syndicate:"Phil",bid:1000},
+  {num:18,leader:"Patrick Cantlay",partners:["Keith Mitchell","Casey Jarvis","Jimmy Walker"],syndicate:"JD",bid:950},
+  {num:19,leader:"Tyrrell Hatton",partners:["Daniel Berger","Ian Holt","Luke Donald"],syndicate:"Nerds",bid:950},
+  {num:20,leader:"Jordan Spieth",partners:["Ryan Gerard","John Parry","Y.E. Yang"],syndicate:"Robbie",bid:800},
+  {num:21,leader:"Sam Burns",partners:["Nick Taylor","William Mouw","Austin Hurt"],syndicate:"JD",bid:1050},
+  {num:22,leader:"Hideki Matsuyama",partners:["Rasmus Hojgaard","Steven Fisk","Ben Kern"],syndicate:"Robbie",bid:800},
+  {num:23,leader:"Adam Scott",partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],syndicate:"Nerds",bid:750},
+  {num:24,leader:"Rickie Fowler",partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],syndicate:"Nerds",bid:1500},
+  {num:25,leader:"Chris Gotterup",partners:["Aaron Rai","John Keefer","Bryce Fisher"],syndicate:"WDC",bid:800},
+  {num:26,leader:"Patrick Reed",partners:["Jordan L. Smith","Austin Smotherman","Chris Gabriele"],syndicate:"WDC",bid:950},
+  {num:27,leader:"Min Woo Lee",partners:["Angel Ayora Fanegas","Matthias Schmid","Derek Berg"],syndicate:"Robbie",bid:450},
+  {num:28,leader:"Ben Griffin",partners:["Bud Cauley","Sami Valimaki","Francisco Bide"],syndicate:"JD",bid:700},
+  {num:29,leader:"Sepp Straka",partners:["Brandt Snedeker","Andrew Putnam","Garrett Sapp"],syndicate:"Beaver",bid:900},
+  {num:30,leader:"Shane Lowry",partners:["Matthew McCarty","Lucas Glover","Jared Jones"],syndicate:"Nerds",bid:600},
+  {num:31,leader:"Akshay Bhatia",partners:["Jayden Trey Schaper","Daniel Brown","Jesse Droemer"],syndicate:"Robbie",bid:500},
+  {num:32,leader:"Maverick McNealy",partners:["Brian Harman","Jhonattan Vegas","Mark Geddes"],syndicate:"Robbie",bid:500},
+  {num:33,leader:"Jacob Bridgeman",partners:["Ryan Fox","Emiliano Grillo","Michael Block"],syndicate:"Nerds",bid:900},
+  {num:34,leader:"Joaquin Niemann",partners:["J.T. Poston","Mikael Lindberg","Michael Kartrude"],syndicate:"Beaver",bid:400},
+  {num:35,leader:"Jason Day",partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],syndicate:"Nerds",bid:450},
+  {num:36,leader:"J.J. Spaun",partners:["Michael Kim","Bernd Wiesberger","Ryan Lenahan"],syndicate:"Robbie",bid:950},
+  {num:37,leader:"Kurt Kitayama",partners:["Ryo Hisatsune","Elvis Smylie","Ryan Vermeer"],syndicate:"Phil",bid:600},
+  {num:38,leader:"Harris English",partners:["Denny McCarthy","Kota Kaneko","Timothy Wiseman"],syndicate:"Phil",bid:550},
+  {num:39,leader:"Nicolai Hojgaard",partners:["Max Homa","Stewart Cink","Tyler Collet"],syndicate:"Beaver",bid:950},
+  {num:40,leader:"Gary Woodland",partners:["Cameron Smith","David Lipsky","Zach Haynes"],syndicate:"Robbie",bid:600},
+];
+
+// ============================================================================
+// Live data state
+// ============================================================================
+let liveScores = {};
+let currentSort = 'pl';
+let currentFilter = 'all';
+
+function getScore(name){ const v = liveScores[nameKey(name)]; return v===undefined ? null : v; }
+function getBest(g){
+  let best = null;
+  for(const p of [g.leader, ...g.partners]){
+    const s = getScore(p);
+    if(s!==null && (best===null || s<best)) best=s;
+  }
+  return best;
+}
+function getBestGolfer(g){
+  let bestName=null,bestScore=null;
+  for(const p of [g.leader, ...g.partners]){
+    const s = getScore(p);
+    if(s!==null && (bestScore===null || s<bestScore)){ bestScore=s; bestName=p; }
+  }
+  return { name:bestName, score:bestScore };
+}
+
+// ============================================================================
+// Compute each group's current implied value + P/L
+// ============================================================================
+function computeMarket(){
+  const enriched = allGroups.map(g => ({ ...g, best:getBest(g) }));
+  // Sort by best score asc to assign placement rank (null scores last).
+  const sorted = [...enriched].sort((a,b) => {
+    if(a.best===null && b.best===null) return 0;
+    if(a.best===null) return 1;
+    if(b.best===null) return -1;
+    return a.best - b.best;
+  });
+  // Tie-aware rank: same score => same rank
+  let lastScore=null, lastRank=0;
+  sorted.forEach((g,i) => {
+    if(g.best===null){ g.rank=null; return; }
+    if(g.best!==lastScore){ lastRank=i+1; lastScore=g.best; }
+    g.rank = lastRank;
+  });
+  // Implied value = placement payout based on row position (ties get the higher of two adjacent slots' payout).
+  // For simplicity we use the index-based payout from the sort, same as the leaderboard does.
+  sorted.forEach((g,i) => {
+    const pct = i < PAYOUTS.length ? PAYOUTS[i] : 0;
+    g.implied = Math.round(POT * pct);
+    g.pl = g.implied - g.bid;
+    g.mult = g.bid>0 ? g.implied / g.bid : 0;
+  });
+  return sorted;
+}
+
+// ============================================================================
+// Render
+// ============================================================================
+function renderTable(){
+  const data = computeMarket();
+  // Sort
+  const sorted = [...data].sort((a,b) => {
+    switch(currentSort){
+      case 'pl': return b.pl - a.pl;
+      case 'mult': return (b.mult||0) - (a.mult||0);
+      case 'value': return b.implied - a.implied;
+      case 'cost': return b.bid - a.bid;
+      case 'grp': return a.num - b.num;
+      default: return 0;
+    }
+  });
+  // Filter
+  const filtered = sorted.filter(g => {
+    if(currentFilter==='nerds') return g.syndicate==='Nerds';
+    if(currentFilter==='cash') return g.implied > 0;
+    return true;
+  });
+  const tbody = document.getElementById('mkt-body'); tbody.innerHTML = '';
+  filtered.forEach((g,i) => {
+    const isN = g.syndicate==='Nerds';
+    const bg = getBestGolfer(g);
+    const scoreTxt = bg.score===null ? '—' : fmtRel(bg.score);
+    const rankTxt = g.rank===null ? '—' : (g.rank<=13 ? `<span class="rank-chip cash">T${g.rank}</span>` : `<span class="rank-chip">T${g.rank}</span>`);
+    const bestLine = bg.name ? `${bg.name}` : 'no scores yet';
+    const multTxt = g.bid>0 && g.implied>0 ? `<span class="mult ${g.mult>=1?'up':'dn'}">${g.mult.toFixed(2)}x</span>` : '';
+    const tr = document.createElement('tr');
+    if(isN) tr.className='nr';
+    const uid = `exp-${g.num}`;
+    tr.innerHTML = `
+      <td>
+        <div class="grp-cell">
+          <span class="grp-num${isN?' nr':''}">#${g.num}</span>
+          <div>
+            <div class="grp-head${isN?' nr':''}">${g.leader} <button class="expand-btn" onclick="toggleExp('${uid}',this)">▾ partners</button></div>
+            <div class="grp-best${isN?' nr':''}">Best: ${bestLine}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="sp ${synClass[g.syndicate]||''}">${g.syndicate}</span></td>
+      <td class="r">${fmtDollars(g.bid)}</td>
+      <td><span class="score-pill ${sc(bg.score)}">${scoreTxt}</span></td>
+      <td class="r">${rankTxt}</td>
+      <td class="r" style="color:#C9A84C;font-weight:500;">${fmtDollars(g.implied)}</td>
+      <td class="r">${fmtPL(g.pl)}${multTxt}</td>`;
+    tbody.appendChild(tr);
+    const expTr = document.createElement('tr'); expTr.className='exp-row';
+    const members = [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))];
+    const rows = members.map(m => {
+      const s = getScore(m.name);
+      return `<div class="exp-golfer"><span class="exp-name${m.isHl?' hl':''}">${m.name}${m.isHl?' <span style="color:#5a7090;font-size:9px;">(headliner)</span>':''}</span><span class="exp-score ${sc(s)}">${fmtRel(s)}</span></div>`;
+    }).join('');
+    expTr.innerHTML = `<td colspan="7"><div class="exp-content" id="${uid}">${rows}</div></td>`;
+    tbody.appendChild(expTr);
+  });
+  renderSummary(data);
+}
+
+function toggleExp(uid, btn){
+  const el = document.getElementById(uid);
+  if(!el) return;
+  const o = el.classList.toggle('open');
+  if(btn) btn.textContent = o ? '▴ partners' : '▾ partners';
+}
+
+function renderSummary(data){
+  const totalNotional = data.reduce((s,g) => s + (g.implied||0), 0);
+  document.getElementById('stat-notional').textContent = fmtDollars(totalNotional);
+  // Biggest gainer/loser by absolute P/L
+  const haveScores = data.filter(g => g.best !== null);
+  if(!haveScores.length){
+    document.getElementById('stat-up').textContent = '—';
+    document.getElementById('stat-up-sub').textContent = 'awaiting scores';
+    document.getElementById('stat-dn').textContent = '—';
+    document.getElementById('stat-dn-sub').textContent = 'awaiting scores';
+    return;
+  }
+  const up = [...data].sort((a,b)=>b.pl-a.pl)[0];
+  const dn = [...data].sort((a,b)=>a.pl-b.pl)[0];
+  document.getElementById('stat-up').textContent = (up.pl>=0?'+':'-')+fmtDollars(Math.abs(up.pl));
+  document.getElementById('stat-up-sub').textContent = `${up.leader} (#${up.num}) · paid ${fmtDollars(up.bid)} → ${fmtDollars(up.implied)}`;
+  document.getElementById('stat-dn').textContent = (dn.pl>=0?'+':'-')+fmtDollars(Math.abs(dn.pl));
+  document.getElementById('stat-dn-sub').textContent = `${dn.leader} (#${dn.num}) · paid ${fmtDollars(dn.bid)} → ${fmtDollars(dn.implied)}`;
+}
+
+// ============================================================================
+// Live data fetch (same shape as index.html's loadScores, but only needs scores)
+// ============================================================================
+async function loadScores(){
+  const lu = document.getElementById('last-upd'); lu.textContent = 'fetching...';
+  try {
+    const res = await fetch(viaProxy(ESPN_LEADERBOARD_URL), { cache:'no-store' });
+    if(!res.ok) throw new Error('leaderboard HTTP '+res.status);
+    const data = await res.json();
+    const event = (data.events||[])[0];
+    if(!event) throw new Error('no active event');
+    const comp = (event.competitions||[])[0] || {};
+    const newScores = {};
+    const writeBoth = (k,v) => { newScores[k]=v; const a=nameAliases[k]; if(a) newScores[a]=v; };
+    for(const c of (comp.competitors||[])){
+      const ath = c.athlete||{};
+      const key = nameKey(ath.displayName||ath.fullName||'');
+      if(!key) continue;
+      const desc = (c.status?.type?.description||'').toUpperCase();
+      const missedCut = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
+      if(missedCut) continue;
+      const rel = parseRelScore(c.score?.displayValue ?? c.score);
+      if(rel !== null) writeBoth(key, rel);
+    }
+    liveScores = newScores;
+    lu.textContent = new Date().toLocaleTimeString();
+  } catch(e) {
+    console.warn('loadScores failed:', e);
+    lu.textContent = 'unable to fetch scores';
+  }
+  renderTable();
+}
+
+// ============================================================================
+// Wire up controls
+// ============================================================================
+document.querySelectorAll('[data-sort]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSort = btn.dataset.sort;
+    renderTable();
+  });
+});
+document.querySelectorAll('[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+
+// Init
+renderTable();
+loadScores();
+setInterval(loadScores, 300000); // refresh every 5 min
+</script>
+</body>
+</html>

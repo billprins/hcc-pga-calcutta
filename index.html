@@ -17,6 +17,10 @@
     .hbadge { font-size: 11px; padding: 4px 12px; border-radius: 20px; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; border: 1px solid rgba(201,168,76,0.4); color: #C9A84C; background: rgba(201,168,76,0.08); }
     .hbadge.muted { border-color: rgba(255,255,255,0.15); color: #8fa3c0; background: rgba(255,255,255,0.05); }
     .ticker { background: #C9A84C; padding: 6px 1rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; color: #0d1728; display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+    .nav { background: #08111e; border-bottom: 1px solid #1e3050; padding: 0.5rem 1rem; text-align: center; }
+    .nav a { display: inline-block; padding: 6px 16px; margin: 0 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #7a8faf; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .nav a:hover { background: #152035; color: #c8d4e8; }
+    .nav a.active { color: #C9A84C; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); }
     .t-dot { width: 6px; height: 6px; border-radius: 50%; background: #0d1728; opacity: 0.35; display: inline-block; margin-right: 6px; }
     .content { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
     .sec { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; white-space: nowrap; }
@@ -164,9 +168,9 @@
   <span><span class="t-dot"></span>Auto-refreshes every 5 min during play</span>
   <span><span class="t-dot"></span>Last updated: <span id="last-upd">—</span></span>
 </div>
-<div style="background:#08111e;border-bottom:1px solid #1e3050;padding:0.5rem 1rem;text-align:center;">
-  <a href="index.html" style="display:inline-block;padding:6px 16px;margin:0 4px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;text-decoration:none;border-radius:6px;text-transform:uppercase;letter-spacing:0.08em;color:#C9A84C;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);">Leaderboard</a>
-  <a href="market.html" style="display:inline-block;padding:6px 16px;margin:0 4px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;text-decoration:none;border-radius:6px;text-transform:uppercase;letter-spacing:0.08em;color:#7a8faf;">Market →</a>
+<div class="nav">
+  <a href="index.html" class="active">Leaderboard</a>
+  <a href="market.html">Market</a>
 </div>
 
 <div class="content">

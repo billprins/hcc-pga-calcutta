@@ -279,7 +279,23 @@ function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; 
 // hyphens, suffixes, etc., so 'J.J. Spaun', 'JJ Spaun' and 'Jj Spaun' all collide on 'jjspaun'.
 // Avoids the last-word collisions that bit the old code (Cameron Smith vs Jordan L. Smith,
 // Si Woo Kim vs Michael Kim).
-function nameKey(n){ return (n||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+// Canonical roster key. Strips diacritics (é→e, ñ→n) via NFD decomposition, then
+// maps separate Scandinavian/Germanic code points that NFD leaves intact (ø→o, æ→ae,
+// ß→ss, etc.). Required so ESPN's "Højgaard" matches the auction's "Hojgaard".
+function nameKey(n){
+  return (n||'')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g,'')
+    .replace(/ø/g,'o')
+    .replace(/æ/g,'ae')
+    .replace(/œ/g,'oe')
+    .replace(/ð/g,'d')
+    .replace(/þ/g,'th')
+    .replace(/ß/g,'ss')
+    .replace(/đ/g,'d')
+    .replace(/[^a-z0-9]/g,'');
+}
 
 // ESPN uses a player's preferred shortened name for some golfers; map ESPN's key -> roster key
 // so live data lands under the canonical name our roster uses.

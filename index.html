@@ -225,6 +225,7 @@
         <th>Golfer</th>
         <th>Syndicate</th>
         <th class="r">Score</th>
+        <th class="r">Today</th>
         <th class="r">Cost (group)</th>
         <th class="r">Tee time</th>
         <th class="r">Watch on</th>
@@ -384,6 +385,17 @@ function cumulativeToPar(c){
   return total;
 }
 
+// Just the current round's to-par. Returns null if the golfer hasn't teed off
+// in today's round yet (linescore exists but displayValue is empty/'-').
+function todayToPar(c){
+  const lines = c?.linescores;
+  const cp = c?.status?.period;
+  if(!lines || !cp) return null;
+  const cur = lines.find(ls => ls.period === cp);
+  if(!cur) return null;
+  return parseRelScore(cur.displayValue);
+}
+
 const teeTimes = {
   'schauffele':{thu:'7:29 AM',fri:'12:54 PM'},'reitan':{thu:'7:13 AM',fri:'12:38 PM'},
   'brennan':{thu:'6:18 AM',fri:'11:43 AM'},'blanchet':{thu:'5:45 AM',fri:'11:10 AM'},
@@ -474,10 +486,11 @@ const allGroups = [
 
 const synSpend={Nerds:9000,Phil:11050,Robbie:10900,JD:6700,WDC:7050,Beaver:5950};
 const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
-let liveScores={}, scorecards={}, liveTT={}, tournamentStarted=false;
+let liveScores={}, liveToday={}, scorecards={}, liveTT={}, tournamentStarted=false;
 let projectedCutline=null, cutInsideCount=0, cutFieldCount=0;
 
 function getScore(name){const v=liveScores[nameKey(name)];return v===undefined?null:v;}
+function getTodayScore(name){const v=liveToday[nameKey(name)];return v===undefined?null:v;}
 function fmtScoreCell(s){if(s===null)return'<span style="color:#3a5a45">—</span>';if(s===0)return'<span style="color:#8fa3c0">E</span>';if(s<0)return`<span style="color:#4fc87a">${s}</span>`;return`<span style="color:#e05a5a">+${s}</span>`;}
 function getBest(g){let best=null;for(const p of[g.leader,...g.partners]){const s=getScore(p);if(s!==null&&(best===null||s<best))best=s;}return best;}
 function sc(s){return s===null?'e':s<0?'u':s>0?'o':'e';}
@@ -550,10 +563,10 @@ function renderField(){
   individuals.forEach((ind,i)=>{
     const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isN=ind.isNerds,ftUid=`ft-sc-${i}`;
     const tr=document.createElement('tr');if(isN)tr.className='nr';
-    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span><span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${isN?'#4fc87a':'#8fa3c0'};font-weight:${isN?'500':'400'};">$${ind.payout.toLocaleString()}</td>`;
+    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span><span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${isN?'#4fc87a':'#8fa3c0'};font-weight:${isN?'500':'400'};">$${ind.payout.toLocaleString()}</td>`;
     tbody.appendChild(tr);
     const scTr=document.createElement('tr');scTr.className=isN?'sc-row nr-sc':'sc-row';
-    scTr.innerHTML=`<td colspan="8"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
+    scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
     tbody.appendChild(scTr);
   });
   renderSyndicates(computeSynPayouts());
@@ -668,6 +681,7 @@ async function loadScores(){
     tournamentStarted = state==='in' || state==='post';
 
     const newScores={};
+    const newToday={};
     const newTT={};
     const athleteIds={};
     // Helper: write a value under the ESPN key AND, if aliased, the roster key too.
@@ -684,9 +698,12 @@ async function loadScores(){
       if(missedCut) continue;
       const rel=cumulativeToPar(c);
       if(rel!==null) writeBoth(newScores,key,rel);
+      const today=todayToPar(c);
+      if(today!==null) writeBoth(newToday,key,today);
       if(ath.id) writeBoth(athleteIds,key,ath.id);
     }
     liveScores=newScores;
+    liveToday=newToday;
     liveTT=newTT;
 
     // Compute projected cutline from the raw competitor list (no alias dupes here).

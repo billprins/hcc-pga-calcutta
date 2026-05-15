@@ -105,7 +105,7 @@
 <div class="content">
 
   <div class="intro">
-    <b>How to read this:</b> every group's "implied value" is the payout it would earn if the tournament ended right now — i.e., its current rank's prize money. <b>P/L</b> is implied value minus what the syndicate paid at auction. A group well outside top 12 has zero implied value, but the share isn't worthless — it just means current odds are below break-even. Use these numbers as the floor of a negotiation, not a guaranteed price; final settlement is between buyer and seller.
+    <b>How to read this:</b> each row is one golfer. <b>Cost</b> is the group's full auction price (same for all 3-4 members of the group). <b>Implied value</b> is what this golfer would individually pay out if they finished at their current individual rank — using the same 22%/15%/12%/… placement schedule that drives the leaderboard. <b>P/L</b> is implied value minus the group cost — so partners outside the top 13 will show large negative P/L while a single leader can carry the whole group's potential. Use these as the floor of a negotiation, not a guaranteed price.
   </div>
 
   <div class="stat-row">
@@ -121,6 +121,7 @@
     <button class="ctrl-btn" data-sort="mult">Multiplier ↓</button>
     <button class="ctrl-btn" data-sort="value">Implied $ ↓</button>
     <button class="ctrl-btn" data-sort="cost">Cost ↓</button>
+    <button class="ctrl-btn" data-sort="score">Score ↓</button>
     <button class="ctrl-btn" data-sort="grp">Group #</button>
     <span class="ctrl-lbl" style="margin-left:1rem;">Filter</span>
     <button class="ctrl-btn active" data-filter="all">All groups</button>
@@ -131,10 +132,10 @@
   <div class="mkt-wrap">
     <table class="mkt">
       <thead><tr>
-        <th>Group</th>
+        <th>Golfer</th>
         <th>Syndicate</th>
-        <th class="r">Cost</th>
-        <th>Best score</th>
+        <th class="r">Group cost</th>
+        <th>Score</th>
         <th class="r">Rank</th>
         <th class="r">Implied $</th>
         <th class="r">P/L</th>
@@ -285,30 +286,42 @@ function getBestGolfer(g){
 // Compute each group's current implied value + P/L
 // ============================================================================
 function computeMarket(){
-  const enriched = allGroups.map(g => ({ ...g, best:getBest(g) }));
-  // Sort by best score asc to assign placement rank (null scores last).
-  const sorted = [...enriched].sort((a,b) => {
-    if(a.best===null && b.best===null) return 0;
-    if(a.best===null) return 1;
-    if(b.best===null) return -1;
-    return a.best - b.best;
+  // Flatten the 40 groups into ~160 individual rows. Each row keeps a reference
+  // to its group's cost and headliner so we can render the group context inline.
+  const rows = [];
+  allGroups.forEach(g => {
+    const members = [{name:g.leader,isLeader:true},...g.partners.map(p=>({name:p,isLeader:false}))];
+    members.forEach(m => {
+      rows.push({
+        name: m.name,
+        isLeader: m.isLeader,
+        syndicate: g.syndicate,
+        groupNum: g.num,
+        groupLeader: g.leader,
+        cost: g.bid,
+        score: getScore(m.name),
+      });
+    });
   });
-  // Tie-aware rank: same score => same rank
+  // Sort by individual score asc (null scores last).
+  rows.sort((a,b) => {
+    if(a.score===null && b.score===null) return 0;
+    if(a.score===null) return 1;
+    if(b.score===null) return -1;
+    return a.score - b.score;
+  });
+  // Tie-aware rank + index-based placement payout (same scheme the leaderboard uses).
   let lastScore=null, lastRank=0;
-  sorted.forEach((g,i) => {
-    if(g.best===null){ g.rank=null; return; }
-    if(g.best!==lastScore){ lastRank=i+1; lastScore=g.best; }
-    g.rank = lastRank;
-  });
-  // Implied value = placement payout based on row position (ties get the higher of two adjacent slots' payout).
-  // For simplicity we use the index-based payout from the sort, same as the leaderboard does.
-  sorted.forEach((g,i) => {
+  rows.forEach((r,i) => {
+    if(r.score===null){ r.rank=null; r.implied=0; r.pl=-r.cost; r.mult=0; return; }
+    if(r.score !== lastScore){ lastRank = i+1; lastScore = r.score; }
+    r.rank = lastRank;
     const pct = i < PAYOUTS.length ? PAYOUTS[i] : 0;
-    g.implied = Math.round(POT * pct);
-    g.pl = g.implied - g.bid;
-    g.mult = g.bid>0 ? g.implied / g.bid : 0;
+    r.implied = Math.round(POT * pct);
+    r.pl = r.implied - r.cost;
+    r.mult = r.cost > 0 ? r.implied / r.cost : 0;
   });
-  return sorted;
+  return rows;
 }
 
 // ============================================================================
@@ -316,75 +329,60 @@ function computeMarket(){
 // ============================================================================
 function renderTable(){
   const data = computeMarket();
-  // Sort
   const sorted = [...data].sort((a,b) => {
     switch(currentSort){
       case 'pl': return b.pl - a.pl;
       case 'mult': return (b.mult||0) - (a.mult||0);
       case 'value': return b.implied - a.implied;
-      case 'cost': return b.bid - a.bid;
-      case 'grp': return a.num - b.num;
+      case 'cost': return b.cost - a.cost;
+      case 'score':
+        if(a.score===null && b.score===null) return 0;
+        if(a.score===null) return 1;
+        if(b.score===null) return -1;
+        return a.score - b.score;
+      case 'grp': return a.groupNum - b.groupNum;
       default: return 0;
     }
   });
-  // Filter
-  const filtered = sorted.filter(g => {
-    if(currentFilter==='nerds') return g.syndicate==='Nerds';
-    if(currentFilter==='cash') return g.implied > 0;
+  const filtered = sorted.filter(r => {
+    if(currentFilter==='nerds') return r.syndicate==='Nerds';
+    if(currentFilter==='cash') return r.implied > 0;
     return true;
   });
   const tbody = document.getElementById('mkt-body'); tbody.innerHTML = '';
-  filtered.forEach((g,i) => {
-    const isN = g.syndicate==='Nerds';
-    const bg = getBestGolfer(g);
-    const scoreTxt = bg.score===null ? '—' : fmtRel(bg.score);
-    const rankTxt = g.rank===null ? '—' : (g.rank<=13 ? `<span class="rank-chip cash">T${g.rank}</span>` : `<span class="rank-chip">T${g.rank}</span>`);
-    const bestLine = bg.name ? `${bg.name}` : 'no scores yet';
-    const multTxt = g.bid>0 && g.implied>0 ? `<span class="mult ${g.mult>=1?'up':'dn'}">${g.mult.toFixed(2)}x</span>` : '';
+  filtered.forEach(r => {
+    const isN = r.syndicate==='Nerds';
+    const scoreTxt = r.score===null ? '—' : fmtRel(r.score);
+    const rankTxt = r.rank===null ? '—' : (r.rank<=PAYOUTS.length ? `<span class="rank-chip cash">T${r.rank}</span>` : `<span class="rank-chip">T${r.rank}</span>`);
+    const multTxt = r.cost>0 && r.implied>0 ? `<span class="mult ${r.mult>=1?'up':'dn'}">${r.mult.toFixed(2)}x</span>` : '';
+    const roleLabel = r.isLeader ? '<span style="color:#C9A84C;font-size:9px;margin-left:6px;text-transform:uppercase;letter-spacing:0.06em;">headliner</span>' : '';
     const tr = document.createElement('tr');
     if(isN) tr.className='nr';
-    const uid = `exp-${g.num}`;
     tr.innerHTML = `
       <td>
         <div class="grp-cell">
-          <span class="grp-num${isN?' nr':''}">#${g.num}</span>
+          <span class="grp-num${isN?' nr':''}">#${r.groupNum}</span>
           <div>
-            <div class="grp-head${isN?' nr':''}">${g.leader} <button class="expand-btn" onclick="toggleExp('${uid}',this)">▾ partners</button></div>
-            <div class="grp-best${isN?' nr':''}">Best: ${bestLine}</div>
+            <div class="grp-head${isN?' nr':''}">${r.name}${roleLabel}</div>
+            <div class="grp-best${isN?' nr':''}">Grp #${r.groupNum} · ${r.groupLeader}</div>
           </div>
         </div>
       </td>
-      <td><span class="sp ${synClass[g.syndicate]||''}">${g.syndicate}</span></td>
-      <td class="r">${fmtDollars(g.bid)}</td>
-      <td><span class="score-pill ${sc(bg.score)}">${scoreTxt}</span></td>
+      <td><span class="sp ${synClass[r.syndicate]||''}">${r.syndicate}</span></td>
+      <td class="r">${fmtDollars(r.cost)}</td>
+      <td><span class="score-pill ${sc(r.score)}">${scoreTxt}</span></td>
       <td class="r">${rankTxt}</td>
-      <td class="r" style="color:#C9A84C;font-weight:500;">${fmtDollars(g.implied)}</td>
-      <td class="r">${fmtPL(g.pl)}${multTxt}</td>`;
+      <td class="r" style="color:#C9A84C;font-weight:500;">${fmtDollars(r.implied)}</td>
+      <td class="r">${fmtPL(r.pl)}${multTxt}</td>`;
     tbody.appendChild(tr);
-    const expTr = document.createElement('tr'); expTr.className='exp-row';
-    const members = [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))];
-    const rows = members.map(m => {
-      const s = getScore(m.name);
-      return `<div class="exp-golfer"><span class="exp-name${m.isHl?' hl':''}">${m.name}${m.isHl?' <span style="color:#5a7090;font-size:9px;">(headliner)</span>':''}</span><span class="exp-score ${sc(s)}">${fmtRel(s)}</span></div>`;
-    }).join('');
-    expTr.innerHTML = `<td colspan="7"><div class="exp-content" id="${uid}">${rows}</div></td>`;
-    tbody.appendChild(expTr);
   });
   renderSummary(data);
 }
 
-function toggleExp(uid, btn){
-  const el = document.getElementById(uid);
-  if(!el) return;
-  const o = el.classList.toggle('open');
-  if(btn) btn.textContent = o ? '▴ partners' : '▾ partners';
-}
-
 function renderSummary(data){
-  const totalNotional = data.reduce((s,g) => s + (g.implied||0), 0);
+  const totalNotional = data.reduce((s,r) => s + (r.implied||0), 0);
   document.getElementById('stat-notional').textContent = fmtDollars(totalNotional);
-  // Biggest gainer/loser by absolute P/L
-  const haveScores = data.filter(g => g.best !== null);
+  const haveScores = data.filter(r => r.score !== null);
   if(!haveScores.length){
     document.getElementById('stat-up').textContent = '—';
     document.getElementById('stat-up-sub').textContent = 'awaiting scores';
@@ -395,9 +393,9 @@ function renderSummary(data){
   const up = [...data].sort((a,b)=>b.pl-a.pl)[0];
   const dn = [...data].sort((a,b)=>a.pl-b.pl)[0];
   document.getElementById('stat-up').textContent = (up.pl>=0?'+':'-')+fmtDollars(Math.abs(up.pl));
-  document.getElementById('stat-up-sub').textContent = `${up.leader} (#${up.num}) · paid ${fmtDollars(up.bid)} → ${fmtDollars(up.implied)}`;
+  document.getElementById('stat-up-sub').textContent = `${up.name} · Grp #${up.groupNum} · cost ${fmtDollars(up.cost)} → ${fmtDollars(up.implied)}`;
   document.getElementById('stat-dn').textContent = (dn.pl>=0?'+':'-')+fmtDollars(Math.abs(dn.pl));
-  document.getElementById('stat-dn-sub').textContent = `${dn.leader} (#${dn.num}) · paid ${fmtDollars(dn.bid)} → ${fmtDollars(dn.implied)}`;
+  document.getElementById('stat-dn-sub').textContent = `${dn.name} · Grp #${dn.groupNum} · cost ${fmtDollars(dn.cost)} → ${fmtDollars(dn.implied)}`;
 }
 
 // ============================================================================

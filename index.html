@@ -131,6 +131,7 @@
     .sp-bv{background:#2a1008;color:#d47050;border:1px solid #4a2010;}
     .role-hl{font-size:10px;color:#C9A84C;font-family:'Helvetica Neue',Arial,sans-serif;margin-left:5px;}
     .role-p{font-size:10px;color:#3a5070;font-family:'Helvetica Neue',Arial,sans-serif;margin-left:5px;}
+    .pga-pro-tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(255,179,71,0.1);color:#ffb347;border:1px solid rgba(255,179,71,0.35);font-family:'Helvetica Neue',Arial,sans-serif;font-weight:500;letter-spacing:0.06em;margin-left:6px;text-transform:uppercase;vertical-align:middle;}
     .role-p.nr{color:#3a7a50;}
     .sc-toggle-btn{font-size:10px;color:#3a6a80;font-family:'Helvetica Neue',Arial,sans-serif;cursor:pointer;background:none;border:none;padding:0;margin-left:6px;vertical-align:middle;}
     .ft-sc-wrap{display:none;overflow-x:auto;padding:6px 8px 8px;background:#070f14;}
@@ -489,6 +490,16 @@ const allGroups = [
 
 const synSpend={Nerds:9000,Phil:11050,Robbie:10900,JD:6700,WDC:7050,Beaver:5950};
 const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
+// The 20 PGA Club Pros in this year's championship field — eligible for the Low PGA
+// Pro 2% payout if they make the cut. Highlighted in both the Nerds panel and the
+// full-field table so they're spottable while scrolling.
+const PGA_PROS = new Set([
+  'Austin Hurt','Ben Kern','Ben Polland','Braden Shattuck','Bryce Fisher',
+  'Chris Gabriele','Derek Berg','Francisco Bide','Garrett Sapp','Jared Jones',
+  'Jesse Droemer','Mark Geddes','Michael Block','Michael Kartrude','Paul McClure',
+  'Ryan Lenahan','Ryan Vermeer','Timothy Wiseman','Tyler Collet','Zach Haynes',
+].map(n => nameKey(n)));
+function isPgaPro(name){ return PGA_PROS.has(nameKey(name)); }
 let liveScores={}, liveToday={}, scorecards={}, liveTT={}, tournamentStarted=false;
 // Exposed so the lazy scorecard fetcher (toggleFtSc → ensureScorecard) can look
 // up which athlete to fetch for a given golfer.
@@ -545,7 +556,8 @@ function renderNerdsGrid(){
     const div=document.createElement('div');div.className='nc';
     const blocks=members.map((m,mi)=>{
       const s=getScore(m.name),tt=getActiveTT(m.name),uid=`nc-${g.num}-${mi}`;
-      return `<div class="nc-golfer-block"><div class="nc-golfer-row" onclick="toggleNcSc('${uid}')"><span class="nc-golfer-name${m.isHl?' hl':''}">${m.name} <span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="nc-tee-col"><div class="nc-tee-time">${tt.label} · ${tt.time}</div><div class="nc-tee-tv">${tt.tv}</div></div><div class="nc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
+      const proTag = isPgaPro(m.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
+      return `<div class="nc-golfer-block"><div class="nc-golfer-row" onclick="toggleNcSc('${uid}')"><span class="nc-golfer-name${m.isHl?' hl':''}">${m.name}${proTag} <span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="nc-tee-col"><div class="nc-tee-time">${tt.label} · ${tt.time}</div><div class="nc-tee-tv">${tt.tv}</div></div><div class="nc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
     }).join('');
     div.innerHTML=`<div class="nc-head"><div class="nc-head-top"><div><div class="nc-team">Team ${g.lastName}</div><div class="nc-grp">Group #${g.num}${g.lowPro?' · Low PGA Pro eligible':''}</div><div class="nc-cost">Group cost: $${g.bid.toLocaleString()}</div></div><div class="nc-score-block"><div class="nc-score-lbl">Best score</div><div class="nc-score ${sc(best)}">${ss(best)}</div></div></div></div><div class="nc-col-labels"><span class="nc-col-lbl">Golfer (tap to expand scorecard)</span><span style="display:flex;gap:24px;"><span class="nc-col-lbl">Tee time · network</span><span class="nc-col-lbl">Score</span></span></div>${blocks}<div class="nc-footer"><div>${g.featured?'<span class="pill pill-feat">ESPN+ Featured group</span>':''}</div><div><div class="nc-payout-label">Projected payout</div><div class="nc-payout-val">→ $${payout.toLocaleString()} (${Math.round(pct*100)}%)</div></div></div>`;
     grid.appendChild(div);
@@ -582,7 +594,8 @@ function renderField(){
     }
     const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isN=ind.isNerds,ftUid=`ft-sc-${i}`;
     const tr=document.createElement('tr');if(isN)tr.className='nr';
-    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span><span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${isN?'#4fc87a':'#8fa3c0'};font-weight:${isN?'500':'400'};">$${ind.payout.toLocaleString()}</td>`;
+    const proTag = isPgaPro(ind.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
+    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${isN?'#4fc87a':'#8fa3c0'};font-weight:${isN?'500':'400'};">$${ind.payout.toLocaleString()}</td>`;
     tbody.appendChild(tr);
     const scTr=document.createElement('tr');scTr.className=isN?'sc-row nr-sc':'sc-row';
     scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;

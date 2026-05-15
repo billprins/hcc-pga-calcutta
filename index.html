@@ -554,7 +554,14 @@ function renderSyndicates(synPayouts){
   order.forEach(s=>{
     const proj=synPayouts[s]||0,net=proj-synSpend[s],isN=s==='Nerds';
     const d=document.createElement('div');d.className=`syc${isN?' nr':''}`;
-    d.innerHTML=`<div class="syc-n${isN?' g':''}">${isN?'🤓 ':''}${s}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${proj?'$'+proj.toLocaleString():'—'}</div><div class="syc-net">${proj?(net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>'):'awaiting play'}</div>`;
+    // Once play has started, $0 syndicates show real $0 + negative net instead of
+    // "—" / "awaiting play" — otherwise a syndicate with no group in the top 13
+    // (e.g., JD) reads as if its data failed to load.
+    const payTxt = tournamentStarted ? '$'+proj.toLocaleString() : (proj?'$'+proj.toLocaleString():'—');
+    let netHtml;
+    if(!tournamentStarted) netHtml = proj ? (net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>') : 'awaiting play';
+    else netHtml = net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>';
+    d.innerHTML=`<div class="syc-n${isN?' g':''}">${isN?'🤓 ':''}${s}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${payTxt}</div><div class="syc-net">${netHtml}</div>`;
     grid.appendChild(d);
   });
 }

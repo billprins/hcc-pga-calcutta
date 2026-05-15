@@ -369,6 +369,21 @@ function parseRelScore(v){
   return m[1]==='-' ? -parseInt(m[2],10) : parseInt(m[2],10);
 }
 
+// ESPN's c.score.displayValue went stale mid-week — during R2 it kept returning
+// each golfer's R1 final instead of the running cumulative. Sum each round's
+// to-par from linescores ourselves to get the true through-now total.
+function cumulativeToPar(c){
+  const lines = c?.linescores;
+  if(!lines || !lines.length) return parseRelScore(c?.score?.displayValue ?? c?.score);
+  let total = null;
+  for(const ls of lines){
+    const rel = parseRelScore(ls.displayValue);
+    if(rel === null) continue;
+    total = (total === null) ? rel : total + rel;
+  }
+  return total;
+}
+
 const teeTimes = {
   'schauffele':{thu:'7:29 AM',fri:'12:54 PM'},'reitan':{thu:'7:13 AM',fri:'12:38 PM'},
   'brennan':{thu:'6:18 AM',fri:'11:43 AM'},'blanchet':{thu:'5:45 AM',fri:'11:10 AM'},
@@ -667,7 +682,7 @@ async function loadScores(){
       const tt=buildTTFromCompetitor(c);
       if(tt) writeBoth(newTT,key,tt);
       if(missedCut) continue;
-      const rel=parseRelScore(c.score?.displayValue ?? c.score);
+      const rel=cumulativeToPar(c);
       if(rel!==null) writeBoth(newScores,key,rel);
       if(ath.id) writeBoth(athleteIds,key,ath.id);
     }
@@ -680,7 +695,7 @@ async function loadScores(){
     for(const c of (comp.competitors||[])){
       const desc=(c.status?.type?.description||'').toUpperCase();
       if(desc.includes('CUT')||desc.includes('WD')||desc.includes('WITHDR')||desc.includes('DISQ')) continue;
-      const rel=parseRelScore(c.score?.displayValue ?? c.score);
+      const rel=cumulativeToPar(c);
       if(rel!==null) fieldScores.push(rel);
     }
     fieldScores.sort((a,b)=>a-b);

@@ -189,6 +189,21 @@ function parseRelScore(v){
   if(!m) return null;
   return m[1]==='-' ? -parseInt(m[2],10) : parseInt(m[2],10);
 }
+
+// ESPN's c.score.displayValue went stale mid-week — during R2 it kept returning
+// each golfer's R1 final instead of the running cumulative. Sum each round's
+// to-par from linescores ourselves to get the true through-now total.
+function cumulativeToPar(c){
+  const lines = c?.linescores;
+  if(!lines || !lines.length) return parseRelScore(c?.score?.displayValue ?? c?.score);
+  let total = null;
+  for(const ls of lines){
+    const rel = parseRelScore(ls.displayValue);
+    if(rel === null) continue;
+    total = (total === null) ? rel : total + rel;
+  }
+  return total;
+}
 function fmtDollars(n){ return '$'+Math.round(n).toLocaleString(); }
 function fmtRel(s){ return s===null?'—':s===0?'E':s<0?String(s):'+'+s; }
 function fmtPL(p){ if(p===0) return '<span class="pl-flat">$0</span>'; if(p>0) return `<span class="pl-up">+${fmtDollars(p)}</span>`; return `<span class="pl-dn">-${fmtDollars(Math.abs(p))}</span>`; }
@@ -406,7 +421,7 @@ async function loadScores(){
       const desc = (c.status?.type?.description||'').toUpperCase();
       const missedCut = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
       if(missedCut) continue;
-      const rel = parseRelScore(c.score?.displayValue ?? c.score);
+      const rel = cumulativeToPar(c);
       if(rel !== null) writeBoth(key, rel);
     }
     liveScores = newScores;

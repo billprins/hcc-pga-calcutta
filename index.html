@@ -115,6 +115,9 @@
     .ft tr.nr td { background: #0f1f14; }
     .ft tr:hover td { background: #192840; }
     .ft tr.nr:hover td { background: #102018; }
+    .ft tr.cut-divider td { background: rgba(224,90,90,0.07); border-top: 2px dashed rgba(224,90,90,0.55); border-bottom: 2px dashed rgba(224,90,90,0.55); padding: 10px 8px; text-align: center; color: #e05a5a; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; }
+    .ft tr.cut-divider:hover td { background: rgba(224,90,90,0.1); }
+    .ft tr.cut-divider td b { color: #f08080; font-weight: 500; margin: 0 6px; }
     .ft tr.sc-row td { padding: 0; border-top: none; background: #070f08; }
     .ft tr.sc-row.nr-sc td { background: #070f08; }
     .pip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 500; }
@@ -563,7 +566,20 @@ function renderField(){
   });
   individuals.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
   const tbody=document.getElementById('field-body');tbody.innerHTML='';
+  // Track when we cross the projected cutline so we can insert a visible divider
+  // between the last golfer making the cut and the first one missing it.
+  let cutInserted=false;
   individuals.forEach((ind,i)=>{
+    if(!cutInserted && tournamentStarted && projectedCutline!==null){
+      const inside = ind.score !== null && ind.score <= projectedCutline;
+      if(!inside){
+        const cutLabel = projectedCutline===0?'E':(projectedCutline>0?'+'+projectedCutline:String(projectedCutline));
+        const cutTr=document.createElement('tr');cutTr.className='cut-divider';
+        cutTr.innerHTML=`<td colspan="9">— Projected cut <b>${cutLabel}</b> · top 70 + ties —</td>`;
+        tbody.appendChild(cutTr);
+        cutInserted=true;
+      }
+    }
     const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isN=ind.isNerds,ftUid=`ft-sc-${i}`;
     const tr=document.createElement('tr');if(isN)tr.className='nr';
     tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span><span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${isN?'#4fc87a':'#8fa3c0'};font-weight:${isN?'500':'400'};">$${ind.payout.toLocaleString()}</td>`;

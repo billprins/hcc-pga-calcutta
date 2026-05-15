@@ -482,16 +482,19 @@ function buildScorecard(name,rounds){
   const legend=`<div class="sc-legend"><span class="sc-legend-item"><span class="leg-eg"></span>Eagle</span><span class="sc-legend-item"><span class="leg-bi"></span>Birdie</span><span class="sc-legend-item" style="color:#6aaa88;font-size:10px;">— Par</span><span class="sc-legend-item"><span class="leg-bo"></span>Bogey</span><span class="sc-legend-item"><span class="leg-db"></span>Dbl+</span></div>`;
   const hdr=`<tr><th class="label">Rnd</th>${[1,2,3,4,5,6,7,8,9].map(h=>`<th>${h}</th>`).join('')}<th class="section">Out</th>${[10,11,12,13,14,15,16,17,18].map(h=>`<th>${h}</th>`).join('')}<th class="section">In</th><th class="section">Tot</th></tr>`;
   const parRow=`<tr><td class="label par-row">Par</td>${PARS.slice(0,9).map(p=>`<td class="par-row">${p}</td>`).join('')}<td class="section par-row">${FRONT_PAR}</td>${PARS.slice(9).map(p=>`<td class="par-row">${p}</td>`).join('')}<td class="section par-row">${BACK_PAR}</td><td class="section par-row">${TOTAL_PAR}</td></tr>`;
+  // Always render all four round rows so a single scorecard is the full week's view.
+  // Rounds that haven't been played (or fetched) yet render as a dimmed dot row.
   const rl=['R1','R2','R3','R4'];
-  let body='';let hasData=false;
-  if(rounds)rounds.forEach((holes,ri)=>{
-    if(!holes)return;hasData=true;
+  const rs = rounds || [null,null,null,null];
+  const blankRow = (label) => `<tr><td class="label" style="color:#3a5070;">${label}</td>${Array(9).fill('<td class="hole-blank">·</td>').join('')}<td class="section hole-blank">·</td>${Array(9).fill('<td class="hole-blank">·</td>').join('')}<td class="section hole-blank">·</td><td class="section hole-blank">·</td></tr>`;
+  const body = rl.map((label, ri) => {
+    const holes = rs[ri];
+    if(!holes) return blankRow(label);
     const f=holes.slice(0,9),b=holes.slice(9);
     const ft=f.reduce((a,x)=>a+(x||0),0),bt=b.reduce((a,x)=>a+(x||0),0),tot=ft+bt;
     const vs=v=>v===0?'E':v>0?'+'+v:String(v);
-    body+=`<tr><td class="label" style="color:#7acce8;">${rl[ri]}</td>${f.map((s,i)=>`<td><span class="hole-score ${holeClass(s,PARS[i])}">${s||''}</span></td>`).join('')}<td class="total">${ft||''}<br><span style="font-size:9px;color:#4a7060;">${ft?vs(ft-FRONT_PAR):''}</span></td>${b.map((s,i)=>`<td><span class="hole-score ${holeClass(s,PARS[9+i])}">${s||''}</span></td>`).join('')}<td class="total">${bt||''}<br><span style="font-size:9px;color:#4a7060;">${bt?vs(bt-BACK_PAR):''}</span></td><td class="total" style="color:#C9A84C;">${tot||''}<br><span style="font-size:9px;">${tot?vs(tot-TOTAL_PAR):''}</span></td></tr>`;
-  });
-  if(!hasData)body=`<tr><td class="label" style="color:#2a5a38;">—</td>${Array(19).fill('<td class="hole-blank">·</td>').join('')}<td class="hole-blank">·</td></tr>`;
+    return `<tr><td class="label" style="color:#7acce8;">${label}</td>${f.map((s,i)=>`<td><span class="hole-score ${holeClass(s,PARS[i])}">${s||''}</span></td>`).join('')}<td class="total">${ft||''}<br><span style="font-size:9px;color:#4a7060;">${ft?vs(ft-FRONT_PAR):''}</span></td>${b.map((s,i)=>`<td><span class="hole-score ${holeClass(s,PARS[9+i])}">${s||''}</span></td>`).join('')}<td class="total">${bt||''}<br><span style="font-size:9px;color:#4a7060;">${bt?vs(bt-BACK_PAR):''}</span></td><td class="total" style="color:#C9A84C;">${tot||''}<br><span style="font-size:9px;">${tot?vs(tot-TOTAL_PAR):''}</span></td></tr>`;
+  }).join('');
   return legend+`<div style="overflow-x:auto;padding:4px 0;"><table class="scorecard"><thead>${hdr}${parRow}</thead><tbody>${body}</tbody></table></div>`;
 }
 

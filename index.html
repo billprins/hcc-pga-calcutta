@@ -63,7 +63,8 @@
     .nc-golfer-block:last-child { border-bottom: none; }
     .nc-golfer-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0.9rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; gap: 8px; cursor: pointer; user-select: none; }
     .nc-golfer-row:hover { background: #0f2518; }
-    .nc-golfer-name { color: #6aaa88; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nc-golfer-name { color: #6aaa88; flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; }
+    .nc-golfer-name .name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     .nc-golfer-name.hl { color: #a0e0c0; font-weight: 500; }
     .nc-tee-col { text-align: right; flex-shrink: 0; }
     .nc-tee-time { font-size: 11px; color: #7acce8; }
@@ -557,7 +558,7 @@ function renderNerdsGrid(){
     const blocks=members.map((m,mi)=>{
       const s=getScore(m.name),tt=getActiveTT(m.name),uid=`nc-${g.num}-${mi}`;
       const proTag = isPgaPro(m.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
-      return `<div class="nc-golfer-block"><div class="nc-golfer-row" onclick="toggleNcSc('${uid}')"><span class="nc-golfer-name${m.isHl?' hl':''}">${m.name}${proTag} <span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="nc-tee-col"><div class="nc-tee-time">${tt.label} · ${tt.time}</div><div class="nc-tee-tv">${tt.tv}</div></div><div class="nc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
+      return `<div class="nc-golfer-block"><div class="nc-golfer-row" onclick="toggleNcSc('${uid}')"><span class="nc-golfer-name${m.isHl?' hl':''}"><span class="name-text">${m.name}</span>${proTag}<span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="nc-tee-col"><div class="nc-tee-time">${tt.label} · ${tt.time}</div><div class="nc-tee-tv">${tt.tv}</div></div><div class="nc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
     }).join('');
     div.innerHTML=`<div class="nc-head"><div class="nc-head-top"><div><div class="nc-team">Team ${g.lastName}</div><div class="nc-grp">Group #${g.num}${g.lowPro?' · Low PGA Pro eligible':''}</div><div class="nc-cost">Group cost: $${g.bid.toLocaleString()}</div></div><div class="nc-score-block"><div class="nc-score-lbl">Best score</div><div class="nc-score ${sc(best)}">${ss(best)}</div></div></div></div><div class="nc-col-labels"><span class="nc-col-lbl">Golfer (tap to expand scorecard)</span><span style="display:flex;gap:24px;"><span class="nc-col-lbl">Tee time · network</span><span class="nc-col-lbl">Score</span></span></div>${blocks}<div class="nc-footer"><div>${g.featured?'<span class="pill pill-feat">ESPN+ Featured group</span>':''}</div><div><div class="nc-payout-label">Projected payout</div><div class="nc-payout-val">→ $${payout.toLocaleString()} (${Math.round(pct*100)}%)</div></div></div>`;
     grid.appendChild(div);

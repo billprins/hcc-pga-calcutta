@@ -568,9 +568,16 @@ function toggleNcSc(uid){const w=document.getElementById(uid),a=document.getElem
 
 function renderField(){
   const individuals=[];
-  allGroups.forEach((g,gi)=>{
-    const pct=PAYOUTS[Math.min(gi,PAYOUTS.length-1)];
-    const payout=Math.round(POT*pct);
+  // Project each group's payout by its CURRENT best-score rank, not its
+  // auction order. Previously this column used the group index, which made
+  // it meaningless mid-tournament (Scheffler always showed $11k even when
+  // he was in the middle of the pack).
+  const ranked=[...allGroups].map(g=>({num:g.num,best:getBest(g)}));
+  ranked.sort((a,b)=>{if(a.best===null&&b.best===null)return 0;if(a.best===null)return 1;if(b.best===null)return -1;return a.best-b.best;});
+  const groupPayouts={};
+  ranked.forEach((g,i)=>{ groupPayouts[g.num]=i<PAYOUTS.length?Math.round(POT*PAYOUTS[i]):0; });
+  allGroups.forEach(g=>{
+    const payout=groupPayouts[g.num]||0;
     [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))].forEach(m=>{
       const tt=getActiveTT(m.name);
       individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,payout,score:getScore(m.name),isNerds:g.syndicate==='Nerds',teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});

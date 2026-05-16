@@ -492,10 +492,17 @@ function sc(s){return s===null?'e':s<0?'u':s>0?'o':'e';}
 function ss(s){return s===null?'—':s===0?'E':s<0?String(s):'+'+s;}
 
 function computeSynPayouts(){
+  // Each golfer earns based on their independent rank among the full field.
+  // The group they were drafted in only matters for who owns the payout.
   const synPayouts={Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
-  const sorted=[...allGroups].map(g=>({...g,best:getBest(g)}));
-  sorted.sort((a,b)=>{if(a.best===null&&b.best===null)return 0;if(a.best===null)return 1;if(b.best===null)return -1;return a.best-b.best;});
-  sorted.forEach((g,i)=>{if(i<PAYOUTS.length)synPayouts[g.syndicate]+=Math.round(POT*PAYOUTS[i]);});
+  const all = [];
+  allGroups.forEach(g => {
+    [g.leader, ...g.partners].forEach(name => all.push({ syndicate:g.syndicate, score:getScore(name) }));
+  });
+  all.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  all.forEach((p,i) => {
+    if(p.score!==null && i<PAYOUTS.length) synPayouts[p.syndicate] += Math.round(POT*PAYOUTS[i]);
+  });
   return synPayouts;
 }
 
@@ -524,31 +531,20 @@ function buildScorecard(name,rounds){
 function getSCData(name){return scorecards[nameKey(name)]||null;}
 
 function renderField(){
+  // Each golfer is independent once play begins: their projected payout is
+  // based on their own rank in the field, not their group's. Anyone outside
+  // the top 13 placement slots is worth $0 regardless of their group's bid.
   const individuals=[];
-  // Project each group's payout by its CURRENT best-score rank, not its
-  // auction order. Previously this column used the group index, which made
-  // it meaningless mid-tournament (Scheffler always showed $11k even when
-  // he was in the middle of the pack).
-  const ranked=[...allGroups].map(g=>({num:g.num,best:getBest(g)}));
-  ranked.sort((a,b)=>{if(a.best===null&&b.best===null)return 0;if(a.best===null)return 1;if(b.best===null)return -1;return a.best-b.best;});
-  const groupPayouts={};
-  ranked.forEach((g,i)=>{ groupPayouts[g.num]=i<PAYOUTS.length?Math.round(POT*PAYOUTS[i]):0; });
   allGroups.forEach(g=>{
-    const payout=groupPayouts[g.num]||0;
-    // The group's projected payout displays only on the golfer currently driving
-    // the rank (best score in the group). Partners with worse scores show "—"
-    // so the column matches what you'd expect by eye when scanning the table.
-    let driverName=null,driverScore=null;
-    [g.leader,...g.partners].forEach(n=>{
-      const s=getScore(n);
-      if(s!==null && (driverScore===null || s<driverScore)){ driverScore=s; driverName=n; }
-    });
     [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))].forEach(m=>{
       const tt=getActiveTT(m.name);
-      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,payout,isDriver:m.name===driverName,score:getScore(m.name),isNerds:g.syndicate==='Nerds',teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
+      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,score:getScore(m.name),teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
     });
   });
   individuals.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  individuals.forEach((ind,i)=>{
+    ind.payout = (ind.score!==null && i<PAYOUTS.length) ? Math.round(POT*PAYOUTS[i]) : 0;
+  });
   const tbody=document.getElementById('field-body');tbody.innerHTML='';
   // Track when we cross the projected cutline so we can insert a visible divider
   // between the last golfer making the cut and the first one missing it.
@@ -564,12 +560,12 @@ function renderField(){
         cutInserted=true;
       }
     }
-    const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isN=ind.isNerds,ftUid=`ft-sc-${i}`;
-    const tr=document.createElement('tr');if(isN)tr.className='nr';
+    const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',ftUid=`ft-sc-${i}`;
+    const tr=document.createElement('tr');
     const proTag = isPgaPro(ind.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
-    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isN?'#c8efd4':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isN?'role-p nr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isN?'#3a7a50':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${ind.isDriver&&ind.payout>0?(isN?'#4fc87a':'#8fa3c0'):'#3a5070'};font-weight:${ind.isDriver&&ind.payout>0&&isN?'500':'400'};">${ind.isDriver&&ind.payout>0?'$'+ind.payout.toLocaleString():'—'}</td>`;
+    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:#8fa3c0;font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':'role-p'}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:#3a5070;margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${ind.payout>0?'#8fa3c0':'#3a5070'};">${ind.payout>0?'$'+ind.payout.toLocaleString():'—'}</td>`;
     tbody.appendChild(tr);
-    const scTr=document.createElement('tr');scTr.className=isN?'sc-row nr-sc':'sc-row';
+    const scTr=document.createElement('tr');scTr.className='sc-row';
     scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
     tbody.appendChild(scTr);
   });

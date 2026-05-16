@@ -488,11 +488,32 @@ function getActiveTT(name){
 }
 
 function computeSynPayouts(){
+  // Each golfer earns based on their independent rank among the full field.
+  // The group they were drafted in only matters for who owns the payout.
   const synPayouts={Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
-  const sorted=[...allGroups].map(g=>({...g,best:getBest(g)}));
-  sorted.sort((a,b)=>{if(a.best===null&&b.best===null)return 0;if(a.best===null)return 1;if(b.best===null)return -1;return a.best-b.best;});
-  sorted.forEach((g,i)=>{if(i<PAYOUTS.length)synPayouts[g.syndicate]+=Math.round(POT*PAYOUTS[i]);});
+  const all = [];
+  allGroups.forEach(g => {
+    [g.leader, ...g.partners].forEach(name => all.push({ syndicate:g.syndicate, score:getScore(name) }));
+  });
+  all.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  all.forEach((p,i) => {
+    if(p.score!==null && i<PAYOUTS.length) synPayouts[p.syndicate] += Math.round(POT*PAYOUTS[i]);
+  });
   return synPayouts;
+}
+
+// Per-golfer projected payout, keyed by nameKey, based on individual rank.
+function computeIndividualPayouts(){
+  const all = [];
+  allGroups.forEach(g => {
+    [g.leader, ...g.partners].forEach(name => all.push({ name, score:getScore(name) }));
+  });
+  all.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  const out = {};
+  all.forEach((p,i) => {
+    out[nameKey(p.name)] = (p.score!==null && i<PAYOUTS.length) ? Math.round(POT*PAYOUTS[i]) : 0;
+  });
+  return out;
 }
 
 function holeClass(s,par){if(!s)return'hole-blank';const d=s-par;if(d<=-2)return'eagle';if(d===-1)return'birdie';if(d===0)return'par-score';if(d===1)return'bogey';return'dbl-bogey';}
@@ -539,20 +560,23 @@ document.getElementById('tp-sub').textContent = `${teamGroups.length} groups · 
 // Render: team panel (analogous to renderNerdsGrid)
 // ============================================================================
 function renderTeamGrid(){
+  // Each golfer is independent — group projected payout is the SUM of its
+  // members' individual payouts, with golfers outside the top 13 worth $0.
+  const indPayouts = computeIndividualPayouts();
   const grid=document.getElementById('team-grid');grid.innerHTML='';
   for(const g of teamGroups){
     const best=getBest(g);
-    const groupIdx=allGroups.findIndex(ag=>ag.num===g.num);
-    const pct=PAYOUTS[Math.min(groupIdx,PAYOUTS.length-1)];
-    const payout=Math.round(POT*pct);
     const members=[{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))];
+    const payout = members.reduce((s,m) => s + (indPayouts[nameKey(m.name)]||0), 0);
+    const inMoney = members.filter(m => (indPayouts[nameKey(m.name)]||0) > 0).length;
     const div=document.createElement('div');div.className='tc';
     const blocks=members.map((m,mi)=>{
       const s=getScore(m.name),tt=getActiveTT(m.name),uid=`tc-${g.num}-${mi}`;
       const proTag = isPgaPro(m.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
       return `<div class="tc-golfer-block"><div class="tc-golfer-row" onclick="toggleTcSc('${uid}')"><span class="tc-golfer-name${m.isHl?' hl':''}"><span class="name-text">${m.name}</span>${proTag}<span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="tc-tee-col"><div class="tc-tee-time">${tt.label} · ${tt.time}</div><div class="tc-tee-tv">${tt.tv}</div></div><div class="tc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
     }).join('');
-    div.innerHTML=`<div class="tc-head"><div class="tc-head-top"><div><div class="tc-team">Team ${g.lastName}</div><div class="tc-grp">Group #${g.num}</div><div class="tc-cost">Group cost: $${g.bid.toLocaleString()}</div></div><div class="tc-score-block"><div class="tc-score-lbl">Best score</div><div class="tc-score ${sc(best)}">${ss(best)}</div></div></div></div><div class="tc-col-labels"><span class="tc-col-lbl">Golfer (tap to expand scorecard)</span><span style="display:flex;gap:24px;"><span class="tc-col-lbl">Tee time · network</span><span class="tc-col-lbl">Score</span></span></div>${blocks}<div class="tc-footer"><div></div><div><div class="tc-payout-label">Projected payout</div><div class="tc-payout-val">→ $${payout.toLocaleString()} (${Math.round(pct*100)}%)</div></div></div>`;
+    const moneyTxt = payout > 0 ? `${inMoney} of ${members.length} in the money` : 'none in the money';
+    div.innerHTML=`<div class="tc-head"><div class="tc-head-top"><div><div class="tc-team">Team ${g.lastName}</div><div class="tc-grp">Group #${g.num}</div><div class="tc-cost">Group cost: $${g.bid.toLocaleString()}</div></div><div class="tc-score-block"><div class="tc-score-lbl">Best score</div><div class="tc-score ${sc(best)}">${ss(best)}</div></div></div></div><div class="tc-col-labels"><span class="tc-col-lbl">Golfer (tap to expand scorecard)</span><span style="display:flex;gap:24px;"><span class="tc-col-lbl">Tee time · network</span><span class="tc-col-lbl">Score</span></span></div>${blocks}<div class="tc-footer"><div style="font-size:10px;color:var(--team-text-faint);">${moneyTxt}</div><div><div class="tc-payout-label">Projected payout</div><div class="tc-payout-val">→ $${payout.toLocaleString()}</div></div></div>`;
     grid.appendChild(div);
   }
 }
@@ -562,24 +586,19 @@ function toggleTcSc(uid){const w=document.getElementById(uid),a=document.getElem
 // Render: full field (rows for active TEAM are highlighted)
 // ============================================================================
 function renderField(){
+  // Each golfer is independent once play begins: their projected payout is
+  // their own individual rank's prize, not their group's. Outside top 13 = $0.
   const individuals=[];
-  const ranked=[...allGroups].map(g=>({num:g.num,best:getBest(g)}));
-  ranked.sort((a,b)=>{if(a.best===null&&b.best===null)return 0;if(a.best===null)return 1;if(b.best===null)return -1;return a.best-b.best;});
-  const groupPayouts={};
-  ranked.forEach((g,i)=>{ groupPayouts[g.num]=i<PAYOUTS.length?Math.round(POT*PAYOUTS[i]):0; });
   allGroups.forEach(g=>{
-    const payout=groupPayouts[g.num]||0;
-    let driverName=null,driverScore=null;
-    [g.leader,...g.partners].forEach(n=>{
-      const s=getScore(n);
-      if(s!==null && (driverScore===null || s<driverScore)){ driverScore=s; driverName=n; }
-    });
     [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))].forEach(m=>{
       const tt=getActiveTT(m.name);
-      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,payout,isDriver:m.name===driverName,score:getScore(m.name),isTeam:g.syndicate===TEAM,teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
+      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,score:getScore(m.name),isTeam:g.syndicate===TEAM,teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
     });
   });
   individuals.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  individuals.forEach((ind,i)=>{
+    ind.payout = (ind.score!==null && i<PAYOUTS.length) ? Math.round(POT*PAYOUTS[i]) : 0;
+  });
   const tbody=document.getElementById('field-body');tbody.innerHTML='';
   let cutInserted=false;
   individuals.forEach((ind,i)=>{
@@ -596,8 +615,8 @@ function renderField(){
     const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isT=ind.isTeam,ftUid=`ft-sc-${i}`;
     const tr=document.createElement('tr');if(isT)tr.className='tr';
     const proTag = isPgaPro(ind.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
-    const driverPay = ind.isDriver && ind.payout>0;
-    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isT?'var(--team-color-soft)':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isT?'role-p tr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isT?'var(--team-text-muted)':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${driverPay?(isT?'var(--team-color)':'#8fa3c0'):'#3a5070'};font-weight:${driverPay&&isT?'500':'400'};">${driverPay?'$'+ind.payout.toLocaleString():'—'}</td>`;
+    const hasPay = ind.payout>0;
+    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isT?'var(--team-color-soft)':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isT?'role-p tr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isT?'var(--team-text-muted)':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${hasPay?(isT?'var(--team-color)':'#8fa3c0'):'#3a5070'};font-weight:${hasPay&&isT?'500':'400'};">${hasPay?'$'+ind.payout.toLocaleString():'—'}</td>`;
     tbody.appendChild(tr);
     const scTr=document.createElement('tr');scTr.className='sc-row';
     scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;

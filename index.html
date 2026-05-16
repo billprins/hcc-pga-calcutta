@@ -165,7 +165,6 @@
     <span class="hbadge">$50,650 total pot</span>
     <span class="hbadge">40 groups · 6 syndicates</span>
     <span class="hbadge muted">108th PGA Championship</span>
-    <span class="hbadge muted">Nerds: 8 groups · 32 golfers</span>
   </div>
 </div>
 <div class="ticker">
@@ -175,14 +174,15 @@
 </div>
 <div class="nav">
   <a href="index.html" class="active">Leaderboard</a>
-  <a href="market.html">Market</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
-  <a href="index.html" class="active">Nerds</a>
+  <a href="team.html?team=Nerds">Nerds</a>
   <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
   <a href="team.html?team=WDC">WDC</a>
   <a href="team.html?team=JD">JD</a>
   <a href="team.html?team=Beaver">Beaver</a>
+  <span style="color:#1e3050;padding:0 4px;">·</span>
+  <a href="market.html">Market</a>
 </div>
 
 <div class="content">
@@ -197,25 +197,6 @@
       <div class="cut-rule">Top 70 + ties after R2</div>
       <div class="cut-line" id="cut-line">Awaiting enough scores to project</div>
     </div>
-  </div>
-
-  <div class="stat-row">
-    <div class="sc gb"><div class="sc-lbl">Nerds invested</div><div class="sc-val g">$9,000</div><div class="sc-sub">8 groups · 32 golfers</div></div>
-    <div class="sc"><div class="sc-lbl">Total pot</div><div class="sc-val">$50,650</div><div class="sc-sub">40 groups · 6 syndicates</div></div>
-    <div class="sc gb"><div class="sc-lbl">Nerd golfers above cut</div><div class="sc-val g" id="cut-stat">32 / 32</div><div class="sc-sub" id="cut-sub">Pre-tournament · all active</div></div>
-    <div class="sc"><div class="sc-lbl">Nerds pot share</div><div class="sc-val">17.8%</div><div class="sc-sub">by dollars invested</div></div>
-  </div>
-
-  <div class="sec-head"><span class="sec">Nerds syndicate · tee times &amp; TV</span><div class="sec-line"></div></div>
-  <div class="nerds-panel">
-    <div class="np-head">
-      <div class="np-icon">🤓</div>
-      <div>
-        <div class="np-title">Nerds Syndicate</div>
-        <div class="np-sub">8 groups · $9,000 invested · 32 golfers · Click any golfer to expand scorecard · All times CT</div>
-      </div>
-    </div>
-    <div class="ng" id="nerds-grid"></div>
   </div>
 
   <div class="sec-head"><span class="sec">Broadcast schedule</span><div class="sec-line"></div></div>
@@ -442,17 +423,6 @@ function getActiveTT(name){
   return{time:'TBD',tv:'ESPN/CBS',label:'Sun R4'};
 }
 
-const nerdsGroups = [
-  {num:6, leader:"Xander Schauffele",lastName:"Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],bid:2800,featured:false,lowPro:false},
-  {num:13,leader:"Russell Henley",   lastName:"Henley",    partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],           bid:1050,featured:false,lowPro:true},
-  {num:19,leader:"Tyrrell Hatton",   lastName:"Hatton",    partners:["Daniel Berger","Ian Holt","Luke Donald"],                 bid:950, featured:false,lowPro:false},
-  {num:23,leader:"Adam Scott",       lastName:"Scott",     partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],      bid:750, featured:false,lowPro:false},
-  {num:24,leader:"Rickie Fowler",    lastName:"Fowler",    partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],      bid:1500,featured:false,lowPro:false},
-  {num:30,leader:"Shane Lowry",      lastName:"Lowry",     partners:["Matthew McCarty","Lucas Glover","Jared Jones"],           bid:600, featured:false,lowPro:false},
-  {num:33,leader:"Jacob Bridgeman",  lastName:"Bridgeman", partners:["Ryan Fox","Emiliano Grillo","Michael Block"],             bid:900, featured:false,lowPro:false},
-  {num:35,leader:"Jason Day",        lastName:"Day",       partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],        bid:450, featured:true, lowPro:false},
-];
-
 const allGroups = [
   {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
   {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
@@ -553,27 +523,6 @@ function buildScorecard(name,rounds){
 
 function getSCData(name){return scorecards[nameKey(name)]||null;}
 
-function renderNerdsGrid(){
-  const grid=document.getElementById('nerds-grid');grid.innerHTML='';
-  for(const g of nerdsGroups){
-    const best=getBest(g);
-    const groupIdx=allGroups.findIndex(ag=>ag.num===g.num);
-    const pct=PAYOUTS[Math.min(groupIdx,PAYOUTS.length-1)];
-    const payout=Math.round(POT*pct);
-    const members=[{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))];
-    const div=document.createElement('div');div.className='nc';
-    const blocks=members.map((m,mi)=>{
-      const s=getScore(m.name),tt=getActiveTT(m.name),uid=`nc-${g.num}-${mi}`;
-      const proTag = isPgaPro(m.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
-      return `<div class="nc-golfer-block"><div class="nc-golfer-row" onclick="toggleNcSc('${uid}')"><span class="nc-golfer-name${m.isHl?' hl':''}"><span class="name-text">${m.name}</span>${proTag}<span class="expand-arrow" id="arr-${uid}">▾</span></span><div class="nc-tee-col"><div class="nc-tee-time">${tt.label} · ${tt.time}</div><div class="nc-tee-tv">${tt.tv}</div></div><div class="nc-golfer-score ${sc(s)}">${ss(s)}</div></div><div class="scorecard-wrap" id="${uid}">${buildScorecard(m.name,getSCData(m.name))}</div></div>`;
-    }).join('');
-    div.innerHTML=`<div class="nc-head"><div class="nc-head-top"><div><div class="nc-team">Team ${g.lastName}</div><div class="nc-grp">Group #${g.num}${g.lowPro?' · Low PGA Pro eligible':''}</div><div class="nc-cost">Group cost: $${g.bid.toLocaleString()}</div></div><div class="nc-score-block"><div class="nc-score-lbl">Best score</div><div class="nc-score ${sc(best)}">${ss(best)}</div></div></div></div><div class="nc-col-labels"><span class="nc-col-lbl">Golfer (tap to expand scorecard)</span><span style="display:flex;gap:24px;"><span class="nc-col-lbl">Tee time · network</span><span class="nc-col-lbl">Score</span></span></div>${blocks}<div class="nc-footer"><div>${g.featured?'<span class="pill pill-feat">ESPN+ Featured group</span>':''}</div><div><div class="nc-payout-label">Projected payout</div><div class="nc-payout-val">→ $${payout.toLocaleString()} (${Math.round(pct*100)}%)</div></div></div>`;
-    grid.appendChild(div);
-  }
-}
-
-function toggleNcSc(uid){const w=document.getElementById(uid),a=document.getElementById('arr-'+uid);if(!w)return;const o=w.classList.toggle('open');if(a)a.classList.toggle('open',o);}
-
 function renderField(){
   const individuals=[];
   // Project each group's payout by its CURRENT best-score rank, not its
@@ -625,7 +574,6 @@ function renderField(){
     tbody.appendChild(scTr);
   });
   renderSyndicates(computeSynPayouts());
-  updateCutStat();
   renderCutline();
 }
 
@@ -673,37 +621,13 @@ function renderSyndicates(synPayouts){
   });
 }
 
-function nerdsInsideCut(){
-  if(projectedCutline===null) return null;
-  const all=nerdsGroups.flatMap(g=>[g.leader,...g.partners]);
-  return all.filter(n=>{const s=getScore(n);return s!==null && s<=projectedCutline;}).length;
-}
-
-function updateCutStat(){
-  const all=nerdsGroups.flatMap(g=>[g.leader,...g.partners]),total=all.length;
-  const stat=document.getElementById('cut-stat'),sub=document.getElementById('cut-sub');
-  if(!tournamentStarted){stat.textContent=total+' / '+total;sub.textContent='Pre-tournament · all active';return;}
-  const inside=nerdsInsideCut();
-  if(inside===null){
-    const withScores=all.filter(n=>getScore(n)!==null).length;
-    stat.textContent=withScores+' / '+total;sub.textContent='In play · cut not projected yet';
-  }else{
-    stat.textContent=inside+' / '+total;sub.textContent='Inside projected cut';
-  }
-}
-
 function renderCutline(){
   const v=document.getElementById('cut-val'),line=document.getElementById('cut-line');
   if(!v||!line) return;
-  if(!tournamentStarted){
-    v.textContent='—'; line.textContent='Tournament not yet underway'; return;
-  }
-  if(projectedCutline===null){
-    v.textContent='—'; line.textContent=`Awaiting more scores · ${cutFieldCount} of 156 in`; return;
-  }
+  if(!tournamentStarted){ v.textContent='—'; line.textContent='Tournament not yet underway'; return; }
+  if(projectedCutline===null){ v.textContent='—'; line.textContent=`Awaiting more scores · ${cutFieldCount} of 156 in`; return; }
   v.textContent = projectedCutline===0 ? 'E' : (projectedCutline>0 ? '+'+projectedCutline : String(projectedCutline));
-  const nIn=nerdsInsideCut();
-  line.innerHTML=`<b>${cutInsideCount}</b> golfers currently at or under · <b>${nIn==null?'—':nIn}</b> of 32 Nerds inside`;
+  line.innerHTML=`<b>${cutInsideCount}</b> golfers currently at or under the projected cut`;
 }
 
 // Pull per-hole stroke counts out of ESPN's per-player summary response.
@@ -799,17 +723,15 @@ async function loadScores(){
     projectedCutline = fieldScores.length>=70 ? fieldScores[69] : null;
     cutInsideCount = projectedCutline===null ? 0 : fieldScores.filter(s=>s<=projectedCutline).length;
 
-    // Per-hole scorecards: eagerly fetch for Nerds (always-visible), and also refresh any
-    // non-Nerds scorecards that the user has already expanded at least once (cached in
-    // `scorecards`). Non-Nerds expansions trigger their first fetch via ensureScorecard().
+    // Per-hole scorecards: refresh any that have already been expanded at least
+    // once (cached in `scorecards`). First-time expansions of any golfer trigger
+    // their fetch lazily via ensureScorecard() when the row is opened.
     const eventId=event.id;
     currentEventId=eventId;
     liveAthleteIds=athleteIds;
     const newCards={};
     if(eventId){
-      const nerdsKeys=nerdsGroups.flatMap(g=>[g.leader,...g.partners]).map(n=>nameKey(n));
-      const cachedKeys=Object.keys(scorecards);
-      const targets=[...new Set([...nerdsKeys, ...cachedKeys])];
+      const targets=Object.keys(scorecards);
       await Promise.all(targets.map(async k=>{
         const aid=athleteIds[k];
         if(!aid) return;
@@ -827,12 +749,10 @@ async function loadScores(){
     console.warn('loadScores failed:',e);
     lu.textContent='unable to fetch scores';
   }
-  renderNerdsGrid();
   renderField();
 }
 
 // Init
-renderNerdsGrid();
 renderField();
 loadScores();
 setInterval(loadScores,300000); // refresh every 5 min

@@ -193,14 +193,15 @@
 </div>
 <div class="nav" id="nav-bar">
   <a href="index.html">Leaderboard</a>
-  <a href="market.html">Market</a>
   <span class="nav-sep">·</span>
-  <a href="index.html">Nerds</a>
+  <a href="team.html?team=Nerds">Nerds</a>
   <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
   <a href="team.html?team=WDC">WDC</a>
   <a href="team.html?team=JD">JD</a>
   <a href="team.html?team=Beaver">Beaver</a>
+  <span class="nav-sep">·</span>
+  <a href="market.html">Market</a>
 </div>
 
 <div class="content">
@@ -330,8 +331,8 @@ document.getElementById('hero-team').textContent = `Team ${TEAM}`;
 // Mark the active team in the nav.
 document.querySelectorAll('#nav-bar a').forEach(a => {
   const href = a.getAttribute('href');
-  const aTeam = (href === 'index.html' && TEAM === 'Nerds') ? 'Nerds'
-              : (href.includes('team=') ? new URLSearchParams(href.split('?')[1]).get('team') : null);
+  if (!href.includes('team=')) return;
+  const aTeam = new URLSearchParams(href.split('?')[1]).get('team');
   if (aTeam === TEAM) a.classList.add('active');
 });
 

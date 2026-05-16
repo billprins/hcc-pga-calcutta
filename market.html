@@ -103,7 +103,7 @@
   <a href="team.html?team=Nerds">Nerds</a>
   <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
-  <a href="team.html?team=WDC">WDC</a>
+  <a href="team.html?team=WDC">Wolfpack</a>
   <a href="team.html?team=JD">JD</a>
   <a href="team.html?team=Beaver">Beaver</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
@@ -218,6 +218,10 @@ function fmtRel(s){ return s===null?'—':s===0?'E':s<0?String(s):'+'+s; }
 function fmtPL(p){ if(p===0) return '<span class="pl-flat">$0</span>'; if(p>0) return `<span class="pl-up">+${fmtDollars(p)}</span>`; return `<span class="pl-dn">-${fmtDollars(Math.abs(p))}</span>`; }
 function sc(s){ return s===null?'none':s<0?'u':s>0?'o':'e'; }
 const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
+// Syndicate keys stay stable for data lookups; display names are what users
+// see. Currently only WDC has a rename — they go by "Wolfpack".
+const SYN_DISPLAY = { Nerds:'Nerds', Phil:'Phil', Robbie:'Robbie', JD:'JD', WDC:'Wolfpack', Beaver:'Beaver' };
+function synDisplay(s){ return SYN_DISPLAY[s] || s; }
 
 // ============================================================================
 // Auction roster (mirrors index.html allGroups)
@@ -376,7 +380,7 @@ function renderTable(){
           </div>
         </div>
       </td>
-      <td><span class="sp ${synClass[r.syndicate]||''}">${r.syndicate}</span></td>
+      <td><span class="sp ${synClass[r.syndicate]||''}">${synDisplay(r.syndicate)}</span></td>
       <td class="r">${fmtDollars(r.cost)}</td>
       <td><span class="score-pill ${sc(r.score)}">${scoreTxt}</span></td>
       <td class="r">${rankTxt}</td>

@@ -197,7 +197,7 @@
   <a href="team.html?team=Nerds">Nerds</a>
   <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
-  <a href="team.html?team=WDC">WDC</a>
+  <a href="team.html?team=WDC">Wolfpack</a>
   <a href="team.html?team=JD">JD</a>
   <a href="team.html?team=Beaver">Beaver</a>
   <span class="nav-sep">·</span>
@@ -295,14 +295,19 @@
 const VALID_TEAMS = ['Nerds','Phil','Robbie','WDC','JD','Beaver'];
 const TEAM_PARAM = new URLSearchParams(location.search).get('team') || 'Phil';
 const TEAM = VALID_TEAMS.includes(TEAM_PARAM) ? TEAM_PARAM : 'Phil';
+// Syndicate keys stay stable (data references use them); the display name is
+// what users see. Currently only WDC has a rename — they go by "Wolfpack".
+const SYN_DISPLAY = { Nerds:'Nerds', Phil:'Phil', Robbie:'Robbie', JD:'JD', WDC:'Wolfpack', Beaver:'Beaver' };
+function synDisplay(s){ return SYN_DISPLAY[s] || s; }
+const TEAM_DISPLAY = synDisplay(TEAM);
 
 // Per-team theme: colors, panel/card backgrounds, emoji.
 const TEAM_THEMES = {
   Nerds:  { color:'#4fc87a', soft:'#a0e0c0', bg:'#0f2215', bgCard:'#0d1e12', bgHead:'#111f14', bgHover:'#0f2518', bgFoot:'#0a1810', bgSc:'#091510', border:'#2a5a35', borderSoft:'#1e4028', borderRow:'#1a3520', tMed:'#6aaa88', tMute:'#3a7a50', tFaint:'#3a6a48', tFaintest:'#2a5a38', emoji:'🤓' },
   Phil:   { color:'#5a9fd4', soft:'#a0c8e8', bg:'#0d2040', bgCard:'#0a1830', bgHead:'#0d1f3a', bgHover:'#102540', bgFoot:'#091830', bgSc:'#081428', border:'#2a4060', borderSoft:'#1a3458', borderRow:'#1a2c48', tMed:'#7a9fc0', tMute:'#3a5a7a', tFaint:'#3a557a', tFaintest:'#2a4060', emoji:'🎷' },
   Robbie: { color:'#d4944a', soft:'#e8b070', bg:'#2a1a05', bgCard:'#1f1304', bgHead:'#241606', bgHover:'#2a1f08', bgFoot:'#1a1004', bgSc:'#180e02', border:'#4a3010', borderSoft:'#3a2510', borderRow:'#382008', tMed:'#c0a070', tMute:'#7a5a30', tFaint:'#7a5530', tFaintest:'#5a4020', emoji:'🍻' },
-  JD:     { color:'#d45a8a', soft:'#e890b0', bg:'#2a0d1a', bgCard:'#1f0814', bgHead:'#240a16', bgHover:'#2a1020', bgFoot:'#1a0810', bgSc:'#180610', border:'#4a1a30', borderSoft:'#3a1424', borderRow:'#381020', tMed:'#c08aa0', tMute:'#7a4060', tFaint:'#7a3858', tFaintest:'#5a2a44', emoji:'🐺' },
-  WDC:    { color:'#8a7ad4', soft:'#b0a0e8', bg:'#1a1040', bgCard:'#130a30', bgHead:'#170e38', bgHover:'#1c1040', bgFoot:'#0f0828', bgSc:'#0d0628', border:'#2a2060', borderSoft:'#221858', borderRow:'#1f1850', tMed:'#a098c8', tMute:'#5a4a8a', tFaint:'#5a4a8a', tFaintest:'#3a306a', emoji:'🦅' },
+  JD:     { color:'#d45a8a', soft:'#e890b0', bg:'#2a0d1a', bgCard:'#1f0814', bgHead:'#240a16', bgHover:'#2a1020', bgFoot:'#1a0810', bgSc:'#180610', border:'#4a1a30', borderSoft:'#3a1424', borderRow:'#381020', tMed:'#c08aa0', tMute:'#7a4060', tFaint:'#7a3858', tFaintest:'#5a2a44', emoji:'🥃' },
+  WDC:    { color:'#8a7ad4', soft:'#b0a0e8', bg:'#1a1040', bgCard:'#130a30', bgHead:'#170e38', bgHover:'#1c1040', bgFoot:'#0f0828', bgSc:'#0d0628', border:'#2a2060', borderSoft:'#221858', borderRow:'#1f1850', tMed:'#a098c8', tMute:'#5a4a8a', tFaint:'#5a4a8a', tFaintest:'#3a306a', emoji:'🐺' },
   Beaver: { color:'#d47050', soft:'#e89070', bg:'#2a1008', bgCard:'#1f0c06', bgHead:'#240e08', bgHover:'#2a140a', bgFoot:'#1a0a06', bgSc:'#180806', border:'#4a2010', borderSoft:'#3a1808', borderRow:'#381808', tMed:'#c08070', tMute:'#7a5040', tFaint:'#7a4838', tFaintest:'#5a3828', emoji:'🦫' },
 };
 const theme = TEAM_THEMES[TEAM];
@@ -326,8 +331,8 @@ rs.setProperty('--team-text-faint', theme.tFaint);
 rs.setProperty('--team-text-faintest', theme.tFaintest);
 
 // Page chrome (title, nav highlight, hero)
-document.title = `Hillwood CC · Team ${TEAM} · 2026 PGA Calcutta`;
-document.getElementById('hero-team').textContent = `Team ${TEAM}`;
+document.title = `Hillwood CC · Team ${TEAM_DISPLAY} · 2026 PGA Calcutta`;
+document.getElementById('hero-team').textContent = `Team ${TEAM_DISPLAY}`;
 // Mark the active team in the nav.
 document.querySelectorAll('#nav-bar a').forEach(a => {
   const href = a.getAttribute('href');
@@ -544,16 +549,16 @@ function getSCData(name){return scorecards[nameKey(name)]||null;}
 const teamGolfers = teamGroups.flatMap(g => [g.leader, ...g.partners]);
 const teamInvested = synSpend[TEAM] || 0;
 const teamShare = teamInvested / POT;
-document.getElementById('hero-team-badge').textContent = `Team ${TEAM}: ${teamGroups.length} groups · ${teamGolfers.length} golfers`;
-document.getElementById('lbl-invested').textContent = `${TEAM} invested`;
+document.getElementById('hero-team-badge').textContent = `Team ${TEAM_DISPLAY}: ${teamGroups.length} groups · ${teamGolfers.length} golfers`;
+document.getElementById('lbl-invested').textContent = `${TEAM_DISPLAY} invested`;
 document.getElementById('val-invested').textContent = '$' + teamInvested.toLocaleString();
 document.getElementById('sub-invested').textContent = `${teamGroups.length} groups · ${teamGolfers.length} golfers`;
-document.getElementById('lbl-cut').textContent = `${TEAM} golfers above cut`;
-document.getElementById('lbl-share').textContent = `${TEAM} pot share`;
+document.getElementById('lbl-cut').textContent = `${TEAM_DISPLAY} golfers above cut`;
+document.getElementById('lbl-share').textContent = `${TEAM_DISPLAY} pot share`;
 document.getElementById('val-share').textContent = (teamShare*100).toFixed(1) + '%';
-document.getElementById('sec-team').textContent = `${TEAM} syndicate · tee times & TV`;
+document.getElementById('sec-team').textContent = `${TEAM_DISPLAY} syndicate · tee times & TV`;
 document.getElementById('tp-icon').textContent = theme.emoji;
-document.getElementById('tp-title').textContent = `${TEAM} Syndicate`;
+document.getElementById('tp-title').textContent = `${TEAM_DISPLAY} Syndicate`;
 document.getElementById('tp-sub').textContent = `${teamGroups.length} groups · $${teamInvested.toLocaleString()} invested · ${teamGolfers.length} golfers · Click any golfer to expand scorecard · All times CT`;
 
 // ============================================================================
@@ -616,7 +621,7 @@ function renderField(){
     const tr=document.createElement('tr');if(isT)tr.className='tr';
     const proTag = isPgaPro(ind.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
     const hasPay = ind.payout>0;
-    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isT?'var(--team-color-soft)':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isT?'role-p tr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isT?'var(--team-text-muted)':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${ind.syndicate}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${hasPay?(isT?'var(--team-color)':'#8fa3c0'):'#3a5070'};font-weight:${hasPay&&isT?'500':'400'};">${hasPay?'$'+ind.payout.toLocaleString():'—'}</td>`;
+    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isT?'var(--team-color-soft)':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isT?'role-p tr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isT?'var(--team-text-muted)':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${synDisplay(ind.syndicate)}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${hasPay?(isT?'var(--team-color)':'#8fa3c0'):'#3a5070'};font-weight:${hasPay&&isT?'500':'400'};">${hasPay?'$'+ind.payout.toLocaleString():'—'}</td>`;
     tbody.appendChild(tr);
     const scTr=document.createElement('tr');scTr.className='sc-row';
     scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
@@ -657,7 +662,7 @@ function renderSyndicates(synPayouts){
     let netHtml;
     if(!tournamentStarted) netHtml = proj ? (net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>') : 'awaiting play';
     else netHtml = net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>';
-    d.innerHTML=`<div class="syc-n${isT?' t':''}">${isT?(theme.emoji+' '):''}${s}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${payTxt}</div><div class="syc-net">${netHtml}</div>`;
+    d.innerHTML=`<div class="syc-n${isT?' t':''}">${isT?(theme.emoji+' '):''}${synDisplay(s)}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${payTxt}</div><div class="syc-net">${netHtml}</div>`;
     grid.appendChild(d);
   });
 }
@@ -686,7 +691,7 @@ function renderCutline(){
   if(projectedCutline===null){ v.textContent='—'; line.textContent=`Awaiting more scores · ${cutFieldCount} of 156 in`; return; }
   v.textContent = projectedCutline===0 ? 'E' : (projectedCutline>0 ? '+'+projectedCutline : String(projectedCutline));
   const nIn=teamInsideCut();
-  line.innerHTML=`<b>${cutInsideCount}</b> golfers currently at or under · <b>${nIn==null?'—':nIn}</b> of ${teamGolfers.length} ${TEAM} golfers inside`;
+  line.innerHTML=`<b>${cutInsideCount}</b> golfers currently at or under · <b>${nIn==null?'—':nIn}</b> of ${teamGolfers.length} ${TEAM_DISPLAY} golfers inside`;
 }
 
 // ============================================================================

@@ -191,7 +191,7 @@
   </div>
 </div>
 <div class="ticker">
-  <span><span class="t-dot"></span>First tee Thu May 14, 5:45 AM CT</span>
+  <span><span class="t-dot"></span><span id="next-tee">Next tee: awaiting data</span></span>
   <span><span class="t-dot"></span>Auto-refreshes every 5 min during play</span>
   <span><span class="t-dot"></span>Last updated: <span id="last-upd">—</span></span>
 </div>
@@ -508,6 +508,10 @@ const PGA_PROS = new Set([
 ].map(n => nameKey(n)));
 function isPgaPro(name){ return PGA_PROS.has(nameKey(name)); }
 let liveScores={}, liveToday={}, liveCut=new Set(), scorecards={}, liveTT={}, tournamentStarted=false;
+// Earliest upcoming tee time across the field + everyone teeing off at that
+// exact moment. Refreshed on every loadScores tick so once everyone's teed
+// off today, this naturally rolls over to the first tee of the next round.
+let nextTeeInfo=null;
 // Exposed so the lazy scorecard fetcher (toggleFtSc → ensureScorecard) can look
 // up which athlete to fetch for a given golfer.
 let liveAthleteIds={}, currentEventId=null;
@@ -520,6 +524,22 @@ function fmtScoreCell(s){if(s===null)return'<span style="color:#3a5a45">—</spa
 function getBest(g){let best=null;for(const p of[g.leader,...g.partners]){const s=getScore(p);if(s!==null&&(best===null||s<best))best=s;}return best;}
 function sc(s){return s===null?'e':s<0?'u':s>0?'o':'e';}
 function ss(s){return s===null?'—':s===0?'E':s<0?String(s):'+'+s;}
+
+// Update the ticker's "next tee" line. nextTeeInfo is populated from ESPN's
+// per-competitor status (and linescores for post-round golfers) inside loadScores.
+function renderNextTee(){
+  const el = document.getElementById('next-tee');
+  if(!el) return;
+  if(!nextTeeInfo){ el.textContent = 'No upcoming tee times'; return; }
+  const d = nextTeeInfo.time;
+  const dayPart = d.toLocaleDateString('en-US',{timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric'}).replace(',','');
+  const timePart = d.toLocaleTimeString('en-US',{timeZone:'America/Chicago',hour:'numeric',minute:'2-digit',hour12:true});
+  const lastNames = nextTeeInfo.golfers.map(n => {
+    const parts = (n||'').trim().split(/\s+/);
+    return parts[parts.length-1] || n;
+  }).join('/');
+  el.textContent = `Next tee ${dayPart}, ${timePart} CT (${lastNames})`;
+}
 
 // Hot/cold movers driven by today's round score: lowest = hot, highest = cold.
 // Excludes cut golfers and anyone who hasn't teed off in the current round yet.
@@ -655,6 +675,7 @@ function renderField(){
   });
   renderSyndicates(computeSynPayouts());
   renderHotCold();
+  renderNextTee();
 }
 
 // Lazy scorecard fetch: when a non-Nerds golfer's scorecard is expanded for the
@@ -783,6 +804,42 @@ async function loadScores(){
     liveToday=newToday;
     liveTT=newTT;
     liveCut=newCut;
+
+    // Compute next upcoming tee time across all surviving golfers. For each
+    // competitor we use status.teeTime when they haven't teed off yet (state==='pre'),
+    // and fall back to the next round's teeTime from linescores when they've
+    // finished the current round (state==='post'). Anyone currently in progress
+    // has no upcoming tee for this round.
+    const nowMs = Date.now();
+    const upcomingTees = [];
+    for(const c of (comp.competitors||[])){
+      const ath=c.athlete||{};
+      const espnName = ath.displayName||ath.fullName||ath.shortName||'';
+      const status = c.status;
+      if(!status) continue;
+      const desc=(status.type?.description||'').toUpperCase();
+      const missedCut = !!status.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
+      if(missedCut) continue;
+      const state=(status.type?.state||'').toLowerCase();
+      let teeIso = null;
+      if(state === 'pre' && status.teeTime){
+        teeIso = status.teeTime;
+      } else if(state === 'post'){
+        const next = (c.linescores||[]).find(ls => (ls.period||0) > (status.period||0) && ls.teeTime);
+        if(next) teeIso = next.teeTime;
+      }
+      if(!teeIso) continue;
+      const teeMs = new Date(teeIso).getTime();
+      if(teeMs > nowMs) upcomingTees.push({ name: espnName, ms: teeMs });
+    }
+    if(upcomingTees.length){
+      upcomingTees.sort((a,b) => a.ms - b.ms);
+      const earliest = upcomingTees[0].ms;
+      const group = upcomingTees.filter(t => t.ms === earliest).map(t => t.name);
+      nextTeeInfo = { time: new Date(earliest), golfers: group };
+    } else {
+      nextTeeInfo = null;
+    }
 
     // Compute projected cutline from the raw competitor list (no alias dupes here).
     // PGA Championship cut = top 70 + ties after R2. Mid-tournament we just project off current scores.

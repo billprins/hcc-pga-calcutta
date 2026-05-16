@@ -55,6 +55,16 @@
     .cut-rule { font-size: 13px; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; margin-bottom: 4px; }
     .cut-line { font-size: 12px; color: #7a8faf; font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; }
     .cut-line b { color: #c8d4e8; font-weight: 500; }
+    .net-card { background: #152035; border: 1px solid var(--team-color); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .net-side { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
+    .net-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .net-val { font-size: 36px; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; line-height: 1; color: #c8d4e8; }
+    .net-val.pos { color: #4fc87a; }
+    .net-val.neg { color: #e05a5a; }
+    .net-info { flex: 1; min-width: 220px; }
+    .net-rule { font-size: 13px; color: var(--team-color); font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; margin-bottom: 4px; }
+    .net-line { font-size: 12px; color: #7a8faf; font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; }
+    .net-line b { color: #c8d4e8; font-weight: 500; }
     .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.5rem; }
     .sc { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem 1.1rem; }
     .sc.tb { border-color: var(--team-color); }
@@ -215,6 +225,18 @@
     <div class="cut-info">
       <div class="cut-rule">Top 70 + ties after R2</div>
       <div class="cut-line" id="cut-line">Awaiting enough scores to project</div>
+    </div>
+  </div>
+
+  <div class="sec-head"><span class="sec" id="sec-net">Team P/L</span><div class="sec-line"></div></div>
+  <div class="net-card">
+    <div class="net-side">
+      <div class="net-lbl">Projected net</div>
+      <div class="net-val" id="net-val">—</div>
+    </div>
+    <div class="net-info">
+      <div class="net-rule">If tournament ended now</div>
+      <div class="net-line" id="net-line">awaiting scores</div>
     </div>
   </div>
 
@@ -557,6 +579,7 @@ document.getElementById('lbl-cut').textContent = `${TEAM_DISPLAY} golfers above 
 document.getElementById('lbl-share').textContent = `${TEAM_DISPLAY} pot share`;
 document.getElementById('val-share').textContent = (teamShare*100).toFixed(1) + '%';
 document.getElementById('sec-team').textContent = `${TEAM_DISPLAY} syndicate · tee times & TV`;
+document.getElementById('sec-net').textContent = `${TEAM_DISPLAY} projected P/L`;
 document.getElementById('tp-icon').textContent = theme.emoji;
 document.getElementById('tp-title').textContent = `${TEAM_DISPLAY} Syndicate`;
 document.getElementById('tp-sub').textContent = `${teamGroups.length} groups · $${teamInvested.toLocaleString()} invested · ${teamGolfers.length} golfers · Click any golfer to expand scorecard · All times CT`;
@@ -630,6 +653,7 @@ function renderField(){
   renderSyndicates(computeSynPayouts());
   updateCutStat();
   renderCutline();
+  renderNet();
 }
 
 async function ensureScorecard(name, wrapId){
@@ -682,6 +706,26 @@ function updateCutStat(){
   }else{
     stat.textContent=inside+' / '+total;sub.textContent='Inside projected cut';
   }
+}
+
+function renderNet(){
+  // Net = sum of team's individual payouts − team's auction spend. Negative
+  // until/unless enough of the team's golfers cash to clear their cost.
+  const val = document.getElementById('net-val');
+  const line = document.getElementById('net-line');
+  if(!val || !line) return;
+  if(!tournamentStarted){
+    val.textContent = '—'; val.className = 'net-val';
+    line.textContent = 'Tournament not yet underway';
+    return;
+  }
+  const indPayouts = computeIndividualPayouts();
+  const teamPayout = teamGolfers.reduce((s,n) => s + (indPayouts[nameKey(n)] || 0), 0);
+  const net = teamPayout - teamInvested;
+  if(net > 0){ val.textContent = '+$' + net.toLocaleString(); val.className = 'net-val pos'; }
+  else if(net < 0){ val.textContent = '-$' + Math.abs(net).toLocaleString(); val.className = 'net-val neg'; }
+  else{ val.textContent = '$0'; val.className = 'net-val'; }
+  line.innerHTML = `Invested <b>$${teamInvested.toLocaleString()}</b> · projected payout <b>$${teamPayout.toLocaleString()}</b>`;
 }
 
 function renderCutline(){

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hillwood CC · Stats · 2026 PGA Calcutta</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
+    .hero-stripe { height: 6px; background: #C9A84C; }
+    .hero-inner { padding: 1.75rem 1.5rem 1.25rem; text-align: center; background: #0d1728; border-bottom: 1px solid #C9A84C; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.18em; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .hero-title { font-size: 28px; color: #fff; font-weight: normal; font-family: Georgia, serif; }
+    .hero-title span { color: #C9A84C; }
+    .hero-sub { font-size: 12px; color: #7a8faf; font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 0.3rem; }
+    .ticker { background: #C9A84C; padding: 6px 1rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; color: #0d1728; display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+    .t-dot { width: 6px; height: 6px; border-radius: 50%; background: #0d1728; opacity: 0.35; display: inline-block; margin-right: 6px; }
+    .nav { background: #08111e; border-bottom: 1px solid #1e3050; padding: 0.5rem 1rem; text-align: center; }
+    .nav a { display: inline-block; padding: 6px 14px; margin: 0 2px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #7a8faf; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .nav a:hover { background: #152035; color: #c8d4e8; }
+    .nav a.active { color: #C9A84C; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); }
+    .nav-sep { color: #1e3050; padding: 0 4px; }
+    .content { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .sec { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A84C; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; white-space: nowrap; }
+    .sec-head { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 0.8rem; padding-bottom: 8px; border-bottom: 1px solid #1e3050; }
+    .sec-line { flex: 1; height: 1px; background: #1e3050; }
+    .sec-note { font-size: 11px; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 1rem; font-style: italic; }
+    .card { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    .card.gb { border-color: rgba(201,168,76,0.4); }
+
+    /* Money distribution */
+    .moneydist { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    .md-row { display: grid; grid-template-columns: 110px 1fr 90px 70px; gap: 12px; align-items: center; padding: 6px 0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .md-name { color: #c8d4e8; font-weight: 500; }
+    .md-bar-wrap { background: #0a1322; border-radius: 4px; overflow: hidden; height: 14px; position: relative; }
+    .md-bar { height: 100%; transition: width 0.4s ease; }
+    .md-bar.s-n  { background: linear-gradient(90deg, #1a4028, #4fc87a); }
+    .md-bar.s-ph { background: linear-gradient(90deg, #1a4060, #5a9fd4); }
+    .md-bar.s-ro { background: linear-gradient(90deg, #4a3010, #d4944a); }
+    .md-bar.s-jd { background: linear-gradient(90deg, #4a1a30, #d45a8a); }
+    .md-bar.s-wdc{ background: linear-gradient(90deg, #2a2060, #8a7ad4); }
+    .md-bar.s-bv { background: linear-gradient(90deg, #4a2010, #d47050); }
+    .md-amt { font-family: 'Helvetica Neue', Arial, sans-serif; color: #C9A84C; text-align: right; font-weight: 500; }
+    .md-net { font-size: 11px; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: right; }
+    .md-net.pos { color: #4fc87a; } .md-net.neg { color: #e05a5a; }
+
+    /* Sweat list */
+    .sweat-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+    .sweat { width: 100%; border-collapse: collapse; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; min-width: 540px; }
+    .sweat th { text-align: left; padding: 7px 8px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #3a5070; border-bottom: 1px solid #1e3050; font-weight: 500; }
+    .sweat th.r, .sweat td.r { text-align: right; }
+    .sweat td { padding: 7px 8px; border-bottom: 1px solid #111e30; color: #8fa3c0; }
+    .sweat tr.in td { color: #c8efd4; }
+    .sweat tr.out td { color: #e8a0a0; }
+    .sweat tr.divider td { border-top: 2px dashed rgba(224,90,90,0.4); border-bottom: 2px dashed rgba(224,90,90,0.4); padding: 8px; text-align: center; color: #e05a5a; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; background: rgba(224,90,90,0.05); }
+
+    /* Round records */
+    .rr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+    .rr-card { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem; }
+    .rr-card.hot { border-color: rgba(79,200,122,0.4); }
+    .rr-card.cold { border-color: rgba(224,90,90,0.4); }
+    .rr-header { font-size: 11px; font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .rr-card.hot .rr-header { color: #4fc87a; }
+    .rr-card.cold .rr-header { color: #e05a5a; }
+    .rr-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; padding: 4px 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .rr-name { color: #c8d4e8; }
+    .rr-sub  { font-size: 10px; color: #5a7090; margin-left: 6px; }
+    .rr-rnd  { font-size: 10px; color: #7acce8; font-family: 'Helvetica Neue', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; }
+    .rr-score { font-weight: 500; text-align: right; min-width: 32px; }
+    .rr-score.u { color: #4fc87a; } .rr-score.o { color: #e05a5a; } .rr-score.e { color: #c8d4e8; }
+    @media(max-width:600px){.rr-grid{grid-template-columns:1fr;}}
+
+    /* Movement */
+    .mv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+    .mv-card { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem; }
+    .mv-card.up { border-color: rgba(79,200,122,0.4); }
+    .mv-card.dn { border-color: rgba(224,90,90,0.4); }
+    .mv-header { font-size: 11px; font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .mv-card.up .mv-header { color: #4fc87a; }
+    .mv-card.dn .mv-header { color: #e05a5a; }
+    .mv-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; padding: 4px 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .mv-name { color: #c8d4e8; }
+    .mv-sub { font-size: 10px; color: #5a7090; margin-left: 6px; }
+    .mv-rank { font-size: 11px; color: #7a8faf; }
+    .mv-delta { font-weight: 500; text-align: right; min-width: 40px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .mv-delta.up { color: #4fc87a; } .mv-delta.dn { color: #e05a5a; }
+    @media(max-width:600px){.mv-grid{grid-template-columns:1fr;}}
+
+    /* Hole carnage */
+    .hc-chart { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1.25rem 1rem 1rem; margin-bottom: 1.5rem; }
+    .hc-bars { display: flex; align-items: flex-end; justify-content: space-between; gap: 4px; height: 140px; padding: 0 4px 8px; border-bottom: 1px solid #1e3050; }
+    .hc-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+    .hc-bar { width: 100%; min-height: 4px; border-radius: 3px 3px 0 0; position: relative; }
+    .hc-bar.easy { background: linear-gradient(180deg, #4fc87a 0%, #1a4028 100%); }
+    .hc-bar.hard { background: linear-gradient(180deg, #e05a5a 0%, #3a1010 100%); }
+    .hc-bar.neutral { background: linear-gradient(180deg, #5a7090 0%, #1e3050 100%); }
+    .hc-bar.hardest { background: linear-gradient(180deg, #ff7050 0%, #6a1010 100%); box-shadow: 0 0 10px rgba(255,112,80,0.5); }
+    .hc-bar.easiest { background: linear-gradient(180deg, #5fff8a 0%, #2a6040 100%); box-shadow: 0 0 10px rgba(95,255,138,0.4); }
+    .hc-bar-val { font-size: 9px; color: #8fa3c0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .hc-bar-hole { font-size: 9px; color: #5a7090; font-family: 'Helvetica Neue', Arial, sans-serif; padding: 4px 0 0; text-align: center; }
+    .hc-bar-par { font-size: 8px; color: #3a5070; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .hc-summary { display: flex; justify-content: space-around; gap: 8px; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #1e3050; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; }
+    .hc-summary-card { flex: 1; text-align: center; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.02); }
+    .hc-summary-lbl { font-size: 9px; color: #5a7090; letter-spacing: 0.08em; text-transform: uppercase; }
+    .hc-summary-val { font-size: 16px; font-weight: 500; margin-top: 2px; }
+    .hc-summary-val.hardest { color: #ff7050; }
+    .hc-summary-val.easiest { color: #5fff8a; }
+    .hc-summary-sub { font-size: 10px; color: #7a8faf; margin-top: 1px; }
+
+    /* Streaks */
+    .streaks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+    .stk-card { background: #152035; border: 1px solid #1e3050; border-radius: 8px; padding: 1rem; }
+    .stk-card.hot { border-color: rgba(79,200,122,0.4); }
+    .stk-card.cold { border-color: rgba(224,90,90,0.4); }
+    .stk-header { font-size: 11px; font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .stk-card.hot .stk-header { color: #4fc87a; }
+    .stk-card.cold .stk-header { color: #e05a5a; }
+    .stk-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; padding: 4px 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .stk-name { color: #c8d4e8; }
+    .stk-sub { font-size: 10px; color: #5a7090; margin-left: 6px; }
+    .stk-rnd { font-size: 10px; color: #7acce8; text-transform: uppercase; letter-spacing: 0.06em; }
+    .stk-count { font-weight: 500; text-align: right; min-width: 50px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .stk-count.up { color: #4fc87a; }
+    .stk-count.dn { color: #e05a5a; }
+    @media(max-width:600px){.streaks-grid{grid-template-columns:1fr;}}
+
+    .empty { color: #5a7090; font-size: 12px; font-style: italic; padding: 8px; text-align: center; }
+    .loading { color: #7acce8; font-size: 12px; padding: 8px; text-align: center; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .footer { text-align: center; padding: 1.5rem 1rem 0; font-size: 11px; color: #3a5070; font-family: 'Helvetica Neue', Arial, sans-serif; border-top: 1px solid #1e3050; margin-top: 2rem; }
+    .rbtn { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.4); color: #C9A84C; padding: 7px 18px; border-radius: 6px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; cursor: pointer; margin-top: 0.75rem; }
+
+    .sp { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; vertical-align: middle; }
+    .sp-n{background:#1a4028;color:#4fc87a;border:1px solid #2a5a35;}
+    .sp-ph{background:#0d2040;color:#5a9fd4;border:1px solid #1a4060;}
+    .sp-ro{background:#2a1a05;color:#d4944a;border:1px solid #4a3010;}
+    .sp-jd{background:#2a0d1a;color:#d45a8a;border:1px solid #4a1a30;}
+    .sp-wdc{background:#1a1040;color:#8a7ad4;border:1px solid #2a2060;}
+    .sp-bv{background:#2a1008;color:#d47050;border:1px solid #4a2010;}
+  </style>
+</head>
+<body>
+
+<div class="hero-stripe"></div>
+<div class="hero-inner">
+  <div class="hero-eyebrow">Hillwood Country Club · 2026 PGA Championship Calcutta</div>
+  <div class="hero-title">Tournament <span>Stats</span></div>
+  <div class="hero-sub">Live derived stats — sweat list, round records, money distribution, position movement, hole carnage, hot streaks</div>
+</div>
+<div class="ticker">
+  <span><span class="t-dot"></span>Live data via ESPN</span>
+  <span><span class="t-dot"></span>Auto-refreshes every 5 min</span>
+  <span><span class="t-dot"></span>Last updated: <span id="last-upd">—</span></span>
+</div>
+<div class="nav">
+  <a href="index.html">Leaderboard</a>
+  <span class="nav-sep">·</span>
+  <a href="team.html?team=Nerds">Nerds</a>
+  <a href="team.html?team=Phil">Phil</a>
+  <a href="team.html?team=Robbie">Robbie</a>
+  <a href="team.html?team=WDC">Wolfpack</a>
+  <a href="team.html?team=JD">JD</a>
+  <a href="team.html?team=Beaver">Beaver</a>
+  <span class="nav-sep">·</span>
+  <a href="stats.html" class="active">Stats</a>
+  <a href="market.html">Market</a>
+</div>
+
+<div class="content">
+
+  <!-- 1. Money distribution -->
+  <div class="sec-head"><span class="sec">Projected money distribution</span><div class="sec-line"></div></div>
+  <div class="sec-note">If the tournament ended right now, here's where the pot would land — by syndicate, sorted by projected take.</div>
+  <div class="moneydist" id="md-body"><div class="empty">Computing…</div></div>
+
+  <!-- 2. Sweat list -->
+  <div class="sec-head"><span class="sec">Sweat list · bubble of the money</span><div class="sec-line"></div></div>
+  <div class="sec-note">Hillwood pays positions 1-12 plus Low Pro (13 cashing slots). Positions 9-16 shown here — the dashed line is the cutoff.</div>
+  <div class="sweat-wrap"><table class="sweat"><thead><tr>
+    <th style="width:50px">Pos</th><th>Golfer</th><th>Syn.</th><th class="r">Score</th><th class="r">Today</th><th class="r">Margin</th>
+  </tr></thead><tbody id="sweat-body"><tr><td colspan="6" class="empty">Computing…</td></tr></tbody></table></div>
+
+  <!-- 3. Round records -->
+  <div class="sec-head"><span class="sec">Round records · tournament-wide</span><div class="sec-line"></div></div>
+  <div class="sec-note">Best and worst single-round scores anyone has posted so far.</div>
+  <div class="rr-grid" id="rr-grid">
+    <div class="rr-card hot">
+      <div class="rr-header">⛳ Lowest rounds</div>
+      <div id="rr-low"><div class="empty">Computing…</div></div>
+    </div>
+    <div class="rr-card cold">
+      <div class="rr-header">💥 Worst rounds</div>
+      <div id="rr-high"><div class="empty">Computing…</div></div>
+    </div>
+  </div>
+
+  <!-- 4. Movement today -->
+  <div class="sec-head"><span class="sec">Position movement · today</span><div class="sec-line"></div></div>
+  <div class="sec-note">Where each golfer ranked at the start of today's round vs where they sit now. Climbers gain positions, fallers lose them.</div>
+  <div class="mv-grid">
+    <div class="mv-card up">
+      <div class="mv-header">↑ Biggest climbers</div>
+      <div id="mv-up"><div class="empty">Computing…</div></div>
+    </div>
+    <div class="mv-card dn">
+      <div class="mv-header">↓ Biggest fallers</div>
+      <div id="mv-dn"><div class="empty">Computing…</div></div>
+    </div>
+  </div>
+
+  <!-- 5. Hole carnage -->
+  <div class="sec-head"><span class="sec">Hole carnage · today's scoring difficulty</span><div class="sec-line"></div></div>
+  <div class="sec-note">Average strokes vs par per hole across the field (today only). Red = playing tough, green = playing easy. Based on the top players' scorecards plus the Nerds — we don't pull every golfer's per-hole data.</div>
+  <div class="hc-chart">
+    <div class="hc-bars" id="hc-bars"><div class="loading">Fetching per-hole data…</div></div>
+    <div class="hc-summary" id="hc-summary"></div>
+  </div>
+
+  <!-- 6. Streaks -->
+  <div class="sec-head"><span class="sec">Live streaks</span><div class="sec-line"></div></div>
+  <div class="sec-note">Consecutive birdies (hot) or bogeys/worse (cold) in today's round. Based on scorecards we've fetched.</div>
+  <div class="streaks-grid">
+    <div class="stk-card hot">
+      <div class="stk-header">🔥 Birdie runs</div>
+      <div id="stk-hot"><div class="loading">Fetching per-hole data…</div></div>
+    </div>
+    <div class="stk-card cold">
+      <div class="stk-header">❄️ Bogey runs</div>
+      <div id="stk-cold"><div class="loading">Fetching per-hole data…</div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Hillwood Country Club · 2026 PGA Championship Calcutta · Stats<br>
+    <span style="margin-top:4px;display:inline-block;">Live data via ESPN · auto-refresh every 5 min</span><br>
+    <button class="rbtn" onclick="loadAll()">↻ Refresh now</button>
+  </div>
+
+</div>
+
+<script>
+// ============================================================================
+// Constants + ESPN client (mirrors index.html)
+// ============================================================================
+const POT = 50650;
+const PAYOUTS = [0.22,0.15,0.12,0.10,0.08,0.07,0.06,0.05,0.04,0.04,0.03,0.02,0.02];
+const PARS = [4,4,3,4,5,4,3,4,4,4,5,3,4,4,3,4,5,4];
+const TOTAL_PAR = PARS.reduce((a,b)=>a+b,0);
+
+const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+const PROXY_URL = '';
+function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; }
+
+function nameKey(n){
+  return (n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/ø/g,'o').replace(/æ/g,'ae').replace(/œ/g,'oe')
+    .replace(/ð/g,'d').replace(/þ/g,'th').replace(/ß/g,'ss').replace(/đ/g,'d')
+    .replace(/[^a-z0-9]/g,'');
+}
+const nameAliases = { 'mattmccarty':'matthewmccarty','nicoechavarria':'nicolasechavarria' };
+
+function parseRelScore(v){
+  if(v===undefined||v===null) return null;
+  if(typeof v==='number') return v;
+  const s=String(v).trim().toUpperCase(); if(!s) return null;
+  if(s==='E'||s==='EVEN') return 0;
+  if(['MC','CUT','WD','DQ','DNS','-'].includes(s)) return null;
+  const m=s.match(/^([+-]?)(\d+)$/); if(!m) return null;
+  return m[1]==='-' ? -parseInt(m[2],10) : parseInt(m[2],10);
+}
+function cumulativeToPar(c){
+  const lines = c?.linescores; if(!lines||!lines.length) return null;
+  let total=null;
+  for(const ls of lines){ const r=parseRelScore(ls.displayValue); if(r===null) continue; total=(total===null)?r:total+r; }
+  return total;
+}
+function fmtRel(v){ return v===null||v===undefined?'—':v===0?'E':v>0?'+'+v:String(v); }
+function relCls(v){ return v===null?'e':v<0?'u':v>0?'o':'e'; }
+function fmtDollars(n){ return '$'+Math.round(n).toLocaleString(); }
+
+// ============================================================================
+// Auction roster
+// ============================================================================
+const allGroups = [
+  {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
+  {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
+  {num:3,leader:"Jon Rahm",partners:["Michael Thorbjornsen","Matt Wallace"],syndicate:"Beaver",bid:2500},
+  {num:4,leader:"Cameron Young",partners:["Keegan Bradley","Hao-Tong Li"],syndicate:"JD",bid:3300},
+  {num:5,leader:"Bryson DeChambeau",partners:["Corey Conners","Ricky Castillo","Andy Sullivan"],syndicate:"Phil",bid:2500},
+  {num:6,leader:"Xander Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],syndicate:"Nerds",bid:2800},
+  {num:7,leader:"Matt Fitzpatrick",partners:["Alex Fitzpatrick","Max Greyserman","Joe Highsmith"],syndicate:"Robbie",bid:2500},
+  {num:8,leader:"Ludvig Aberg",partners:["Sudarshan Yellamaraju","Christiaan Bezuidenhout","Travis Smyth"],syndicate:"Robbie",bid:2700},
+  {num:9,leader:"Tommy Fleetwood",partners:["Harry Hall","Stephan Jaeger","Adam Schenk"],syndicate:"Beaver",bid:1200},
+  {num:10,leader:"Collin Morikawa",partners:["Sungjae Im","Rasmus Neergaard-Petersen","Davis Riley"],syndicate:"Phil",bid:1500},
+  {num:11,leader:"Brooks Koepka",partners:["Alexander Noren","Aldrich Potgieter","Brian Campbell"],syndicate:"Phil",bid:1500},
+  {num:12,leader:"Justin Rose",partners:["Sahith Theegala","Andrew Novak","Martin Kaymer"],syndicate:"WDC",bid:1200},
+  {num:13,leader:"Russell Henley",partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],syndicate:"Nerds",bid:1050},
+  {num:14,leader:"Si Woo Kim",partners:["Marco Penge","Daniel Hillier","Padraig Harrington"],syndicate:"JD",bid:700},
+  {num:15,leader:"Justin Thomas",partners:["Sam Stevens","Max McGreevy","Jordan Gumberg"],syndicate:"Beaver",bid:1100},
+  {num:16,leader:"Robert MacIntyre",partners:["Wyndham Clark","Chris Kirk","Jason Dufner"],syndicate:"WDC",bid:800},
+  {num:17,leader:"Viktor Hovland",partners:["Alex Smalley","Billy Horschel","Shaun Micheel"],syndicate:"Phil",bid:1000},
+  {num:18,leader:"Patrick Cantlay",partners:["Keith Mitchell","Casey Jarvis","Jimmy Walker"],syndicate:"JD",bid:950},
+  {num:19,leader:"Tyrrell Hatton",partners:["Daniel Berger","Ian Holt","Luke Donald"],syndicate:"Nerds",bid:950},
+  {num:20,leader:"Jordan Spieth",partners:["Ryan Gerard","John Parry","Y.E. Yang"],syndicate:"Robbie",bid:800},
+  {num:21,leader:"Sam Burns",partners:["Nick Taylor","William Mouw","Austin Hurt"],syndicate:"JD",bid:1050},
+  {num:22,leader:"Hideki Matsuyama",partners:["Rasmus Hojgaard","Steven Fisk","Ben Kern"],syndicate:"Robbie",bid:800},
+  {num:23,leader:"Adam Scott",partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],syndicate:"Nerds",bid:750},
+  {num:24,leader:"Rickie Fowler",partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],syndicate:"Nerds",bid:1500},
+  {num:25,leader:"Chris Gotterup",partners:["Aaron Rai","John Keefer","Bryce Fisher"],syndicate:"WDC",bid:800},
+  {num:26,leader:"Patrick Reed",partners:["Jordan L. Smith","Austin Smotherman","Chris Gabriele"],syndicate:"WDC",bid:950},
+  {num:27,leader:"Min Woo Lee",partners:["Angel Ayora Fanegas","Matthias Schmid","Derek Berg"],syndicate:"Robbie",bid:450},
+  {num:28,leader:"Ben Griffin",partners:["Bud Cauley","Sami Valimaki","Francisco Bide"],syndicate:"JD",bid:700},
+  {num:29,leader:"Sepp Straka",partners:["Brandt Snedeker","Andrew Putnam","Garrett Sapp"],syndicate:"Beaver",bid:900},
+  {num:30,leader:"Shane Lowry",partners:["Matthew McCarty","Lucas Glover","Jared Jones"],syndicate:"Nerds",bid:600},
+  {num:31,leader:"Akshay Bhatia",partners:["Jayden Trey Schaper","Daniel Brown","Jesse Droemer"],syndicate:"Robbie",bid:500},
+  {num:32,leader:"Maverick McNealy",partners:["Brian Harman","Jhonattan Vegas","Mark Geddes"],syndicate:"Robbie",bid:500},
+  {num:33,leader:"Jacob Bridgeman",partners:["Ryan Fox","Emiliano Grillo","Michael Block"],syndicate:"Nerds",bid:900},
+  {num:34,leader:"Joaquin Niemann",partners:["J.T. Poston","Mikael Lindberg","Michael Kartrude"],syndicate:"Beaver",bid:400},
+  {num:35,leader:"Jason Day",partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],syndicate:"Nerds",bid:450},
+  {num:36,leader:"J.J. Spaun",partners:["Michael Kim","Bernd Wiesberger","Ryan Lenahan"],syndicate:"Robbie",bid:950},
+  {num:37,leader:"Kurt Kitayama",partners:["Ryo Hisatsune","Elvis Smylie","Ryan Vermeer"],syndicate:"Phil",bid:600},
+  {num:38,leader:"Harris English",partners:["Denny McCarthy","Kota Kaneko","Timothy Wiseman"],syndicate:"Phil",bid:550},
+  {num:39,leader:"Nicolai Hojgaard",partners:["Max Homa","Stewart Cink","Tyler Collet"],syndicate:"Beaver",bid:950},
+  {num:40,leader:"Gary Woodland",partners:["Cameron Smith","David Lipsky","Zach Haynes"],syndicate:"Robbie",bid:600},
+];
+const synSpend={Nerds:9000,Phil:11050,Robbie:9800,JD:6700,WDC:7050,Beaver:7050};
+const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
+const synBarClass={Nerds:"s-n",Phil:"s-ph",Robbie:"s-ro",JD:"s-jd",WDC:"s-wdc",Beaver:"s-bv"};
+const SYN_DISPLAY = { Nerds:'Nerds', Phil:'Phil', Robbie:'Robbie', JD:'JD', WDC:'Wolfpack', Beaver:'Beaver' };
+function synDisplay(s){ return SYN_DISPLAY[s] || s; }
+
+// Reverse lookup: golfer name -> syndicate
+const golferSyn = {};
+allGroups.forEach(g => {
+  [g.leader, ...g.partners].forEach(name => { golferSyn[nameKey(name)] = g.syndicate; });
+});
+function getSyndicate(name){
+  const k = nameKey(name);
+  return golferSyn[k] || golferSyn[nameAliases[k]] || null;
+}
+
+// ============================================================================
+// State
+// ============================================================================
+let competitors = []; // raw ESPN competitor objects from latest fetch
+let currentEventId = null;
+let scorecards = {}; // nameKey -> rounds[4][18] of stroke counts
+let currentPeriod = 0; // ESPN's status.period for the event
+let tournamentState = ''; // 'in', 'post', etc.
+
+// ============================================================================
+// Section 1: Money distribution
+// ============================================================================
+function renderMoneyDist(){
+  // Individual-rank payouts: sort all surviving golfers by cumulative, assign PAYOUTS[i].
+  const golfers = [];
+  for(const c of competitors){
+    const desc=(c.status?.type?.description||'').toUpperCase();
+    if(!!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ')) continue;
+    const total = cumulativeToPar(c);
+    if(total === null) continue;
+    const syn = getSyndicate(c.athlete?.displayName);
+    if(!syn) continue; // golfer not in our roster (shouldn't happen for Hillwood post-cut)
+    golfers.push({ name:c.athlete?.displayName, syn, total });
+  }
+  golfers.sort((a,b)=>a.total-b.total);
+  const synPayouts = {Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
+  golfers.forEach((g,i) => {
+    if(i<PAYOUTS.length) synPayouts[g.syn] += Math.round(POT*PAYOUTS[i]);
+  });
+  const totals = Object.entries(synPayouts).map(([s,proj]) => ({
+    s, proj, spend:synSpend[s], net:proj-synSpend[s],
+    pct: proj / POT,
+  })).sort((a,b)=>b.proj-a.proj);
+  const totalProjected = totals.reduce((s,x)=>s+x.proj,0) || 1;
+  const maxPct = Math.max(...totals.map(t=>t.pct));
+  const body = document.getElementById('md-body');
+  body.innerHTML = totals.map(t => {
+    const barWidth = maxPct > 0 ? Math.max(2, (t.pct/maxPct)*100) : 0;
+    const netCls = t.net>=0 ? 'pos' : 'neg';
+    const netStr = t.net>=0 ? '+'+fmtDollars(t.net) : '-'+fmtDollars(Math.abs(t.net));
+    return `<div class="md-row">
+      <div class="md-name">${synDisplay(t.s)}<span style="font-size:10px;color:#5a7090;margin-left:6px;">${(t.pct*100).toFixed(1)}%</span></div>
+      <div class="md-bar-wrap"><div class="md-bar ${synBarClass[t.s]}" style="width:${barWidth}%;"></div></div>
+      <div class="md-amt">${fmtDollars(t.proj)}</div>
+      <div class="md-net ${netCls}">${netStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================================
+// Section 2: Sweat list — positions 9-16
+// ============================================================================
+function renderSweatList(){
+  const golfers = [];
+  for(const c of competitors){
+    const desc=(c.status?.type?.description||'').toUpperCase();
+    if(!!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ')) continue;
+    const total = cumulativeToPar(c);
+    if(total === null) continue;
+    const syn = getSyndicate(c.athlete?.displayName);
+    if(!syn) continue;
+    // Today score
+    const todayLs = (c.linescores||[]).find(ls => ls.period === c.status?.period);
+    const today = todayLs ? parseRelScore(todayLs.displayValue) : null;
+    golfers.push({ name:c.athlete?.displayName, syn, total, today });
+  }
+  golfers.sort((a,b)=>a.total-b.total);
+  // Pay positions 1-13 (PAYOUTS.length). Show 9-16 (4 inside money, 3 outside, with divider after position 13).
+  const start = 8; // index 8 = position 9
+  const end = Math.min(golfers.length, 16);
+  const slice = golfers.slice(start, end);
+  const lastInsideScore = golfers[12]?.total; // position 13's score
+  const tbody = document.getElementById('sweat-body');
+  if(!slice.length){ tbody.innerHTML = '<tr><td colspan="6" class="empty">No data yet</td></tr>'; return; }
+  let html = '';
+  let dividerShown = false;
+  slice.forEach((g,i) => {
+    const pos = start + i + 1;
+    const inMoney = pos <= 13;
+    if(!dividerShown && !inMoney){
+      html += `<tr class="divider"><td colspan="6">— Cash line · top 13 + Low Pro —</td></tr>`;
+      dividerShown = true;
+    }
+    const marginToCut = lastInsideScore != null ? g.total - lastInsideScore : null;
+    const marginStr = marginToCut === null ? '—' :
+      marginToCut <= 0 ? `<span style="color:#4fc87a">in by ${Math.abs(marginToCut)}</span>` :
+      `<span style="color:#e05a5a">out by ${marginToCut}</span>`;
+    const rowCls = inMoney ? 'in' : 'out';
+    html += `<tr class="${rowCls}">
+      <td>T${pos}</td>
+      <td>${g.name}</td>
+      <td><span class="sp ${synClass[g.syn]}">${synDisplay(g.syn)}</span></td>
+      <td class="r">${fmtRel(g.total)}</td>
+      <td class="r">${fmtRel(g.today)}</td>
+      <td class="r">${marginStr}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+// ============================================================================
+// Section 3: Round records — lowest/highest single rounds
+// ============================================================================
+function renderRoundRecords(){
+  const all = [];
+  for(const c of competitors){
+    (c.linescores||[]).forEach(ls => {
+      const rel = parseRelScore(ls.displayValue);
+      if(rel === null) return;
+      if(ls.period < 1 || ls.period > 4) return;
+      // Only count COMPLETED rounds — in-progress rounds aren't records yet.
+      // Heuristic: if this is the current period AND state is 'in', the round
+      // isn't done. If state is 'post' on the current period, OR period < event's
+      // current period, it's complete.
+      const period = ls.period;
+      const eventState = tournamentState;
+      const isCurrentPeriod = period === currentPeriod;
+      const myState = (c.status?.type?.state||'').toLowerCase();
+      const isComplete = !isCurrentPeriod || (myState === 'post' || eventState === 'post');
+      if(!isComplete) return;
+      all.push({ name:c.athlete?.displayName, syn:getSyndicate(c.athlete?.displayName), rel, period });
+    });
+  }
+  if(!all.length){
+    document.getElementById('rr-low').innerHTML  = '<div class="empty">No completed rounds yet</div>';
+    document.getElementById('rr-high').innerHTML = '<div class="empty">No completed rounds yet</div>';
+    return;
+  }
+  const lows  = [...all].sort((a,b)=>a.rel-b.rel).slice(0,5);
+  const highs = [...all].sort((a,b)=>b.rel-a.rel).slice(0,5);
+  const rowHtml = g => {
+    const synSpan = g.syn ? `<span class="sp ${synClass[g.syn]}">${synDisplay(g.syn)}</span>` : '';
+    return `<div class="rr-row">
+      <div><span class="rr-name">${g.name}</span><span class="rr-sub">${synSpan}</span></div>
+      <span class="rr-rnd">R${g.period}</span>
+      <span class="rr-score ${relCls(g.rel)}">${fmtRel(g.rel)}</span>
+    </div>`;
+  };
+  document.getElementById('rr-low').innerHTML  = lows.map(rowHtml).join('');
+  document.getElementById('rr-high').innerHTML = highs.map(rowHtml).join('');
+}
+
+// ============================================================================
+// Section 4: Movement today
+// ============================================================================
+function renderMovement(){
+  // For each surviving golfer: their current cumulative AND their cumulative
+  // through the round before today. Sort both. Compute delta in rank.
+  const golfers = [];
+  for(const c of competitors){
+    const desc=(c.status?.type?.description||'').toUpperCase();
+    if(!!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ')) continue;
+    const total = cumulativeToPar(c);
+    if(total === null) continue;
+    const today = (() => {
+      const ls = (c.linescores||[]).find(l => l.period === c.status?.period);
+      return ls ? parseRelScore(ls.displayValue) : null;
+    })();
+    if(today === null) return; // didn't play today
+    const yesterdayCum = total - today;
+    golfers.push({ name:c.athlete?.displayName, syn:getSyndicate(c.athlete?.displayName), total, today, yesterdayCum });
+  }
+  if(!golfers.length){
+    document.getElementById('mv-up').innerHTML = '<div class="empty">No movement data yet</div>';
+    document.getElementById('mv-dn').innerHTML = '<div class="empty">No movement data yet</div>';
+    return;
+  }
+  // Yesterday rank
+  const byYday = [...golfers].sort((a,b)=>a.yesterdayCum-b.yesterdayCum);
+  const ydayRank = new Map();
+  byYday.forEach((g,i) => ydayRank.set(g.name, i+1));
+  // Today rank
+  const byToday = [...golfers].sort((a,b)=>a.total-b.total);
+  const todayRank = new Map();
+  byToday.forEach((g,i) => todayRank.set(g.name, i+1));
+  // Compute movement (positive = climbed)
+  golfers.forEach(g => {
+    g.yRank = ydayRank.get(g.name);
+    g.tRank = todayRank.get(g.name);
+    g.delta = g.yRank - g.tRank;
+  });
+  const climbers = [...golfers].sort((a,b)=>b.delta-a.delta).slice(0,5).filter(g=>g.delta>0);
+  const fallers  = [...golfers].sort((a,b)=>a.delta-b.delta).slice(0,5).filter(g=>g.delta<0);
+  const rowHtml = (g, isUp) => {
+    const synSpan = g.syn ? `<span class="sp ${synClass[g.syn]}">${synDisplay(g.syn)}</span>` : '';
+    const deltaStr = isUp ? `↑${g.delta}` : `↓${Math.abs(g.delta)}`;
+    return `<div class="mv-row">
+      <div><span class="mv-name">${g.name}</span><span class="mv-sub">${synSpan}</span></div>
+      <span class="mv-rank">T${g.yRank} → T${g.tRank}</span>
+      <span class="mv-delta ${isUp?'up':'dn'}">${deltaStr}</span>
+    </div>`;
+  };
+  document.getElementById('mv-up').innerHTML = climbers.length ? climbers.map(g=>rowHtml(g,true)).join('') : '<div class="empty">Nobody climbed yet</div>';
+  document.getElementById('mv-dn').innerHTML = fallers.length ? fallers.map(g=>rowHtml(g,false)).join('') : '<div class="empty">Nobody fell yet</div>';
+}
+
+// ============================================================================
+// Sections 5-6 depend on per-hole scorecards
+// ============================================================================
+
+// Extract per-round per-hole stroke counts from competitorsummary response.
+function extractRounds(playerSummary){
+  const out=[null,null,null,null];
+  try{
+    const rounds = playerSummary.rounds || [];
+    rounds.forEach(r=>{
+      const rIdx = ((r.period||r.round||1)-1);
+      if(rIdx<0||rIdx>3) return;
+      const cells = r.linescores || r.holes || [];
+      if(!cells.length) return;
+      const holes = new Array(18).fill(null);
+      cells.forEach(h=>{
+        if(!h||typeof h!=='object') return;
+        const hole = h.period || h.holeNumber || h.hole;
+        const v = h.value ?? h.score ?? h.strokes ?? h.displayValue;
+        const n = parseInt(v,10);
+        if(hole>=1 && hole<=18 && !isNaN(n)) holes[hole-1] = n;
+      });
+      if(holes.some(x=>x!==null)) out[rIdx] = holes;
+    });
+  }catch(_){}
+  return out;
+}
+
+async function fetchScorecard(eventId, athleteId){
+  const url=`https://site.web.api.espn.com/apis/site/v2/sports/golf/pga/leaderboard/${eventId}/competitorsummary/${athleteId}`;
+  const r = await fetch(viaProxy(url), { cache:'no-store' });
+  if(!r.ok) throw new Error('scorecard HTTP '+r.status);
+  return r.json();
+}
+
+// Top ~50 leaderboard golfers + all golfers in any Hillwood group (so the
+// Nerds and other syndicate partners are well-represented even if some
+// missed the cut). De-duped.
+function selectScorecardTargets(){
+  const targets = new Map(); // athleteId -> name
+  // Top 50 from leaderboard (surviving)
+  const survivors = competitors
+    .filter(c => {
+      const desc=(c.status?.type?.description||'').toUpperCase();
+      return !(!!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ'));
+    })
+    .map(c => ({ c, total: cumulativeToPar(c) }))
+    .filter(x => x.total !== null)
+    .sort((a,b) => a.total - b.total)
+    .slice(0, 50);
+  survivors.forEach(({c}) => {
+    if(c.athlete?.id) targets.set(c.athlete.id, c.athlete.displayName);
+  });
+  // Add all roster golfers we have athlete IDs for
+  const rosterKeys = new Set();
+  allGroups.forEach(g => [g.leader, ...g.partners].forEach(n => rosterKeys.add(nameKey(n))));
+  competitors.forEach(c => {
+    const k = nameKey(c.athlete?.displayName||'');
+    if(rosterKeys.has(k) || rosterKeys.has(nameAliases[k]||'')){
+      if(c.athlete?.id) targets.set(c.athlete.id, c.athlete.displayName);
+    }
+  });
+  return [...targets.entries()].map(([id, name]) => ({ id, name }));
+}
+
+async function loadScorecards(){
+  if(!currentEventId) return;
+  const targets = selectScorecardTargets();
+  const newCards = { ...scorecards }; // preserve previously cached
+  await Promise.all(targets.map(async ({ id, name }) => {
+    try {
+      const sd = await fetchScorecard(currentEventId, id);
+      const rounds = extractRounds(sd);
+      if(rounds.some(r => r && r.length)) newCards[nameKey(name)] = rounds;
+    } catch(_) {}
+  }));
+  scorecards = newCards;
+}
+
+// ============================================================================
+// Section 5: Hole carnage
+// ============================================================================
+function renderHoleCarnage(){
+  // For each hole 1..18, average (strokes − par) across all golfers whose
+  // CURRENT-ROUND scorecard has a stroke for that hole.
+  if(!Object.keys(scorecards).length){
+    document.getElementById('hc-bars').innerHTML = '<div class="empty">No per-hole data yet</div>';
+    document.getElementById('hc-summary').innerHTML = '';
+    return;
+  }
+  const period = currentPeriod || 3;
+  const holeStrokes = Array.from({length:18}, () => []);
+  Object.values(scorecards).forEach(rounds => {
+    const holes = rounds[period-1];
+    if(!holes) return;
+    holes.forEach((s, i) => {
+      if(s !== null && s > 0) holeStrokes[i].push(s);
+    });
+  });
+  const holeAvg = holeStrokes.map((arr, i) => {
+    if(!arr.length) return null;
+    const avg = arr.reduce((s,x)=>s+x,0) / arr.length;
+    return { hole:i+1, par:PARS[i], avg, vsPar: avg - PARS[i], n: arr.length };
+  });
+  // If nothing for the current period, fall back to the most recent period that has data.
+  let activePeriod = period;
+  if(!holeAvg.some(h=>h!==null)){
+    for(let p = 4; p >= 1; p--){
+      const test = Array.from({length:18}, () => []);
+      Object.values(scorecards).forEach(rounds => {
+        const holes = rounds[p-1];
+        if(!holes) return;
+        holes.forEach((s, i) => { if(s !== null && s > 0) test[i].push(s); });
+      });
+      if(test.some(a => a.length)){
+        activePeriod = p;
+        for(let i = 0; i < 18; i++){
+          if(!test[i].length){ holeAvg[i] = null; }
+          else {
+            const avg = test[i].reduce((s,x)=>s+x,0) / test[i].length;
+            holeAvg[i] = { hole:i+1, par:PARS[i], avg, vsPar: avg - PARS[i], n: test[i].length };
+          }
+        }
+        break;
+      }
+    }
+  }
+  if(!holeAvg.some(h=>h!==null)){
+    document.getElementById('hc-bars').innerHTML = '<div class="empty">No per-hole data yet for this round</div>';
+    document.getElementById('hc-summary').innerHTML = '';
+    return;
+  }
+  // Find hardest/easiest
+  const populated = holeAvg.filter(h => h !== null);
+  const hardest = populated.reduce((a,b) => b.vsPar > a.vsPar ? b : a, populated[0]);
+  const easiest = populated.reduce((a,b) => b.vsPar < a.vsPar ? b : a, populated[0]);
+  // Build bars: scale by |vsPar|, max(abs)=1.0 → 100%
+  const maxAbs = Math.max(...populated.map(h => Math.abs(h.vsPar)), 0.3);
+  const bars = holeAvg.map((h, i) => {
+    if(!h){
+      return `<div class="hc-bar-col"><div class="hc-bar neutral" style="height:4px;"></div><div class="hc-bar-val">—</div><div class="hc-bar-hole">${i+1}</div><div class="hc-bar-par">par ${PARS[i]}</div></div>`;
+    }
+    const height = Math.max(4, (Math.abs(h.vsPar) / maxAbs) * 100);
+    let cls = 'neutral';
+    if(h === hardest) cls = 'hardest';
+    else if(h === easiest) cls = 'easiest';
+    else if(h.vsPar > 0.1) cls = 'hard';
+    else if(h.vsPar < -0.1) cls = 'easy';
+    const valStr = (h.vsPar >= 0 ? '+' : '') + h.vsPar.toFixed(2);
+    return `<div class="hc-bar-col" title="Hole ${h.hole} (par ${h.par}) — avg ${h.avg.toFixed(2)} (${valStr} vs par) · ${h.n} golfers"><div class="hc-bar ${cls}" style="height:${height}%;"></div><div class="hc-bar-val">${valStr}</div><div class="hc-bar-hole">${h.hole}</div><div class="hc-bar-par">par ${h.par}</div></div>`;
+  });
+  document.getElementById('hc-bars').innerHTML = bars.join('');
+  document.getElementById('hc-summary').innerHTML = `
+    <div class="hc-summary-card">
+      <div class="hc-summary-lbl">Hardest · R${activePeriod}</div>
+      <div class="hc-summary-val hardest">#${hardest.hole}</div>
+      <div class="hc-summary-sub">par ${hardest.par} · avg ${hardest.avg.toFixed(2)} (${hardest.vsPar>=0?'+':''}${hardest.vsPar.toFixed(2)})</div>
+    </div>
+    <div class="hc-summary-card">
+      <div class="hc-summary-lbl">Easiest · R${activePeriod}</div>
+      <div class="hc-summary-val easiest">#${easiest.hole}</div>
+      <div class="hc-summary-sub">par ${easiest.par} · avg ${easiest.avg.toFixed(2)} (${easiest.vsPar>=0?'+':''}${easiest.vsPar.toFixed(2)})</div>
+    </div>`;
+}
+
+// ============================================================================
+// Section 6: Streaks
+// ============================================================================
+function renderStreaks(){
+  if(!Object.keys(scorecards).length){
+    document.getElementById('stk-hot').innerHTML = '<div class="empty">No per-hole data yet</div>';
+    document.getElementById('stk-cold').innerHTML = '<div class="empty">No per-hole data yet</div>';
+    return;
+  }
+  const period = currentPeriod || 3;
+  const nameByKey = {};
+  competitors.forEach(c => { nameByKey[nameKey(c.athlete?.displayName||'')] = c.athlete?.displayName; });
+  // For each golfer with scorecard data for the current period, find longest
+  // consecutive birdie run (stroke < par) and longest consecutive bogey+ run.
+  const hotRuns = [];
+  const coldRuns = [];
+  Object.entries(scorecards).forEach(([key, rounds]) => {
+    let holes = rounds[period-1];
+    let actualPeriod = period;
+    if(!holes){
+      // Look for any round with data; report which one
+      for(let p = 4; p >= 1; p--){
+        if(rounds[p-1]){ holes = rounds[p-1]; actualPeriod = p; break; }
+      }
+    }
+    if(!holes) return;
+    const name = nameByKey[key] || key;
+    const syn = getSyndicate(name);
+    let birdieRun = 0, maxBirdie = 0;
+    let bogeyRun = 0, maxBogey = 0;
+    holes.forEach((s, i) => {
+      if(s === null || s === 0) { birdieRun = 0; bogeyRun = 0; return; }
+      const delta = s - PARS[i];
+      if(delta < 0){ birdieRun++; bogeyRun = 0; if(birdieRun > maxBirdie) maxBirdie = birdieRun; }
+      else if(delta > 0){ bogeyRun++; birdieRun = 0; if(bogeyRun > maxBogey) maxBogey = bogeyRun; }
+      else { birdieRun = 0; bogeyRun = 0; }
+    });
+    if(maxBirdie >= 2) hotRuns.push({ name, syn, run:maxBirdie, period:actualPeriod });
+    if(maxBogey  >= 2) coldRuns.push({ name, syn, run:maxBogey,  period:actualPeriod });
+  });
+  hotRuns.sort((a,b)=>b.run - a.run || a.name.localeCompare(b.name));
+  coldRuns.sort((a,b)=>b.run - a.run || a.name.localeCompare(b.name));
+  const rowHtml = (g, kind) => {
+    const synSpan = g.syn ? `<span class="sp ${synClass[g.syn]}">${synDisplay(g.syn)}</span>` : '';
+    const word = kind === 'hot' ? 'birdies' : 'bogeys+';
+    return `<div class="stk-row">
+      <div><span class="stk-name">${g.name}</span><span class="stk-sub">${synSpan}</span></div>
+      <span class="stk-rnd">R${g.period}</span>
+      <span class="stk-count ${kind==='hot'?'up':'dn'}">${g.run} ${word}</span>
+    </div>`;
+  };
+  document.getElementById('stk-hot').innerHTML  = hotRuns.length  ? hotRuns.slice(0,6).map(g=>rowHtml(g,'hot')).join('')   : '<div class="empty">No streaks of 2+ yet</div>';
+  document.getElementById('stk-cold').innerHTML = coldRuns.length ? coldRuns.slice(0,6).map(g=>rowHtml(g,'cold')).join('') : '<div class="empty">No streaks of 2+ yet</div>';
+}
+
+// ============================================================================
+// Main loop
+// ============================================================================
+async function loadAll(){
+  const lu = document.getElementById('last-upd');
+  lu.textContent = 'fetching…';
+  try {
+    const res = await fetch(viaProxy(ESPN_LEADERBOARD_URL), { cache:'no-store' });
+    if(!res.ok) throw new Error('leaderboard HTTP '+res.status);
+    const data = await res.json();
+    const event = (data.events||[])[0];
+    if(!event) throw new Error('no event');
+    const comp = (event.competitions||[])[0] || {};
+    currentEventId = event.id;
+    currentPeriod = comp.status?.period || 0;
+    tournamentState = (comp.status?.type?.state||'').toLowerCase();
+    competitors = comp.competitors || [];
+    // Render fast sections immediately
+    renderMoneyDist();
+    renderSweatList();
+    renderRoundRecords();
+    renderMovement();
+    lu.textContent = new Date().toLocaleTimeString();
+    // Then fetch scorecards in the background and render the slow sections
+    await loadScorecards();
+    renderHoleCarnage();
+    renderStreaks();
+  } catch(e) {
+    console.warn('loadAll failed:', e);
+    lu.textContent = 'unable to fetch';
+  }
+}
+
+loadAll();
+setInterval(loadAll, 300000);
+</script>
+</body>
+</html>

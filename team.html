@@ -167,6 +167,8 @@
     .role-p{font-size:10px;color:#3a5070;font-family:'Helvetica Neue',Arial,sans-serif;margin-left:5px;}
     .role-p.tr{color:var(--team-text-muted);}
     .pga-pro-tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(255,179,71,0.1);color:#ffb347;border:1px solid rgba(255,179,71,0.35);font-family:'Helvetica Neue',Arial,sans-serif;font-weight:500;letter-spacing:0.06em;margin-left:6px;text-transform:uppercase;vertical-align:middle;}
+    .cut-badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:3px;background:rgba(224,90,90,0.1);color:#e05a5a;border:1px solid rgba(224,90,90,0.35);font-family:'Helvetica Neue',Arial,sans-serif;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;}
+    .ft tr.cut-row td { opacity: 0.55; }
     .sc-toggle-btn{font-size:10px;color:#3a6a80;font-family:'Helvetica Neue',Arial,sans-serif;cursor:pointer;background:none;border:none;padding:0;margin-left:6px;vertical-align:middle;}
     .ft-sc-wrap{display:none;overflow-x:auto;padding:6px 8px 8px;background:#070f14;}
     .ft-sc-wrap.open{display:block;}
@@ -215,18 +217,6 @@
 </div>
 
 <div class="content">
-
-  <div class="sec-head"><span class="sec">Projected cutline</span><div class="sec-line"></div></div>
-  <div class="cut-card">
-    <div class="cut-side">
-      <div class="cut-lbl">Projected cut</div>
-      <div class="cut-val" id="cut-val">—</div>
-    </div>
-    <div class="cut-info">
-      <div class="cut-rule">Top 70 + ties after R2</div>
-      <div class="cut-line" id="cut-line">Awaiting enough scores to project</div>
-    </div>
-  </div>
 
   <div class="sec-head"><span class="sec" id="sec-net">Team P/L</span><div class="sec-line"></div></div>
   <div class="net-card">
@@ -497,12 +487,13 @@ const teamGroups = allGroups.filter(g => g.syndicate === TEAM).map(g => ({
 // ============================================================================
 // Live state + helpers (same shape as index.html)
 // ============================================================================
-let liveScores={}, liveToday={}, scorecards={}, liveTT={}, tournamentStarted=false;
+let liveScores={}, liveToday={}, liveCut=new Set(), scorecards={}, liveTT={}, tournamentStarted=false;
 let liveAthleteIds={}, currentEventId=null;
 let projectedCutline=null, cutInsideCount=0, cutFieldCount=0;
 
 function getScore(name){const v=liveScores[nameKey(name)];return v===undefined?null:v;}
 function getTodayScore(name){const v=liveToday[nameKey(name)];return v===undefined?null:v;}
+function isCut(name){return liveCut.has(nameKey(name));}
 function fmtScoreCell(s){if(s===null)return'<span style="color:#3a5a45">—</span>';if(s===0)return'<span style="color:#8fa3c0">E</span>';if(s<0)return`<span style="color:#4fc87a">${s}</span>`;return`<span style="color:#e05a5a">+${s}</span>`;}
 function getBest(g){let best=null;for(const p of[g.leader,...g.partners]){const s=getScore(p);if(s!==null&&(best===null||s<best))best=s;}return best;}
 function sc(s){return s===null?'e':s<0?'u':s>0?'o':'e';}
@@ -620,31 +611,49 @@ function renderField(){
   allGroups.forEach(g=>{
     [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))].forEach(m=>{
       const tt=getActiveTT(m.name);
-      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,score:getScore(m.name),isTeam:g.syndicate===TEAM,teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
+      individuals.push({name:m.name,isHl:m.isHl,syndicate:g.syndicate,groupBid:g.bid,groupNum:g.num,groupLeader:g.leader,score:getScore(m.name),cut:isCut(m.name),isTeam:g.syndicate===TEAM,teeTime:tt.time,teeLabel:tt.label,tv:tt.tv});
     });
   });
-  individuals.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
+  // Surviving golfers first by score; then cut golfers; then any with no data.
+  individuals.sort((a,b)=>{
+    if(a.score!==null && b.score!==null) return a.score-b.score;
+    if(a.score!==null) return -1;
+    if(b.score!==null) return 1;
+    if(a.cut && !b.cut) return -1;
+    if(!a.cut && b.cut) return 1;
+    return 0;
+  });
   individuals.forEach((ind,i)=>{
     ind.payout = (ind.score!==null && i<PAYOUTS.length) ? Math.round(POT*PAYOUTS[i]) : 0;
   });
   const tbody=document.getElementById('field-body');tbody.innerHTML='';
-  let cutInserted=false;
+  let cutDividerInserted=false;
   individuals.forEach((ind,i)=>{
-    if(!cutInserted && tournamentStarted && projectedCutline!==null){
-      const inside = ind.score !== null && ind.score <= projectedCutline;
-      if(!inside){
-        const cutLabel = projectedCutline===0?'E':(projectedCutline>0?'+'+projectedCutline:String(projectedCutline));
-        const cutTr=document.createElement('tr');cutTr.className='cut-divider';
-        cutTr.innerHTML=`<td colspan="9">— Projected cut <b>${cutLabel}</b> · top 70 + ties —</td>`;
-        tbody.appendChild(cutTr);
-        cutInserted=true;
-      }
+    if(!cutDividerInserted && ind.cut){
+      const cutCount=individuals.filter(x=>x.cut).length;
+      const cutTr=document.createElement('tr');cutTr.className='cut-divider';
+      cutTr.innerHTML=`<td colspan="9">— Cut · <b>${cutCount}</b> golfer${cutCount===1?'':'s'} missed the cut —</td>`;
+      tbody.appendChild(cutTr);
+      cutDividerInserted=true;
     }
-    const rank=i+1,pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn',isT=ind.isTeam,ftUid=`ft-sc-${i}`;
-    const tr=document.createElement('tr');if(isT)tr.className='tr';
+    const isT=ind.isTeam,ftUid=`ft-sc-${i}`;
+    const tr=document.createElement('tr');
+    const trCls=[];if(isT)trCls.push('tr');if(ind.cut)trCls.push('cut-row');
+    if(trCls.length) tr.className=trCls.join(' ');
     const proTag = isPgaPro(ind.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
     const hasPay = ind.payout>0;
-    tr.innerHTML=`<td><span class="pip ${pc}">${rank}</span></td><td><span style="color:${isT?'var(--team-color-soft)':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isT?'role-p tr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isT?'var(--team-text-muted)':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${synDisplay(ind.syndicate)}</span></td><td class="r">${fmtScoreCell(ind.score)}</td><td class="r">${fmtScoreCell(getTodayScore(ind.name))}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r" style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</td><td class="r" style="font-size:11px;color:#7a9cd4;">${ind.tv}</td><td class="r" style="color:${hasPay?(isT?'var(--team-color)':'#8fa3c0'):'#3a5070'};font-weight:${hasPay&&isT?'500':'400'};">${hasPay?'$'+ind.payout.toLocaleString():'—'}</td>`;
+    let posCell;
+    if(ind.score!==null){
+      const rank=i+1, pc=rank===1?'p1':rank===2?'p2':rank===3?'p3':'pn';
+      posCell = `<span class="pip ${pc}">${rank}</span>`;
+    } else {
+      posCell = '<span style="color:#3a5070;font-size:11px;">—</span>';
+    }
+    const scoreCell = ind.cut ? '<span class="cut-badge">Cut</span>' : fmtScoreCell(ind.score);
+    const todayCell = ind.cut ? '<span style="color:#3a5070">—</span>' : fmtScoreCell(getTodayScore(ind.name));
+    const teeCell = ind.cut ? '<span style="color:#3a5070;font-size:11px;">—</span>' : `<span style="font-size:11px;color:#7acce8;">${ind.teeLabel} · ${ind.teeTime} CT</span>`;
+    const tvCell = ind.cut ? '<span style="color:#3a5070;font-size:11px;">—</span>' : `<span style="font-size:11px;color:#7a9cd4;">${ind.tv}</span>`;
+    tr.innerHTML=`<td>${posCell}</td><td><span style="color:${isT?'var(--team-color-soft)':'#8fa3c0'};font-size:13px;">${ind.name}</span>${proTag}<span class="${ind.isHl?'role-hl':(isT?'role-p tr':'role-p')}">${ind.isHl?'headliner':'partner'}</span><button class="sc-toggle-btn" data-golfer="${ind.name.replace(/"/g,'&quot;')}" onclick="toggleFtSc('${ftUid}',this)">▾ scorecard</button><div style="font-size:10px;color:${isT?'var(--team-text-muted)':'#3a5070'};margin-top:1px;">Grp #${ind.groupNum} · ${ind.groupLeader}</div></td><td><span class="sp ${synClass[ind.syndicate]}">${synDisplay(ind.syndicate)}</span></td><td class="r">${scoreCell}</td><td class="r">${todayCell}</td><td class="r" style="font-size:12px;color:#4a6080;">$${ind.groupBid.toLocaleString()}</td><td class="r">${teeCell}</td><td class="r">${tvCell}</td><td class="r" style="color:${hasPay?(isT?'var(--team-color)':'#8fa3c0'):'#3a5070'};font-weight:${hasPay&&isT?'500':'400'};">${hasPay?'$'+ind.payout.toLocaleString():'—'}</td>`;
     tbody.appendChild(tr);
     const scTr=document.createElement('tr');scTr.className='sc-row';
     scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
@@ -652,7 +661,6 @@ function renderField(){
   });
   renderSyndicates(computeSynPayouts());
   updateCutStat();
-  renderCutline();
   renderNet();
 }
 
@@ -691,21 +699,15 @@ function renderSyndicates(synPayouts){
   });
 }
 
-function teamInsideCut(){
-  if(projectedCutline===null) return null;
-  return teamGolfers.filter(n=>{const s=getScore(n);return s!==null && s<=projectedCutline;}).length;
-}
 function updateCutStat(){
   const total=teamGolfers.length;
   const stat=document.getElementById('cut-stat'),sub=document.getElementById('cut-sub');
   if(!tournamentStarted){stat.textContent=total+' / '+total;sub.textContent='Pre-tournament · all active';return;}
-  const inside=teamInsideCut();
-  if(inside===null){
-    const withScores=teamGolfers.filter(n=>getScore(n)!==null).length;
-    stat.textContent=withScores+' / '+total;sub.textContent='In play · cut not projected yet';
-  }else{
-    stat.textContent=inside+' / '+total;sub.textContent='Inside projected cut';
-  }
+  // After the cut, count team golfers still in vs cut.
+  const stillIn = teamGolfers.filter(n=>!isCut(n)).length;
+  const cutCount = total - stillIn;
+  stat.textContent = stillIn+' / '+total;
+  sub.textContent = cutCount>0 ? `${cutCount} cut · ${stillIn} still in` : 'all still in';
 }
 
 function renderNet(){
@@ -728,15 +730,6 @@ function renderNet(){
   line.innerHTML = `Invested <b>$${teamInvested.toLocaleString()}</b> · projected payout <b>$${teamPayout.toLocaleString()}</b>`;
 }
 
-function renderCutline(){
-  const v=document.getElementById('cut-val'),line=document.getElementById('cut-line');
-  if(!v||!line) return;
-  if(!tournamentStarted){ v.textContent='—'; line.textContent='Tournament not yet underway'; return; }
-  if(projectedCutline===null){ v.textContent='—'; line.textContent=`Awaiting more scores · ${cutFieldCount} of 156 in`; return; }
-  v.textContent = projectedCutline===0 ? 'E' : (projectedCutline>0 ? '+'+projectedCutline : String(projectedCutline));
-  const nIn=teamInsideCut();
-  line.innerHTML=`<b>${cutInsideCount}</b> golfers currently at or under · <b>${nIn==null?'—':nIn}</b> of ${teamGolfers.length} ${TEAM_DISPLAY} golfers inside`;
-}
 
 // ============================================================================
 // ESPN fetch (same as index.html)
@@ -783,8 +776,9 @@ async function loadScores(){
     const state=(comp.status?.type?.state||'').toLowerCase();
     tournamentStarted = state==='in' || state==='post';
 
-    const newScores={}, newToday={}, newTT={}, athleteIds={};
+    const newScores={}, newToday={}, newTT={}, newCut=new Set(), athleteIds={};
     const writeBoth=(map,key,val)=>{ map[key]=val; const a=nameAliases[key]; if(a) map[a]=val; };
+    const addCut=(key)=>{ newCut.add(key); const a=nameAliases[key]; if(a) newCut.add(a); };
     for(const c of (comp.competitors||[])){
       const ath=c.athlete||{};
       const key=nameKey(ath.displayName||ath.fullName||ath.shortName||'');
@@ -793,7 +787,7 @@ async function loadScores(){
       const missedCut = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
       const tt=buildTTFromCompetitor(c);
       if(tt) writeBoth(newTT,key,tt);
-      if(missedCut) continue;
+      if(missedCut){ addCut(key); continue; }
       const rel=cumulativeToPar(c);
       if(rel!==null) writeBoth(newScores,key,rel);
       const today=todayToPar(c);
@@ -803,6 +797,7 @@ async function loadScores(){
     liveScores=newScores;
     liveToday=newToday;
     liveTT=newTT;
+    liveCut=newCut;
 
     const fieldScores=[];
     for(const c of (comp.competitors||[])){

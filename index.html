@@ -580,6 +580,27 @@ function renderHotCold(){
   if(coldEl) coldEl.innerHTML = cold.length ? cold.map(rowHtml).join('') : '<div class="hc-empty">Awaiting today\'s scores</div>';
 }
 
+// PGA-style tie handling: golfers tied at position P share the combined prize
+// money of positions P through P+N-1 equally. Takes an array of scores (null
+// allowed, treated as no-pay) already sorted ascending, returns parallel
+// payout amounts.
+function tiePayouts(sortedScores){
+  const out = new Array(sortedScores.length).fill(0);
+  let i = 0;
+  while(i < sortedScores.length){
+    const s = sortedScores[i];
+    if(s === null || s === undefined){ i++; continue; }
+    let j = i;
+    while(j < sortedScores.length && sortedScores[j] === s) j++;
+    let pct = 0;
+    for(let k = i; k < j; k++) if(k < PAYOUTS.length) pct += PAYOUTS[k];
+    const each = Math.round(POT * pct / (j - i));
+    for(let k = i; k < j; k++) out[k] = each;
+    i = j;
+  }
+  return out;
+}
+
 function computeSynPayouts(){
   // Each golfer earns based on their independent rank among the full field.
   // The group they were drafted in only matters for who owns the payout.
@@ -589,9 +610,8 @@ function computeSynPayouts(){
     [g.leader, ...g.partners].forEach(name => all.push({ syndicate:g.syndicate, score:getScore(name) }));
   });
   all.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
-  all.forEach((p,i) => {
-    if(p.score!==null && i<PAYOUTS.length) synPayouts[p.syndicate] += Math.round(POT*PAYOUTS[i]);
-  });
+  const pays = tiePayouts(all.map(p => p.score));
+  all.forEach((p,i) => { synPayouts[p.syndicate] += pays[i]; });
   return synPayouts;
 }
 
@@ -641,9 +661,8 @@ function renderField(){
     if(!a.cut && b.cut) return 1;
     return 0;
   });
-  individuals.forEach((ind,i)=>{
-    ind.payout = (ind.score!==null && i<PAYOUTS.length) ? Math.round(POT*PAYOUTS[i]) : 0;
-  });
+  const _pays = tiePayouts(individuals.map(g => g.score));
+  individuals.forEach((ind,i)=>{ ind.payout = _pays[i]; });
   const tbody=document.getElementById('field-body');tbody.innerHTML='';
   // Insert a CUT divider between surviving golfers and cut golfers — same
   // visual rule as before but now reflecting the actual cut rather than a

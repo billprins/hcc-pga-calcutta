@@ -347,6 +347,25 @@ let scorecards = {}; // nameKey -> rounds[4][18] of stroke counts
 let currentPeriod = 0; // ESPN's status.period for the event
 let tournamentState = ''; // 'in', 'post', etc.
 
+// PGA-style tie handling: golfers tied at position P share the combined prize
+// money of positions P through P+N-1 equally.
+function tiePayouts(sortedScores){
+  const out = new Array(sortedScores.length).fill(0);
+  let i = 0;
+  while(i < sortedScores.length){
+    const s = sortedScores[i];
+    if(s === null || s === undefined){ i++; continue; }
+    let j = i;
+    while(j < sortedScores.length && sortedScores[j] === s) j++;
+    let pct = 0;
+    for(let k = i; k < j; k++) if(k < PAYOUTS.length) pct += PAYOUTS[k];
+    const each = Math.round(POT * pct / (j - i));
+    for(let k = i; k < j; k++) out[k] = each;
+    i = j;
+  }
+  return out;
+}
+
 // ============================================================================
 // Section 1: Money distribution
 // ============================================================================
@@ -364,9 +383,8 @@ function renderMoneyDist(){
   }
   golfers.sort((a,b)=>a.total-b.total);
   const synPayouts = {Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
-  golfers.forEach((g,i) => {
-    if(i<PAYOUTS.length) synPayouts[g.syn] += Math.round(POT*PAYOUTS[i]);
-  });
+  const pays = tiePayouts(golfers.map(g => g.total));
+  golfers.forEach((g,i) => { synPayouts[g.syn] += pays[i]; });
   const totals = Object.entries(synPayouts).map(([s,proj]) => ({
     s, proj, spend:synSpend[s], net:proj-synSpend[s],
     pct: proj / POT,
@@ -405,7 +423,10 @@ function renderSweatList(){
     golfers.push({ name:c.athlete?.displayName, syn, total, today });
   }
   golfers.sort((a,b)=>a.total-b.total);
-  // Pay positions 1-13 (PAYOUTS.length). Show 9-16 (4 inside money, 3 outside, with divider after position 13).
+  // Tie-aware ranks: golfers with the same score share a position.
+  let lastScore=null,lastRank=0;
+  golfers.forEach((g,i)=>{ if(g.total!==lastScore){ lastRank=i+1; lastScore=g.total; } g.rank=lastRank; });
+  // Pay positions 1-13 (PAYOUTS.length). Show 9-16 around the cash line.
   const start = 8; // index 8 = position 9
   const end = Math.min(golfers.length, 16);
   const slice = golfers.slice(start, end);
@@ -414,9 +435,8 @@ function renderSweatList(){
   if(!slice.length){ tbody.innerHTML = '<tr><td colspan="6" class="empty">No data yet</td></tr>'; return; }
   let html = '';
   let dividerShown = false;
-  slice.forEach((g,i) => {
-    const pos = start + i + 1;
-    const inMoney = pos <= 13;
+  slice.forEach((g) => {
+    const inMoney = lastInsideScore != null && g.total <= lastInsideScore;
     if(!dividerShown && !inMoney){
       html += `<tr class="divider"><td colspan="6">— Cash line · top 13 + Low Pro —</td></tr>`;
       dividerShown = true;
@@ -427,7 +447,7 @@ function renderSweatList(){
       `<span style="color:#e05a5a">out by ${marginToCut}</span>`;
     const rowCls = inMoney ? 'in' : 'out';
     html += `<tr class="${rowCls}">
-      <td>T${pos}</td>
+      <td>T${g.rank}</td>
       <td>${g.name}</td>
       <td><span class="sp ${synClass[g.syn]}">${synDisplay(g.syn)}</span></td>
       <td class="r">${fmtRel(g.total)}</td>

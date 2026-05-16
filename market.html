@@ -298,6 +298,25 @@ function getBestGolfer(g){
 // ============================================================================
 // Compute each group's current implied value + P/L
 // ============================================================================
+// PGA-style tie handling: golfers tied at position P share the combined prize
+// money of positions P through P+N-1 equally.
+function tiePayouts(sortedScores){
+  const out = new Array(sortedScores.length).fill(0);
+  let i = 0;
+  while(i < sortedScores.length){
+    const s = sortedScores[i];
+    if(s === null || s === undefined){ i++; continue; }
+    let j = i;
+    while(j < sortedScores.length && sortedScores[j] === s) j++;
+    let pct = 0;
+    for(let k = i; k < j; k++) if(k < PAYOUTS.length) pct += PAYOUTS[k];
+    const each = Math.round(POT * pct / (j - i));
+    for(let k = i; k < j; k++) out[k] = each;
+    i = j;
+  }
+  return out;
+}
+
 function computeMarket(){
   // Flatten the 40 groups into ~160 individual rows. Each row keeps a reference
   // to its group's cost and headliner so we can render the group context inline.
@@ -323,14 +342,15 @@ function computeMarket(){
     if(b.score===null) return -1;
     return a.score - b.score;
   });
-  // Tie-aware rank + index-based placement payout (same scheme the leaderboard uses).
+  // Tie-aware rank AND tie-aware payout (PGA-standard: tied golfers split the
+  // combined prize money of the positions they occupy).
+  const pays = tiePayouts(rows.map(r => r.score));
   let lastScore=null, lastRank=0;
   rows.forEach((r,i) => {
     if(r.score===null){ r.rank=null; r.implied=0; r.pl=-r.cost; r.mult=0; return; }
     if(r.score !== lastScore){ lastRank = i+1; lastScore = r.score; }
     r.rank = lastRank;
-    const pct = i < PAYOUTS.length ? PAYOUTS[i] : 0;
-    r.implied = Math.round(POT * pct);
+    r.implied = pays[i];
     r.pl = r.implied - r.cost;
     r.mult = r.cost > 0 ? r.implied / r.cost : 0;
   });

@@ -534,8 +534,8 @@ function renderHotCold(){
     });
   });
   todays.sort((a,b) => a.today - b.today || a.name.localeCompare(b.name));
-  const hot  = todays.slice(0,3);
-  const cold = todays.slice(-3).reverse();
+  const hot  = todays.slice(0,5);
+  const cold = todays.slice(-5).reverse();
   const fmtCell = v => {
     if(v===null||v===undefined) return { str:'—', cls:'e' };
     if(v===0) return { str:'E', cls:'e' };

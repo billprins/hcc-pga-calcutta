@@ -143,9 +143,11 @@
     .hc-card.hc-hot .hc-header { color: #ff9a5a; }
     .hc-card.hc-cold .hc-header { color: #6ec5ee; }
     .hc-list { display: flex; flex-direction: column; gap: 4px; }
-    .hc-col-labels { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 0 8px 4px; }
+    .hc-col-labels { display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center; padding: 0 8px 4px; }
     .hc-col-lbl { font-size: 9px; color: #5a7090; letter-spacing: 0.08em; text-transform: lowercase; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: right; }
-    .hc-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.02); border-radius: 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .hc-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.02); border-radius: 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .hc-thru { font-size: 11px; color: #8fa3c0; text-align: right; min-width: 24px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .hc-thru.fin { color: #4fc87a; font-weight: 500; }
     .hc-name { color: #c8d4e8; }
     .hc-sub { font-size: 10px; color: #5a7090; margin-left: 6px; }
     .hc-score { font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: right; min-width: 32px; }
@@ -214,12 +216,12 @@
   <div class="hc-grid">
     <div class="hc-card hc-hot">
       <div class="hc-header">🔥 Hot Golfers</div>
-      <div class="hc-col-labels"><span></span><span class="hc-col-lbl">today</span><span class="hc-col-lbl tour">for the tournament</span></div>
+      <div class="hc-col-labels"><span></span><span class="hc-col-lbl">today</span><span class="hc-col-lbl">thru</span><span class="hc-col-lbl tour">for the tournament</span></div>
       <div class="hc-list" id="hc-hot-list"><div class="hc-empty">Awaiting today's scores</div></div>
     </div>
     <div class="hc-card hc-cold">
       <div class="hc-header">🧊 Cold Golfers</div>
-      <div class="hc-col-labels"><span></span><span class="hc-col-lbl">today</span><span class="hc-col-lbl tour">for the tournament</span></div>
+      <div class="hc-col-labels"><span></span><span class="hc-col-lbl">today</span><span class="hc-col-lbl">thru</span><span class="hc-col-lbl tour">for the tournament</span></div>
       <div class="hc-list" id="hc-cold-list"><div class="hc-empty">Awaiting today's scores</div></div>
     </div>
   </div>
@@ -507,7 +509,7 @@ const PGA_PROS = new Set([
   'Ryan Lenahan','Ryan Vermeer','Timothy Wiseman','Tyler Collet','Zach Haynes',
 ].map(n => nameKey(n)));
 function isPgaPro(name){ return PGA_PROS.has(nameKey(name)); }
-let liveScores={}, liveToday={}, liveCut=new Set(), scorecards={}, liveTT={}, tournamentStarted=false;
+let liveScores={}, liveToday={}, liveThru={}, liveCut=new Set(), scorecards={}, liveTT={}, tournamentStarted=false;
 // Earliest upcoming tee time across the field + everyone teeing off at that
 // exact moment. Refreshed on every loadScores tick so once everyone's teed
 // off today, this naturally rolls over to the first tee of the next round.
@@ -520,6 +522,7 @@ let projectedCutline=null, cutInsideCount=0, cutFieldCount=0;
 function getScore(name){const v=liveScores[nameKey(name)];return v===undefined?null:v;}
 function getTodayScore(name){const v=liveToday[nameKey(name)];return v===undefined?null:v;}
 function isCut(name){return liveCut.has(nameKey(name));}
+function getThru(name){return liveThru[nameKey(name)]||null;}
 function fmtScoreCell(s){if(s===null)return'<span style="color:#3a5a45">—</span>';if(s===0)return'<span style="color:#8fa3c0">E</span>';if(s<0)return`<span style="color:#4fc87a">${s}</span>`;return`<span style="color:#e05a5a">+${s}</span>`;}
 function getBest(g){let best=null;for(const p of[g.leader,...g.partners]){const s=getScore(p);if(s!==null&&(best===null||s<best))best=s;}return best;}
 function sc(s){return s===null?'e':s<0?'u':s>0?'o':'e';}
@@ -565,7 +568,10 @@ function renderHotCold(){
   const rowHtml = g => {
     const t = fmtCell(g.today);
     const tot = fmtCell(g.total);
-    return `<div class="hc-row"><div><span class="hc-name">${g.name}</span><span class="hc-sub">${synDisplay(g.syndicate)}</span></div><span class="hc-score ${t.cls}">${t.str}</span><span class="hc-score tour ${tot.cls}">${tot.str}</span></div>`;
+    const thru = getThru(g.name);
+    const thruCls = thru === 'F' ? 'hc-thru fin' : 'hc-thru';
+    const thruStr = thru || '—';
+    return `<div class="hc-row"><div><span class="hc-name">${g.name}</span><span class="hc-sub">${synDisplay(g.syndicate)}</span></div><span class="hc-score ${t.cls}">${t.str}</span><span class="${thruCls}">${thruStr}</span><span class="hc-score tour ${tot.cls}">${tot.str}</span></div>`;
   };
   const hotEl = document.getElementById('hc-hot-list');
   const coldEl = document.getElementById('hc-cold-list');
@@ -778,6 +784,7 @@ async function loadScores(){
 
     const newScores={};
     const newToday={};
+    const newThru={};
     const newTT={};
     const newCut=new Set();
     const athleteIds={};
@@ -798,10 +805,20 @@ async function loadScores(){
       if(rel!==null) writeBoth(newScores,key,rel);
       const today=todayToPar(c);
       if(today!==null) writeBoth(newToday,key,today);
+      // Thru display: 'F' once today's round is finished, the hole number while
+      // mid-round, null otherwise. Only stored for golfers still tied to the
+      // current round's linescore (i.e. golfers eligible for Hot/Cold).
+      const cstate=(c.status?.type?.state||'').toLowerCase();
+      if(cstate==='post') writeBoth(newThru,key,'F');
+      else if(cstate==='in'){
+        const thru=c.status?.thru ?? c.status?.displayThru;
+        if(thru!=null) writeBoth(newThru,key,String(thru));
+      }
       if(ath.id) writeBoth(athleteIds,key,ath.id);
     }
     liveScores=newScores;
     liveToday=newToday;
+    liveThru=newThru;
     liveTT=newTT;
     liveCut=newCut;
 

@@ -143,10 +143,14 @@
     .hc-card.hc-hot .hc-header { color: #ff9a5a; }
     .hc-card.hc-cold .hc-header { color: #6ec5ee; }
     .hc-list { display: flex; flex-direction: column; gap: 4px; }
-    .hc-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.02); border-radius: 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+    .hc-col-labels { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 0 8px 4px; }
+    .hc-col-lbl { font-size: 9px; color: #5a7090; letter-spacing: 0.08em; text-transform: lowercase; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: right; }
+    .hc-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.02); border-radius: 4px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
     .hc-name { color: #c8d4e8; }
     .hc-sub { font-size: 10px; color: #5a7090; margin-left: 6px; }
-    .hc-score { font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; min-width: 32px; text-align: right; }
+    .hc-score { font-weight: 500; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: right; min-width: 32px; }
+    .hc-score.tour { min-width: 90px; }
+    .hc-col-lbl.tour { min-width: 90px; }
     .hc-score.u { color: #4fc87a; }
     .hc-score.o { color: #e05a5a; }
     .hc-score.e { color: #8fa3c0; }
@@ -210,10 +214,12 @@
   <div class="hc-grid">
     <div class="hc-card hc-hot">
       <div class="hc-header">🔥 Hot Golfers</div>
+      <div class="hc-col-labels"><span></span><span class="hc-col-lbl">today</span><span class="hc-col-lbl tour">for the tournament</span></div>
       <div class="hc-list" id="hc-hot-list"><div class="hc-empty">Awaiting today's scores</div></div>
     </div>
     <div class="hc-card hc-cold">
       <div class="hc-header">🧊 Cold Golfers</div>
+      <div class="hc-col-labels"><span></span><span class="hc-col-lbl">today</span><span class="hc-col-lbl tour">for the tournament</span></div>
       <div class="hc-list" id="hc-cold-list"><div class="hc-empty">Awaiting today's scores</div></div>
     </div>
   </div>
@@ -524,17 +530,22 @@ function renderHotCold(){
       if(isCut(name)) return;
       const today = getTodayScore(name);
       if(today === null) return;
-      todays.push({ name, today, syndicate: g.syndicate });
+      todays.push({ name, today, total: getScore(name), syndicate: g.syndicate });
     });
   });
   todays.sort((a,b) => a.today - b.today || a.name.localeCompare(b.name));
   const hot  = todays.slice(0,3);
   const cold = todays.slice(-3).reverse();
+  const fmtCell = v => {
+    if(v===null||v===undefined) return { str:'—', cls:'e' };
+    if(v===0) return { str:'E', cls:'e' };
+    if(v<0) return { str:String(v), cls:'u' };
+    return { str:'+'+v, cls:'o' };
+  };
   const rowHtml = g => {
-    const t = g.today;
-    const str = t===0?'E':t>0?'+'+t:String(t);
-    const cls = t<0?'u':t>0?'o':'e';
-    return `<div class="hc-row"><div><span class="hc-name">${g.name}</span><span class="hc-sub">${synDisplay(g.syndicate)}</span></div><span class="hc-score ${cls}">${str}</span></div>`;
+    const t = fmtCell(g.today);
+    const tot = fmtCell(g.total);
+    return `<div class="hc-row"><div><span class="hc-name">${g.name}</span><span class="hc-sub">${synDisplay(g.syndicate)}</span></div><span class="hc-score ${t.cls}">${t.str}</span><span class="hc-score tour ${tot.cls}">${tot.str}</span></div>`;
   };
   const hotEl = document.getElementById('hc-hot-list');
   const coldEl = document.getElementById('hc-cold-list');

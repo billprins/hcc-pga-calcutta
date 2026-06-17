@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hillwood CC · Stats · 2026 PGA Calcutta</title>
+  <title>Hillwood CC · Stats · 2026 U.S. Open Calcutta</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
@@ -142,7 +142,7 @@
 
 <div class="hero-stripe"></div>
 <div class="hero-inner">
-  <div class="hero-eyebrow">Hillwood Country Club · 2026 PGA Championship Calcutta</div>
+  <div class="hero-eyebrow">Hillwood Country Club · 2026 U.S. Open Calcutta</div>
   <div class="hero-title">Tournament <span>Stats</span></div>
   <div class="hero-sub">Live derived stats — sweat list, round records, money distribution, position movement, hole carnage, hot streaks</div>
 </div>
@@ -154,12 +154,12 @@
 <div class="nav">
   <a href="index.html">Leaderboard</a>
   <span class="nav-sep">·</span>
-  <a href="team.html?team=Nerds">Nerds</a>
-  <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
-  <a href="team.html?team=WDC">Wolfpack</a>
+  <a href="team.html?team=Nerds">Nerds</a>
+  <a href="team.html?team=Phil">Philoogle</a>
   <a href="team.html?team=JD">JD</a>
-  <a href="team.html?team=Beaver">Beaver</a>
+  <a href="team.html?team=WolfPack">Wolf Pack</a>
+  <a href="team.html?team=Virgins">Virgins</a>
   <span class="nav-sep">·</span>
   <a href="stats.html" class="active">Stats</a>
   <a href="market.html">Market</a>
@@ -174,7 +174,7 @@
 
   <!-- 2. Sweat list -->
   <div class="sec-head"><span class="sec">Sweat list · bubble of the money</span><div class="sec-line"></div></div>
-  <div class="sec-note">Hillwood pays positions 1-12 plus Low Pro (13 cashing slots). Positions 9-16 shown here — the dashed line is the cutoff.</div>
+  <div class="sec-note">Hillwood pays positions 1-11 plus three special prizes (Low Englishman / Islander / Amateur). Positions 7-15 shown here — the dashed line is the top-11 cutoff.</div>
   <div class="sweat-wrap"><table class="sweat"><thead><tr>
     <th style="width:50px">Pos</th><th>Golfer</th><th>Syn.</th><th class="r">Score</th><th class="r">Today</th><th class="r">Margin</th>
   </tr></thead><tbody id="sweat-body"><tr><td colspan="6" class="empty">Computing…</td></tr></tbody></table></div>
@@ -209,7 +209,7 @@
 
   <!-- 5. Hole carnage -->
   <div class="sec-head"><span class="sec">Hole carnage · today's scoring difficulty</span><div class="sec-line"></div></div>
-  <div class="sec-note">Average strokes vs par per hole across the field (today only). Red = playing tough, green = playing easy. Based on the top players' scorecards plus the Nerds — we don't pull every golfer's per-hole data.</div>
+  <div class="sec-note">Average strokes vs par per hole across the field (today only). Red = playing tough, green = playing easy. Based on the top players' scorecards plus every Hillwood golfer — we don't pull every golfer's per-hole data.</div>
   <div class="hc-chart">
     <div class="hc-bars" id="hc-bars"><div class="loading">Fetching per-hole data…</div></div>
     <div class="hc-summary" id="hc-summary"></div>
@@ -230,33 +230,23 @@
   </div>
 
   <div class="footer">
-    Hillwood Country Club · 2026 PGA Championship Calcutta · Stats<br>
+    Hillwood Country Club · 2026 U.S. Open Calcutta · Stats<br>
     <span style="margin-top:4px;display:inline-block;">Live data via ESPN · auto-refresh every 5 min</span><br>
     <button class="rbtn" onclick="loadAll()">↻ Refresh now</button>
   </div>
 
 </div>
 
+<script src="calcutta-data.js"></script>
 <script>
 // ============================================================================
-// Constants + ESPN client (mirrors index.html)
+// POT, PAYOUTS, PARS, TOTAL_PAR, nameKey, nameAliases, allGroups, synSpend,
+// synClass, SYN_DISPLAY/synDisplay, the special-prize sets, tiePayouts and
+// computeAllPayouts all come from calcutta-data.js.
 // ============================================================================
-const POT = 50650;
-const PAYOUTS = [0.22,0.15,0.12,0.10,0.08,0.07,0.06,0.05,0.04,0.04,0.03,0.02,0.02];
-const PARS = [4,4,3,4,5,4,3,4,4,4,5,3,4,4,3,4,5,4];
-const TOTAL_PAR = PARS.reduce((a,b)=>a+b,0);
-
 const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
 const PROXY_URL = '';
 function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; }
-
-function nameKey(n){
-  return (n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
-    .replace(/ø/g,'o').replace(/æ/g,'ae').replace(/œ/g,'oe')
-    .replace(/ð/g,'d').replace(/þ/g,'th').replace(/ß/g,'ss').replace(/đ/g,'d')
-    .replace(/[^a-z0-9]/g,'');
-}
-const nameAliases = { 'mattmccarty':'matthewmccarty','nicoechavarria':'nicolasechavarria' };
 
 function parseRelScore(v){
   if(v===undefined||v===null) return null;
@@ -277,56 +267,10 @@ function fmtRel(v){ return v===null||v===undefined?'—':v===0?'E':v>0?'+'+v:Str
 function relCls(v){ return v===null?'e':v<0?'u':v>0?'o':'e'; }
 function fmtDollars(n){ return '$'+Math.round(n).toLocaleString(); }
 
-// ============================================================================
-// Auction roster
-// ============================================================================
-const allGroups = [
-  {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
-  {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
-  {num:3,leader:"Jon Rahm",partners:["Michael Thorbjornsen","Matt Wallace"],syndicate:"Beaver",bid:2500},
-  {num:4,leader:"Cameron Young",partners:["Keegan Bradley","Hao-Tong Li"],syndicate:"JD",bid:3300},
-  {num:5,leader:"Bryson DeChambeau",partners:["Corey Conners","Ricky Castillo","Andy Sullivan"],syndicate:"Phil",bid:2500},
-  {num:6,leader:"Xander Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],syndicate:"Nerds",bid:2800},
-  {num:7,leader:"Matt Fitzpatrick",partners:["Alex Fitzpatrick","Max Greyserman","Joe Highsmith"],syndicate:"Robbie",bid:2500},
-  {num:8,leader:"Ludvig Aberg",partners:["Sudarshan Yellamaraju","Christiaan Bezuidenhout","Travis Smyth"],syndicate:"Robbie",bid:2700},
-  {num:9,leader:"Tommy Fleetwood",partners:["Harry Hall","Stephan Jaeger","Adam Schenk"],syndicate:"Beaver",bid:1200},
-  {num:10,leader:"Collin Morikawa",partners:["Sungjae Im","Rasmus Neergaard-Petersen","Davis Riley"],syndicate:"Phil",bid:1500},
-  {num:11,leader:"Brooks Koepka",partners:["Alexander Noren","Aldrich Potgieter","Brian Campbell"],syndicate:"Phil",bid:1500},
-  {num:12,leader:"Justin Rose",partners:["Sahith Theegala","Andrew Novak","Martin Kaymer"],syndicate:"WDC",bid:1200},
-  {num:13,leader:"Russell Henley",partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],syndicate:"Nerds",bid:1050},
-  {num:14,leader:"Si Woo Kim",partners:["Marco Penge","Daniel Hillier","Padraig Harrington"],syndicate:"JD",bid:700},
-  {num:15,leader:"Justin Thomas",partners:["Sam Stevens","Max McGreevy","Jordan Gumberg"],syndicate:"Beaver",bid:1100},
-  {num:16,leader:"Robert MacIntyre",partners:["Wyndham Clark","Chris Kirk","Jason Dufner"],syndicate:"WDC",bid:800},
-  {num:17,leader:"Viktor Hovland",partners:["Alex Smalley","Billy Horschel","Shaun Micheel"],syndicate:"Phil",bid:1000},
-  {num:18,leader:"Patrick Cantlay",partners:["Keith Mitchell","Casey Jarvis","Jimmy Walker"],syndicate:"JD",bid:950},
-  {num:19,leader:"Tyrrell Hatton",partners:["Daniel Berger","Ian Holt","Luke Donald"],syndicate:"Nerds",bid:950},
-  {num:20,leader:"Jordan Spieth",partners:["Ryan Gerard","John Parry","Y.E. Yang"],syndicate:"Robbie",bid:800},
-  {num:21,leader:"Sam Burns",partners:["Nick Taylor","William Mouw","Austin Hurt"],syndicate:"JD",bid:1050},
-  {num:22,leader:"Hideki Matsuyama",partners:["Rasmus Hojgaard","Steven Fisk","Ben Kern"],syndicate:"Robbie",bid:800},
-  {num:23,leader:"Adam Scott",partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],syndicate:"Nerds",bid:750},
-  {num:24,leader:"Rickie Fowler",partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],syndicate:"Nerds",bid:1500},
-  {num:25,leader:"Chris Gotterup",partners:["Aaron Rai","John Keefer","Bryce Fisher"],syndicate:"WDC",bid:800},
-  {num:26,leader:"Patrick Reed",partners:["Jordan L. Smith","Austin Smotherman","Chris Gabriele"],syndicate:"WDC",bid:950},
-  {num:27,leader:"Min Woo Lee",partners:["Angel Ayora Fanegas","Matthias Schmid","Derek Berg"],syndicate:"Robbie",bid:450},
-  {num:28,leader:"Ben Griffin",partners:["Bud Cauley","Sami Valimaki","Francisco Bide"],syndicate:"JD",bid:700},
-  {num:29,leader:"Sepp Straka",partners:["Brandt Snedeker","Andrew Putnam","Garrett Sapp"],syndicate:"Beaver",bid:900},
-  {num:30,leader:"Shane Lowry",partners:["Matthew McCarty","Lucas Glover","Jared Jones"],syndicate:"Nerds",bid:600},
-  {num:31,leader:"Akshay Bhatia",partners:["Jayden Trey Schaper","Daniel Brown","Jesse Droemer"],syndicate:"Robbie",bid:500},
-  {num:32,leader:"Maverick McNealy",partners:["Brian Harman","Jhonattan Vegas","Mark Geddes"],syndicate:"Robbie",bid:500},
-  {num:33,leader:"Jacob Bridgeman",partners:["Ryan Fox","Emiliano Grillo","Michael Block"],syndicate:"Nerds",bid:900},
-  {num:34,leader:"Joaquin Niemann",partners:["J.T. Poston","Mikael Lindberg","Michael Kartrude"],syndicate:"Beaver",bid:400},
-  {num:35,leader:"Jason Day",partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],syndicate:"Nerds",bid:450},
-  {num:36,leader:"J.J. Spaun",partners:["Michael Kim","Bernd Wiesberger","Ryan Lenahan"],syndicate:"Robbie",bid:950},
-  {num:37,leader:"Kurt Kitayama",partners:["Ryo Hisatsune","Elvis Smylie","Ryan Vermeer"],syndicate:"Phil",bid:600},
-  {num:38,leader:"Harris English",partners:["Denny McCarthy","Kota Kaneko","Timothy Wiseman"],syndicate:"Phil",bid:550},
-  {num:39,leader:"Nicolai Hojgaard",partners:["Max Homa","Stewart Cink","Tyler Collet"],syndicate:"Beaver",bid:950},
-  {num:40,leader:"Gary Woodland",partners:["Cameron Smith","David Lipsky","Zach Haynes"],syndicate:"Robbie",bid:600},
-];
-const synSpend={Nerds:9000,Phil:11050,Robbie:9800,JD:6700,WDC:7050,Beaver:7050};
-const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
-const synBarClass={Nerds:"s-n",Phil:"s-ph",Robbie:"s-ro",JD:"s-jd",WDC:"s-wdc",Beaver:"s-bv"};
-const SYN_DISPLAY = { Nerds:'Nerds', Phil:'Phil', Robbie:'Robbie', JD:'JD', WDC:'Wolfpack', Beaver:'Beaver' };
-function synDisplay(s){ return SYN_DISPLAY[s] || s; }
+// allGroups, synSpend, synClass, SYN_DISPLAY/synDisplay and the special-prize
+// sets come from calcutta-data.js. synBarClass (the colored bar fills) is
+// stats-only, keyed to the same color classes.
+const synBarClass={Robbie:"s-ro",Nerds:"s-n",Phil:"s-ph",JD:"s-jd",WolfPack:"s-wdc",Virgins:"s-bv"};
 
 // Reverse lookup: golfer name -> syndicate
 const golferSyn = {};
@@ -347,48 +291,37 @@ let scorecards = {}; // nameKey -> rounds[4][18] of stroke counts
 let currentPeriod = 0; // ESPN's status.period for the event
 let tournamentState = ''; // 'in', 'post', etc.
 
-// PGA-style tie handling: golfers tied at position P share the combined prize
-// money of positions P through P+N-1 equally.
-function tiePayouts(sortedScores){
-  const out = new Array(sortedScores.length).fill(0);
-  let i = 0;
-  while(i < sortedScores.length){
-    const s = sortedScores[i];
-    if(s === null || s === undefined){ i++; continue; }
-    let j = i;
-    while(j < sortedScores.length && sortedScores[j] === s) j++;
-    let pct = 0;
-    for(let k = i; k < j; k++) if(k < PAYOUTS.length) pct += PAYOUTS[k];
-    const each = Math.round(POT * pct / (j - i));
-    for(let k = i; k < j; k++) out[k] = each;
-    i = j;
+// Build roster-keyed getScore/isCut closures from the latest ESPN competitor
+// list, so the shared computeAllPayouts() can run on this page too.
+function buildLiveLookup(){
+  const scores = {}, cut = new Set();
+  for(const c of competitors){
+    const key = nameKey(c.athlete?.displayName || c.athlete?.fullName || '');
+    if(!key) continue;
+    const desc = (c.status?.type?.description||'').toUpperCase();
+    const missed = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
+    if(missed){ cut.add(key); const a=nameAliases[key]; if(a) cut.add(a); continue; }
+    const rel = cumulativeToPar(c);
+    if(rel !== null){ scores[key]=rel; const a=nameAliases[key]; if(a) scores[a]=rel; }
   }
-  return out;
+  return {
+    getScore: (n)=>{ const v=scores[nameKey(n)]; return v===undefined?null:v; },
+    isCut:    (n)=> cut.has(nameKey(n)),
+  };
 }
 
 // ============================================================================
 // Section 1: Money distribution
 // ============================================================================
 function renderMoneyDist(){
-  // Individual-rank payouts: sort all surviving golfers by cumulative, assign PAYOUTS[i].
-  const golfers = [];
-  for(const c of competitors){
-    const desc=(c.status?.type?.description||'').toUpperCase();
-    if(!!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ')) continue;
-    const total = cumulativeToPar(c);
-    if(total === null) continue;
-    const syn = getSyndicate(c.athlete?.displayName);
-    if(!syn) continue; // golfer not in our roster (shouldn't happen for Hillwood post-cut)
-    golfers.push({ name:c.athlete?.displayName, syn, total });
-  }
-  golfers.sort((a,b)=>a.total-b.total);
-  const synPayouts = {Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
-  const pays = tiePayouts(golfers.map(g => g.total));
-  golfers.forEach((g,i) => { synPayouts[g.syn] += pays[i]; });
-  const totals = Object.entries(synPayouts).map(([s,proj]) => ({
-    s, proj, spend:synSpend[s], net:proj-synSpend[s],
-    pct: proj / POT,
-  })).sort((a,b)=>b.proj-a.proj);
+  // Full projected payout per syndicate — position prizes plus the three special
+  // categories — via the shared engine, so this matches the leaderboard exactly.
+  const {getScore, isCut} = buildLiveLookup();
+  const {synPayouts} = computeAllPayouts(getScore, isCut);
+  const totals = Object.keys(synSpend).map(s => {
+    const proj = synPayouts[s] || 0;
+    return { s, proj, spend:synSpend[s], net:proj-synSpend[s], pct: proj / POT };
+  }).sort((a,b)=>b.proj-a.proj);
   const totalProjected = totals.reduce((s,x)=>s+x.proj,0) || 1;
   const maxPct = Math.max(...totals.map(t=>t.pct));
   const body = document.getElementById('md-body');
@@ -426,11 +359,11 @@ function renderSweatList(){
   // Tie-aware ranks: golfers with the same score share a position.
   let lastScore=null,lastRank=0;
   golfers.forEach((g,i)=>{ if(g.total!==lastScore){ lastRank=i+1; lastScore=g.total; } g.rank=lastRank; });
-  // Pay positions 1-13 (PAYOUTS.length). Show 9-16 around the cash line.
-  const start = 8; // index 8 = position 9
-  const end = Math.min(golfers.length, 16);
+  // Pay positions 1-11 (POSITION_PCT.length). Show 7-15 around the cash line.
+  const start = 6; // index 6 = position 7
+  const end = Math.min(golfers.length, 15);
   const slice = golfers.slice(start, end);
-  const lastInsideScore = golfers[12]?.total; // position 13's score
+  const lastInsideScore = golfers[10]?.total; // position 11's score
   const tbody = document.getElementById('sweat-body');
   if(!slice.length){ tbody.innerHTML = '<tr><td colspan="6" class="empty">No data yet</td></tr>'; return; }
   let html = '';
@@ -438,7 +371,7 @@ function renderSweatList(){
   slice.forEach((g) => {
     const inMoney = lastInsideScore != null && g.total <= lastInsideScore;
     if(!dividerShown && !inMoney){
-      html += `<tr class="divider"><td colspan="6">— Cash line · top 13 + Low Pro —</td></tr>`;
+      html += `<tr class="divider"><td colspan="6">— Cash line · top 11 (positions) —</td></tr>`;
       dividerShown = true;
     }
     const marginToCut = lastInsideScore != null ? g.total - lastInsideScore : null;

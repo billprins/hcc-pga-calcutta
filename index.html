@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hillwood CC · 2026 PGA Championship Calcutta</title>
+  <title>Hillwood CC · 2026 U.S. Open Calcutta</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
@@ -184,12 +184,12 @@
 <div class="hero-stripe"></div>
 <div class="hero-inner">
   <div class="hero-eyebrow">Hillwood Country Club · Nashville, TN</div>
-  <div class="hero-title">2026 PGA Championship <span>Calcutta</span></div>
-  <div class="hero-sub">Aronimink Golf Club · Newtown Square, PA · May 14–17, 2026</div>
+  <div class="hero-title">2026 U.S. Open <span>Calcutta</span></div>
+  <div class="hero-sub">Shinnecock Hills Golf Club · Southampton, NY · June 18–21, 2026</div>
   <div class="hero-badges">
-    <span class="hbadge">$50,650 total pot</span>
+    <span class="hbadge">$62,950 total pot</span>
     <span class="hbadge">40 groups · 6 syndicates</span>
-    <span class="hbadge muted">108th PGA Championship</span>
+    <span class="hbadge muted">126th U.S. Open</span>
   </div>
 </div>
 <div class="ticker">
@@ -200,12 +200,12 @@
 <div class="nav">
   <a href="index.html" class="active">Leaderboard</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
-  <a href="team.html?team=Nerds">Nerds</a>
-  <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
-  <a href="team.html?team=WDC">Wolfpack</a>
+  <a href="team.html?team=Nerds">Nerds</a>
+  <a href="team.html?team=Phil">Philoogle</a>
   <a href="team.html?team=JD">JD</a>
-  <a href="team.html?team=Beaver">Beaver</a>
+  <a href="team.html?team=WolfPack">Wolf Pack</a>
+  <a href="team.html?team=Virgins">Virgins</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
   <a href="stats.html">Stats</a>
   <a href="market.html">Market</a>
@@ -229,14 +229,17 @@
 
   <div class="sec-head"><span class="sec">Broadcast schedule</span><div class="sec-line"></div></div>
   <div class="tv-grid">
-    <div class="tvd"><div class="tvd-name">Thursday, May 14 — Round 1</div><div class="tvd-slot">5:45 AM – 11 AM <b>ESPN+</b></div><div class="tvd-slot">11 AM – 6 PM <b>ESPN</b></div><div class="tvd-slot">6 – 7 PM <b>ESPN2</b></div></div>
-    <div class="tvd"><div class="tvd-name">Friday, May 15 — Round 2</div><div class="tvd-slot">5:45 AM – 11 AM <b>ESPN+</b></div><div class="tvd-slot">11 AM – 7 PM <b>ESPN</b></div></div>
-    <div class="tvd"><div class="tvd-name">Saturday, May 16 — Round 3</div><div class="tvd-slot">7 – 9 AM <b>ESPN / ESPN+</b></div><div class="tvd-slot">9 AM – noon <b>ESPN</b></div><div class="tvd-slot">Noon – 6 PM <b>CBS / Paramount+</b></div></div>
-    <div class="tvd"><div class="tvd-name">Sunday, May 17 — Final Round</div><div class="tvd-slot">7 – 9 AM <b>ESPN / ESPN+</b></div><div class="tvd-slot">9 AM – noon <b>ESPN</b></div><div class="tvd-slot">Noon – 6 PM <b>CBS / Paramount+</b></div></div>
+    <div class="tvd"><div class="tvd-name">Thursday, June 18 — Round 1</div><div class="tvd-slot">6:30 AM – 5 PM ET <b>USA</b></div><div class="tvd-slot">5 – 8 PM ET <b>Peacock</b></div></div>
+    <div class="tvd"><div class="tvd-name">Friday, June 19 — Round 2</div><div class="tvd-slot">6:30 AM – 1:30 PM ET <b>USA / Peacock</b></div><div class="tvd-slot">1:30 – 7:30 PM ET <b>NBC / Peacock</b></div></div>
+    <div class="tvd"><div class="tvd-name">Saturday, June 20 — Round 3</div><div class="tvd-slot">10 AM – noon ET <b>USA</b></div><div class="tvd-slot">Noon – 8 PM ET <b>NBC / Peacock</b></div></div>
+    <div class="tvd"><div class="tvd-name">Sunday, June 21 — Final Round</div><div class="tvd-slot">9 AM – noon ET <b>USA</b></div><div class="tvd-slot">Noon – 7 PM ET <b>NBC / Peacock</b></div></div>
   </div>
 
   <div class="sec-head"><span class="sec">Syndicate standings</span><div class="sec-line"></div></div>
   <div class="syn-grid" id="syn-grid"></div>
+
+  <div class="sec-head"><span class="sec">Special prizes · projected leaders</span><div class="sec-line"></div></div>
+  <div class="tv-grid" id="special-grid"></div>
 
   <div class="sec-head"><span class="sec">Full field · individual golfer standings</span><div class="sec-line"></div></div>
   <div style="overflow-x:auto;margin-bottom:1.5rem;">
@@ -259,44 +262,43 @@
   <div class="sec-head"><span class="sec">Payout structure</span><div class="sec-line"></div></div>
   <div class="pt-wrap">
     <table class="pt"><thead><tr><th>Place</th><th class="r">% of pot</th><th class="r">Payout</th></tr></thead><tbody>
-      <tr><td><span class="pip p1" style="font-size:10px;">1</span> 1st</td><td class="r">22%</td><td class="r g">$11,143</td></tr>
-      <tr><td><span class="pip p2" style="font-size:10px;">2</span> 2nd</td><td class="r">15%</td><td class="r g">$7,598</td></tr>
-      <tr><td><span class="pip p3" style="font-size:10px;">3</span> 3rd</td><td class="r">12%</td><td class="r g">$6,078</td></tr>
-      <tr><td>4th</td><td class="r">10%</td><td class="r g">$5,065</td></tr>
-      <tr><td>5th</td><td class="r">8%</td><td class="r g">$4,052</td></tr>
-      <tr><td>6th</td><td class="r">7%</td><td class="r g">$3,546</td></tr>
+      <tr><td><span class="pip p1" style="font-size:10px;">1</span> 1st</td><td class="r">20%</td><td class="r g">$12,590</td></tr>
+      <tr><td><span class="pip p2" style="font-size:10px;">2</span> 2nd</td><td class="r">15%</td><td class="r g">$9,443</td></tr>
+      <tr><td><span class="pip p3" style="font-size:10px;">3</span> 3rd</td><td class="r">12%</td><td class="r g">$7,554</td></tr>
+      <tr><td>4th</td><td class="r">10%</td><td class="r g">$6,295</td></tr>
+      <tr><td>5th</td><td class="r">8%</td><td class="r g">$5,036</td></tr>
+      <tr><td>6th</td><td class="r">7%</td><td class="r g">$4,407</td></tr>
+      <tr><td>7th</td><td class="r">6%</td><td class="r g">$3,777</td></tr>
     </tbody></table>
     <table class="pt"><thead><tr><th>Place</th><th class="r">% of pot</th><th class="r">Payout</th></tr></thead><tbody>
-      <tr><td>7th</td><td class="r">6%</td><td class="r g">$3,039</td></tr>
-      <tr><td>8th</td><td class="r">5%</td><td class="r g">$2,533</td></tr>
-      <tr><td>9th</td><td class="r">4%</td><td class="r g">$2,026</td></tr>
-      <tr><td>10th</td><td class="r">4%</td><td class="r g">$2,026</td></tr>
-      <tr><td>11th</td><td class="r">3%</td><td class="r g">$1,520</td></tr>
-      <tr><td>12th</td><td class="r">2%</td><td class="r g">$1,013</td></tr>
-      <tr><td>Low PGA Pro *</td><td class="r">2%</td><td class="r g">$1,013</td></tr>
+      <tr><td>8th</td><td class="r">5%</td><td class="r g">$3,148</td></tr>
+      <tr><td>9th</td><td class="r">4%</td><td class="r g">$2,518</td></tr>
+      <tr><td>10th</td><td class="r">3%</td><td class="r g">$1,889</td></tr>
+      <tr><td>11th</td><td class="r">2%</td><td class="r g">$1,259</td></tr>
+      <tr><td>Low Englishman ¹</td><td class="r">3%</td><td class="r g">$1,889</td></tr>
+      <tr><td>Low Islander ²</td><td class="r">3%</td><td class="r g">$1,889</td></tr>
+      <tr><td>Low Amateur ³</td><td class="r">2%</td><td class="r g">$1,259</td></tr>
     </tbody></table>
   </div>
-  <div class="fn">* PGA Pro must make the cut to be eligible. If no cut is made, 2% splits between 11th and 12th place.</div>
+  <div class="fn">¹ If no Englishman makes the cut, 1st–3rd each go up 1%. &nbsp; ² If no Islander makes the cut, 5th–7th each go up 1%. &nbsp; ³ Low Amateur must make the cut; if none does, 10th &amp; 11th each go up 1%. &nbsp; <span style="color:#5a7090;">"Islanders" = the island-nation field (Australia, New Zealand, Japan).</span></div>
 
   <div class="footer">
-    Hillwood Country Club · Nashville, TN · 2026 PGA Championship Calcutta<br>
+    Hillwood Country Club · Nashville, TN · 2026 U.S. Open Calcutta<br>
     <span style="margin-top:4px;display:inline-block;">Scores via live lookup <span class="ab">auto-refresh every 5 min</span></span><br>
     <button class="rbtn" onclick="loadScores()">↻ Refresh now</button>
   </div>
 
 </div>
 
+<script src="calcutta-data.js"></script>
 <script>
-const POT = 50650;
-const PAYOUTS = [0.22,0.15,0.12,0.10,0.08,0.07,0.06,0.05,0.04,0.04,0.03,0.02,0.02];
-const PARS = [4,4,3,4,5,4,3,4,4,4,5,3,4,4,3,4,5,4];
-const FRONT_PAR = PARS.slice(0,9).reduce((a,b)=>a+b,0);
-const BACK_PAR  = PARS.slice(9).reduce((a,b)=>a+b,0);
-const TOTAL_PAR = FRONT_PAR + BACK_PAR;
+// POT, PAYOUTS, PARS, FRONT/BACK/TOTAL_PAR, nameKey, nameAliases, allGroups,
+// synSpend/synClass/SYN_DISPLAY/synDisplay, the special-prize sets, tiePayouts
+// and computeAllPayouts all live in calcutta-data.js (loaded above).
 
 // --- Live data config ---------------------------------------------------
 // ESPN's public golf leaderboard. With no event param it returns the current/upcoming tournament,
-// which during PGA Championship week (May 14-17, 2026) is the right event.
+// which during U.S. Open week (June 18-21, 2026) is the right event.
 const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
 // If a host/CDN blocks ESPN via CORS (or you want to use the deeper site.web.api endpoint
 // reliably), set PROXY_URL to a tiny relay (Cloudflare Worker / Vercel function) that accepts
@@ -305,44 +307,14 @@ const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf
 const PROXY_URL = '';
 function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; }
 
-// Canonical key for matching ESPN's displayName against our roster. Strips punctuation,
-// hyphens, suffixes, etc., so 'J.J. Spaun', 'JJ Spaun' and 'Jj Spaun' all collide on 'jjspaun'.
-// Avoids the last-word collisions that bit the old code (Cameron Smith vs Jordan L. Smith,
-// Si Woo Kim vs Michael Kim).
-// Canonical roster key. Strips diacritics (é→e, ñ→n) via NFD decomposition, then
-// maps separate Scandinavian/Germanic code points that NFD leaves intact (ø→o, æ→ae,
-// ß→ss, etc.). Required so ESPN's "Højgaard" matches the auction's "Hojgaard".
-function nameKey(n){
-  return (n||'')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g,'')
-    .replace(/ø/g,'o')
-    .replace(/æ/g,'ae')
-    .replace(/œ/g,'oe')
-    .replace(/ð/g,'d')
-    .replace(/þ/g,'th')
-    .replace(/ß/g,'ss')
-    .replace(/đ/g,'d')
-    .replace(/[^a-z0-9]/g,'');
-}
-
-// ESPN uses a player's preferred shortened name for some golfers; map ESPN's key -> roster key
-// so live data lands under the canonical name our roster uses.
-const nameAliases = {
-  'mattmccarty': 'matthewmccarty',
-  'nicoechavarria': 'nicolasechavarria',
-};
-
+// Network for a given tee/broadcast moment (U.S. Open on USA / NBC / Peacock).
+// Windows evaluated in ET to match the published schedule.
 function tvForDate(d){
-  const wd = d.toLocaleString('en-US', { timeZone:'America/Chicago', weekday:'short' });
-  const h24 = parseInt(d.toLocaleString('en-US', { timeZone:'America/Chicago', hour:'numeric', hour12:false }), 10);
-  if(wd==='Thu'||wd==='Fri') return h24<11?'ESPN+':(h24<18?'ESPN':'ESPN2');
-  if(wd==='Sat'||wd==='Sun'){
-    if(h24<9) return 'ESPN+/ESPN';
-    if(h24<12) return 'ESPN';
-    return 'CBS';
-  }
+  const wd = d.toLocaleString('en-US', { timeZone:'America/New_York', weekday:'short' });
+  const h24 = parseInt(d.toLocaleString('en-US', { timeZone:'America/New_York', hour:'numeric', hour12:false }), 10);
+  if(wd==='Thu') return h24<17?'USA':'Peacock';
+  if(wd==='Fri') return h24<13?'USA':'NBC';
+  if(wd==='Sat'||wd==='Sun') return h24<12?'USA':'NBC';
   return '—';
 }
 
@@ -417,99 +389,22 @@ function todayToPar(c){
   return parseRelScore(cur.displayValue);
 }
 
-const teeTimes = {
-  'schauffele':{thu:'7:29 AM',fri:'12:54 PM'},'reitan':{thu:'7:13 AM',fri:'12:38 PM'},
-  'brennan':{thu:'6:18 AM',fri:'11:43 AM'},'blanchet':{thu:'5:45 AM',fri:'11:10 AM'},
-  'henley':{thu:'6:45 AM',fri:'12:10 PM'},'detry':{thu:'7:24 AM',fri:'12:49 PM'},
-  'rodgers':{thu:'7:35 AM',fri:'1:00 PM'},'higa':{thu:'7:35 AM',fri:'1:00 PM'},
-  'hatton':{thu:'7:29 AM',fri:'12:54 PM'},'berger':{thu:'6:56 AM',fri:'12:21 PM'},
-  'holt':{thu:'6:23 AM',fri:'11:48 AM'},'donald':{thu:'11:48 AM',fri:'6:23 AM'},
-  'scott':{thu:'6:56 AM',fri:'12:21 PM'},'johnson':{thu:'11:10 AM',fri:'5:45 AM'},
-  'echavarria':{thu:'11:26 AM',fri:'6:01 AM'},'polland':{thu:'11:26 AM',fri:'6:01 AM'},
-  'fowler':{thu:'7:18 AM',fri:'12:43 PM'},'coody':{thu:'12:27 PM',fri:'7:02 AM'},
-  'higgo':{thu:'6:18 AM',fri:'11:43 AM'},'shattuck':{thu:'5:45 AM',fri:'11:10 AM'},
-  'lowry':{thu:'7:07 AM',fri:'12:32 PM'},'mccarty':{thu:'6:29 AM',fri:'11:54 AM'},
-  'glover':{thu:'6:40 AM',fri:'12:05 PM'},'jones':{thu:'7:46 AM',fri:'1:11 PM'},
-  'bridgeman':{thu:'7:02 AM',fri:'12:27 PM'},'fox':{thu:'7:35 AM',fri:'1:00 PM'},
-  'grillo':{thu:'12:27 PM',fri:'7:02 AM'},'block':{thu:'11:10 AM',fri:'5:45 AM'},
-  'day':{thu:'6:34 AM',fri:'11:59 AM'},'pendrith':{thu:'6:01 AM',fri:'11:26 AM'},
-  'saddier':{thu:'6:51 AM',fri:'12:16 PM'},'mcclure':{thu:'8:02 AM',fri:'1:27 PM'},
-};
-
-function getTVForTime(t){if(!t||t==='TBD')return t==='TBD'?'ESPN/CBS':'—';const[tp,per]=t.split(' ');const h=parseInt(tp);const h24=per==='PM'&&h!==12?h+12:(per==='AM'&&h===12?0:h);return h24<11?'ESPN+':'ESPN';}
 function getActiveTT(name){
-  // Prefer live tee/status data from ESPN; fall back to the hardcoded estimates if unavailable.
+  // ESPN's live per-competitor status drives all tee times this year — no
+  // hardcoded fallback table. Until ESPN publishes a tee/status for a golfer we
+  // show the round label with a placeholder.
   const live = liveTT[nameKey(name)];
   if (live) return live;
-  const k=name.toLowerCase().split(' ').pop();
-  const tt=teeTimes[k];
-  if(!tt)return{time:'—',tv:'—',label:'Thu R1'};
   const now=new Date();
-  if(now<new Date('2026-05-14T23:59:00-04:00'))return{time:tt.thu||'—',tv:getTVForTime(tt.thu),label:'Thu R1'};
-  if(now<new Date('2026-05-15T23:59:00-04:00'))return{time:tt.fri||'—',tv:getTVForTime(tt.fri),label:'Fri R2'};
-  if(now<new Date('2026-05-16T23:59:00-04:00'))return{time:'TBD',tv:'ESPN/CBS',label:'Sat R3'};
-  return{time:'TBD',tv:'ESPN/CBS',label:'Sun R4'};
+  if(now<new Date('2026-06-18T23:59:00-04:00'))return{time:'—',tv:'USA',label:'Thu R1'};
+  if(now<new Date('2026-06-19T23:59:00-04:00'))return{time:'—',tv:'USA',label:'Fri R2'};
+  if(now<new Date('2026-06-20T23:59:00-04:00'))return{time:'—',tv:'USA/NBC',label:'Sat R3'};
+  return{time:'—',tv:'NBC',label:'Sun R4'};
 }
 
-const allGroups = [
-  {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
-  {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
-  {num:3,leader:"Jon Rahm",partners:["Michael Thorbjornsen","Matt Wallace"],syndicate:"Beaver",bid:2500},
-  {num:4,leader:"Cameron Young",partners:["Keegan Bradley","Hao-Tong Li"],syndicate:"JD",bid:3300},
-  {num:5,leader:"Bryson DeChambeau",partners:["Corey Conners","Ricky Castillo","Andy Sullivan"],syndicate:"Phil",bid:2500},
-  {num:6,leader:"Xander Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],syndicate:"Nerds",bid:2800},
-  {num:7,leader:"Matt Fitzpatrick",partners:["Alex Fitzpatrick","Max Greyserman","Joe Highsmith"],syndicate:"Robbie",bid:2500},
-  {num:8,leader:"Ludvig Aberg",partners:["Sudarshan Yellamaraju","Christiaan Bezuidenhout","Travis Smyth"],syndicate:"Robbie",bid:2700},
-  {num:9,leader:"Tommy Fleetwood",partners:["Harry Hall","Stephan Jaeger","Adam Schenk"],syndicate:"Beaver",bid:1200},
-  {num:10,leader:"Collin Morikawa",partners:["Sungjae Im","Rasmus Neergaard-Petersen","Davis Riley"],syndicate:"Phil",bid:1500},
-  {num:11,leader:"Brooks Koepka",partners:["Alexander Noren","Aldrich Potgieter","Brian Campbell"],syndicate:"Phil",bid:1500},
-  {num:12,leader:"Justin Rose",partners:["Sahith Theegala","Andrew Novak","Martin Kaymer"],syndicate:"WDC",bid:1200},
-  {num:13,leader:"Russell Henley",partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],syndicate:"Nerds",bid:1050},
-  {num:14,leader:"Si Woo Kim",partners:["Marco Penge","Daniel Hillier","Padraig Harrington"],syndicate:"JD",bid:700},
-  {num:15,leader:"Justin Thomas",partners:["Sam Stevens","Max McGreevy","Jordan Gumberg"],syndicate:"Beaver",bid:1100},
-  {num:16,leader:"Robert MacIntyre",partners:["Wyndham Clark","Chris Kirk","Jason Dufner"],syndicate:"WDC",bid:800},
-  {num:17,leader:"Viktor Hovland",partners:["Alex Smalley","Billy Horschel","Shaun Micheel"],syndicate:"Phil",bid:1000},
-  {num:18,leader:"Patrick Cantlay",partners:["Keith Mitchell","Casey Jarvis","Jimmy Walker"],syndicate:"JD",bid:950},
-  {num:19,leader:"Tyrrell Hatton",partners:["Daniel Berger","Ian Holt","Luke Donald"],syndicate:"Nerds",bid:950},
-  {num:20,leader:"Jordan Spieth",partners:["Ryan Gerard","John Parry","Y.E. Yang"],syndicate:"Robbie",bid:800},
-  {num:21,leader:"Sam Burns",partners:["Nick Taylor","William Mouw","Austin Hurt"],syndicate:"JD",bid:1050},
-  {num:22,leader:"Hideki Matsuyama",partners:["Rasmus Hojgaard","Steven Fisk","Ben Kern"],syndicate:"Robbie",bid:800},
-  {num:23,leader:"Adam Scott",partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],syndicate:"Nerds",bid:750},
-  {num:24,leader:"Rickie Fowler",partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],syndicate:"Nerds",bid:1500},
-  {num:25,leader:"Chris Gotterup",partners:["Aaron Rai","John Keefer","Bryce Fisher"],syndicate:"WDC",bid:800},
-  {num:26,leader:"Patrick Reed",partners:["Jordan L. Smith","Austin Smotherman","Chris Gabriele"],syndicate:"WDC",bid:950},
-  {num:27,leader:"Min Woo Lee",partners:["Angel Ayora Fanegas","Matthias Schmid","Derek Berg"],syndicate:"Robbie",bid:450},
-  {num:28,leader:"Ben Griffin",partners:["Bud Cauley","Sami Valimaki","Francisco Bide"],syndicate:"JD",bid:700},
-  {num:29,leader:"Sepp Straka",partners:["Brandt Snedeker","Andrew Putnam","Garrett Sapp"],syndicate:"Beaver",bid:900},
-  {num:30,leader:"Shane Lowry",partners:["Matthew McCarty","Lucas Glover","Jared Jones"],syndicate:"Nerds",bid:600},
-  {num:31,leader:"Akshay Bhatia",partners:["Jayden Trey Schaper","Daniel Brown","Jesse Droemer"],syndicate:"Robbie",bid:500},
-  {num:32,leader:"Maverick McNealy",partners:["Brian Harman","Jhonattan Vegas","Mark Geddes"],syndicate:"Robbie",bid:500},
-  {num:33,leader:"Jacob Bridgeman",partners:["Ryan Fox","Emiliano Grillo","Michael Block"],syndicate:"Nerds",bid:900},
-  {num:34,leader:"Joaquin Niemann",partners:["J.T. Poston","Mikael Lindberg","Michael Kartrude"],syndicate:"Beaver",bid:400},
-  {num:35,leader:"Jason Day",partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],syndicate:"Nerds",bid:450},
-  {num:36,leader:"J.J. Spaun",partners:["Michael Kim","Bernd Wiesberger","Ryan Lenahan"],syndicate:"Robbie",bid:950},
-  {num:37,leader:"Kurt Kitayama",partners:["Ryo Hisatsune","Elvis Smylie","Ryan Vermeer"],syndicate:"Phil",bid:600},
-  {num:38,leader:"Harris English",partners:["Denny McCarthy","Kota Kaneko","Timothy Wiseman"],syndicate:"Phil",bid:550},
-  {num:39,leader:"Nicolai Hojgaard",partners:["Max Homa","Stewart Cink","Tyler Collet"],syndicate:"Beaver",bid:950},
-  {num:40,leader:"Gary Woodland",partners:["Cameron Smith","David Lipsky","Zach Haynes"],syndicate:"Robbie",bid:600},
-];
-
-const synSpend={Nerds:9000,Phil:11050,Robbie:9800,JD:6700,WDC:7050,Beaver:7050};
-const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
-// Syndicate keys stay stable for data lookups; display names are what the user
-// sees. Currently only WDC has a rename — they go by "Wolfpack".
-const SYN_DISPLAY = { Nerds:'Nerds', Phil:'Phil', Robbie:'Robbie', JD:'JD', WDC:'Wolfpack', Beaver:'Beaver' };
-function synDisplay(s){ return SYN_DISPLAY[s] || s; }
-// The 20 PGA Club Pros in this year's championship field — eligible for the Low PGA
-// Pro 2% payout if they make the cut. Highlighted in both the Nerds panel and the
-// full-field table so they're spottable while scrolling.
-const PGA_PROS = new Set([
-  'Austin Hurt','Ben Kern','Ben Polland','Braden Shattuck','Bryce Fisher',
-  'Chris Gabriele','Derek Berg','Francisco Bide','Garrett Sapp','Jared Jones',
-  'Jesse Droemer','Mark Geddes','Michael Block','Michael Kartrude','Paul McClure',
-  'Ryan Lenahan','Ryan Vermeer','Timothy Wiseman','Tyler Collet','Zach Haynes',
-].map(n => nameKey(n)));
-function isPgaPro(name){ return PGA_PROS.has(nameKey(name)); }
+// allGroups, synSpend, synClass, SYN_DISPLAY, synDisplay and the special-prize
+// eligibility sets (ISLANDERS / ENGLISH / AMATEURS, with isAmateur etc.) now live
+// in calcutta-data.js. Live state below is page-local.
 let liveScores={}, liveToday={}, liveThru={}, liveCut=new Set(), scorecards={}, liveTT={}, tournamentStarted=false;
 // Earliest upcoming tee time across the field + everyone teeing off at that
 // exact moment. Refreshed on every loadScores tick so once everyone's teed
@@ -580,40 +475,9 @@ function renderHotCold(){
   if(coldEl) coldEl.innerHTML = cold.length ? cold.map(rowHtml).join('') : '<div class="hc-empty">Awaiting today\'s scores</div>';
 }
 
-// PGA-style tie handling: golfers tied at position P share the combined prize
-// money of positions P through P+N-1 equally. Takes an array of scores (null
-// allowed, treated as no-pay) already sorted ascending, returns parallel
-// payout amounts.
-function tiePayouts(sortedScores){
-  const out = new Array(sortedScores.length).fill(0);
-  let i = 0;
-  while(i < sortedScores.length){
-    const s = sortedScores[i];
-    if(s === null || s === undefined){ i++; continue; }
-    let j = i;
-    while(j < sortedScores.length && sortedScores[j] === s) j++;
-    let pct = 0;
-    for(let k = i; k < j; k++) if(k < PAYOUTS.length) pct += PAYOUTS[k];
-    const each = Math.round(POT * pct / (j - i));
-    for(let k = i; k < j; k++) out[k] = each;
-    i = j;
-  }
-  return out;
-}
-
-function computeSynPayouts(){
-  // Each golfer earns based on their independent rank among the full field.
-  // The group they were drafted in only matters for who owns the payout.
-  const synPayouts={Nerds:0,Phil:0,Robbie:0,JD:0,WDC:0,Beaver:0};
-  const all = [];
-  allGroups.forEach(g => {
-    [g.leader, ...g.partners].forEach(name => all.push({ syndicate:g.syndicate, score:getScore(name) }));
-  });
-  all.sort((a,b)=>{if(a.score===null&&b.score===null)return 0;if(a.score===null)return 1;if(b.score===null)return -1;return a.score-b.score;});
-  const pays = tiePayouts(all.map(p => p.score));
-  all.forEach((p,i) => { synPayouts[p.syndicate] += pays[i]; });
-  return synPayouts;
-}
+// tiePayouts() and computeAllPayouts() (position prizes + the three special
+// categories, with tie handling and cut-based redistribution) live in
+// calcutta-data.js. renderField() calls computeAllPayouts(getScore, isCut).
 
 function holeClass(s,par){if(!s)return'hole-blank';const d=s-par;if(d<=-2)return'eagle';if(d===-1)return'birdie';if(d===0)return'par-score';if(d===1)return'bogey';return'dbl-bogey';}
 
@@ -641,8 +505,9 @@ function getSCData(name){return scorecards[nameKey(name)]||null;}
 
 function renderField(){
   // Each golfer is independent once play begins: their projected payout is
-  // based on their own rank in the field, not their group's. Anyone outside
-  // the top 13 placement slots is worth $0 regardless of their group's bid.
+  // based on their own rank in the field plus any special prize they lead, not
+  // their group's. Outside the top 11 (and not leading a special) = $0.
+  const {payByName, synPayouts, specials} = computeAllPayouts(getScore, isCut);
   const individuals=[];
   allGroups.forEach(g=>{
     [{name:g.leader,isHl:true},...g.partners.map(p=>({name:p,isHl:false}))].forEach(m=>{
@@ -661,8 +526,7 @@ function renderField(){
     if(!a.cut && b.cut) return 1;
     return 0;
   });
-  const _pays = tiePayouts(individuals.map(g => g.score));
-  individuals.forEach((ind,i)=>{ ind.payout = _pays[i]; });
+  individuals.forEach(ind=>{ ind.payout = payByName[ind.name]||0; });
   const tbody=document.getElementById('field-body');tbody.innerHTML='';
   // Insert a CUT divider between surviving golfers and cut golfers — same
   // visual rule as before but now reflecting the actual cut rather than a
@@ -679,7 +543,11 @@ function renderField(){
     const ftUid=`ft-sc-${i}`;
     const tr=document.createElement('tr');
     if(ind.cut) tr.className='cut-row';
-    const proTag = isPgaPro(ind.name) ? '<span class="pga-pro-tag">PGA Pro</span>' : '';
+    // Special-prize eligibility markers: amateur (gold), Englishman (blue), Islander (green).
+    let proTag = '';
+    if(isAmateur(ind.name)) proTag += '<span class="pga-pro-tag">AM</span>';
+    if(isEnglish(ind.name)) proTag += '<span class="pga-pro-tag" style="background:rgba(90,159,212,0.12);color:#5a9fd4;border-color:rgba(90,159,212,0.4);">ENG</span>';
+    if(isIslander(ind.name)) proTag += '<span class="pga-pro-tag" style="background:rgba(79,200,122,0.12);color:#4fc87a;border-color:rgba(79,200,122,0.4);">ISL</span>';
     // Position pip: only for golfers with scores. Cut/no-score golfers show '—'.
     let posCell;
     if(ind.score!==null){
@@ -699,14 +567,41 @@ function renderField(){
     scTr.innerHTML=`<td colspan="9"><div class="ft-sc-wrap" id="${ftUid}">${buildScorecard(ind.name,getSCData(ind.name))}</div></td>`;
     tbody.appendChild(scTr);
   });
-  renderSyndicates(computeSynPayouts());
+  renderSyndicates(synPayouts);
+  renderSpecials(specials);
   renderHotCold();
   renderNextTee();
 }
 
-// Lazy scorecard fetch: when a non-Nerds golfer's scorecard is expanded for the
-// first time, fetch their per-hole data in the background and slot it in. Once
-// cached, future loadScores refreshes will keep it current automatically.
+// Projected special-prize leaders (Low Englishman / Islander / Amateur). Each
+// card shows the current low eligible golfer, their score, and the prize $. If a
+// category has gone dead (all eligible cut) we say so — its money has rolled into
+// the finishing places per the payout rules.
+function renderSpecials(specials){
+  const grid=document.getElementById('special-grid');
+  if(!grid) return;
+  const order=['eng','isl','am'];
+  grid.innerHTML = order.map(k=>{
+    const sp=specials[k]; if(!sp) return '';
+    const pctTxt=Math.round(sp.pct*100)+'%';
+    let body;
+    if(!sp.live){
+      body=`<div class="tvd-slot" style="color:#e05a5a;">No eligible golfer made the cut — ${pctTxt} redistributed.</div>`;
+    } else if(sp.score===null){
+      body=`<div class="tvd-slot">Awaiting scores · ${pctTxt} of pot</div>`;
+    } else {
+      const sv=sp.score===0?'E':sp.score<0?String(sp.score):'+'+sp.score;
+      const names=sp.names.join(' / ');
+      const each='$'+sp.each.toLocaleString()+(sp.names.length>1?' ea':'');
+      body=`<div class="tvd-slot"><b>${names}</b> &nbsp;<span style="color:${sp.score<0?'#4fc87a':sp.score>0?'#e05a5a':'#8fa3c0'};">${sv}</span></div><div class="tvd-slot" style="color:#4fc87a;">${each} &nbsp;<span style="color:#5a7090;">(${pctTxt} of pot)</span></div>`;
+    }
+    return `<div class="tvd"><div class="tvd-name">${sp.label}</div>${body}</div>`;
+  }).join('');
+}
+
+// Lazy scorecard fetch: when a golfer's scorecard is expanded for the first
+// time, fetch their per-hole data in the background and slot it in. Once cached,
+// future loadScores refreshes will keep it current automatically.
 async function ensureScorecard(name, wrapId){
   if(!name) return;
   const k = nameKey(name);
@@ -731,19 +626,19 @@ function toggleFtSc(uid,btn){
 }
 
 function renderSyndicates(synPayouts){
-  const order=['Nerds','Phil','Robbie','WDC','JD','Beaver'].sort((a,b)=>(synPayouts[b]||0)-(synPayouts[a]||0));
+  const order=Object.keys(synSpend).sort((a,b)=>(synPayouts[b]||0)-(synPayouts[a]||0));
   const grid=document.getElementById('syn-grid');grid.innerHTML='';
   order.forEach(s=>{
-    const proj=synPayouts[s]||0,net=proj-synSpend[s],isN=s==='Nerds';
-    const d=document.createElement('div');d.className=`syc${isN?' nr':''}`;
+    const proj=synPayouts[s]||0,net=proj-synSpend[s];
+    const d=document.createElement('div');d.className='syc';
     // Once play has started, $0 syndicates show real $0 + negative net instead of
-    // "—" / "awaiting play" — otherwise a syndicate with no group in the top 13
-    // (e.g., JD) reads as if its data failed to load.
+    // "—" / "awaiting play" — otherwise a syndicate with no group in the money
+    // reads as if its data failed to load.
     const payTxt = tournamentStarted ? '$'+proj.toLocaleString() : (proj?'$'+proj.toLocaleString():'—');
     let netHtml;
     if(!tournamentStarted) netHtml = proj ? (net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>') : 'awaiting play';
     else netHtml = net>=0?'<span style="color:#4fc87a">+$'+Math.abs(net).toLocaleString()+' net</span>':'<span style="color:#e05a5a">-$'+Math.abs(net).toLocaleString()+' net</span>';
-    d.innerHTML=`<div class="syc-n${isN?' g':''}">${isN?'🤓 ':''}${synDisplay(s)}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${payTxt}</div><div class="syc-net">${netHtml}</div>`;
+    d.innerHTML=`<div class="syc-n">${synDisplay(s)}</div><div class="syc-s">Invested $${synSpend[s].toLocaleString()}</div><div class="syc-p">${payTxt}</div><div class="syc-net">${netHtml}</div>`;
     grid.appendChild(d);
   });
 }
@@ -879,7 +774,7 @@ async function loadScores(){
     }
 
     // Compute projected cutline from the raw competitor list (no alias dupes here).
-    // PGA Championship cut = top 70 + ties after R2. Mid-tournament we just project off current scores.
+    // U.S. Open cut = low 60 + ties after R2. Mid-tournament we just project off current scores.
     const fieldScores=[];
     for(const c of (comp.competitors||[])){
       const desc=(c.status?.type?.description||'').toUpperCase();
@@ -889,7 +784,7 @@ async function loadScores(){
     }
     fieldScores.sort((a,b)=>a-b);
     cutFieldCount=fieldScores.length;
-    projectedCutline = fieldScores.length>=70 ? fieldScores[69] : null;
+    projectedCutline = fieldScores.length>=60 ? fieldScores[59] : null;
     cutInsideCount = projectedCutline===null ? 0 : fieldScores.filter(s=>s<=projectedCutline).length;
 
     // Per-hole scorecards: refresh any that have already been expanded at least

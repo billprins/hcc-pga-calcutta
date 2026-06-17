@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hillwood CC · Mark-to-Market · 2026 PGA Calcutta</title>
+  <title>Hillwood CC · Mark-to-Market · 2026 U.S. Open Calcutta</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
@@ -93,19 +93,19 @@
 
 <div class="hero-stripe"></div>
 <div class="hero-inner">
-  <div class="hero-eyebrow">Hillwood Country Club · 2026 PGA Championship Calcutta</div>
+  <div class="hero-eyebrow">Hillwood Country Club · 2026 U.S. Open Calcutta</div>
   <div class="hero-title">Secondary <span>Mark-to-Market</span></div>
   <div class="hero-sub">Group-level implied values for negotiating buy/sell of shares · Last updated: <span id="last-upd">—</span></div>
 </div>
 <div class="nav">
   <a href="index.html">Leaderboard</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
-  <a href="team.html?team=Nerds">Nerds</a>
-  <a href="team.html?team=Phil">Phil</a>
   <a href="team.html?team=Robbie">Robbie</a>
-  <a href="team.html?team=WDC">Wolfpack</a>
+  <a href="team.html?team=Nerds">Nerds</a>
+  <a href="team.html?team=Phil">Philoogle</a>
   <a href="team.html?team=JD">JD</a>
-  <a href="team.html?team=Beaver">Beaver</a>
+  <a href="team.html?team=WolfPack">Wolf Pack</a>
+  <a href="team.html?team=Virgins">Virgins</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
   <a href="stats.html">Stats</a>
   <a href="market.html" class="active">Market</a>
@@ -114,12 +114,12 @@
 <div class="content">
 
   <div class="intro">
-    <b>How to read this:</b> each row is one golfer. <b>Cost</b> is the group's full auction price (same for all 3-4 members of the group). <b>Implied value</b> is what this golfer would individually pay out if they finished at their current individual rank — using the same 22%/15%/12%/… placement schedule that drives the leaderboard. <b>P/L</b> is implied value minus the group cost — so partners outside the top 13 will show large negative P/L while a single leader can carry the whole group's potential. Use these as the floor of a negotiation, not a guaranteed price.
+    <b>How to read this:</b> each row is one golfer. <b>Cost</b> is the group's full auction price (same for all 3-4 members of the group). <b>Implied value</b> is what this golfer would individually pay out if they finished at their current individual rank — using the same 20%/15%/12%/… placement schedule that drives the leaderboard, plus any special prize (Low Englishman / Islander / Amateur) they currently lead. <b>P/L</b> is implied value minus the group cost — so partners outside the top 11 will show large negative P/L while a single leader can carry the whole group's potential. Use these as the floor of a negotiation, not a guaranteed price.
   </div>
 
   <div class="stat-row">
     <div class="sc gb"><div class="sc-lbl">Total notional</div><div class="sc-val g" id="stat-notional">—</div><div class="sc-sub">sum of all groups' implied values</div></div>
-    <div class="sc"><div class="sc-lbl">Total invested</div><div class="sc-val">$50,650</div><div class="sc-sub">auction pot</div></div>
+    <div class="sc"><div class="sc-lbl">Total invested</div><div class="sc-val">$62,950</div><div class="sc-sub">auction pot</div></div>
     <div class="sc gb"><div class="sc-lbl">Biggest mover ↑</div><div class="sc-val up" id="stat-up">—</div><div class="sc-sub" id="stat-up-sub">—</div></div>
     <div class="sc"><div class="sc-lbl">Biggest mover ↓</div><div class="sc-val dn" id="stat-dn">—</div><div class="sc-sub" id="stat-dn-sub">—</div></div>
   </div>
@@ -134,7 +134,12 @@
     <button class="ctrl-btn" data-sort="grp">Group #</button>
     <span class="ctrl-lbl" style="margin-left:1rem;">Filter</span>
     <button class="ctrl-btn active" data-filter="all">All groups</button>
-    <button class="ctrl-btn" data-filter="nerds">Nerds only</button>
+    <button class="ctrl-btn" data-filter="Robbie">Robbie</button>
+    <button class="ctrl-btn" data-filter="Nerds">Nerds</button>
+    <button class="ctrl-btn" data-filter="Phil">Philoogle</button>
+    <button class="ctrl-btn" data-filter="JD">JD</button>
+    <button class="ctrl-btn" data-filter="WolfPack">Wolf Pack</button>
+    <button class="ctrl-btn" data-filter="Virgins">Virgins</button>
     <button class="ctrl-btn" data-filter="cash">Currently cashing</button>
   </div>
 
@@ -154,40 +159,23 @@
   </div>
 
   <div class="footer">
-    Hillwood Country Club · 2026 PGA Championship Calcutta · Mark-to-Market<br>
+    Hillwood Country Club · 2026 U.S. Open Calcutta · Mark-to-Market<br>
     <span style="margin-top:4px;display:inline-block;">Implied values derived from live ESPN ranks <span class="ab">auto-refresh every 5 min</span></span><br>
     <button class="rbtn" onclick="loadScores()">↻ Refresh now</button>
   </div>
 
 </div>
 
+<script src="calcutta-data.js"></script>
 <script>
 // ============================================================================
-// Constants & helpers — kept locally so this page has zero shared-state risk
-// with index.html. The auction data won't change so duplication is fine.
+// POT, PAYOUTS, nameKey, nameAliases, allGroups, synClass/SYN_DISPLAY/synDisplay,
+// the special-prize sets and computeAllPayouts come from calcutta-data.js.
 // ============================================================================
-const POT = 50650;
-const PAYOUTS = [0.22,0.15,0.12,0.10,0.08,0.07,0.06,0.05,0.04,0.04,0.03,0.02,0.02];
-// Last entry is the Low Pro payout in the rules, but the deployed leaderboard
-// treats it as a 13th placement payout. Match that behaviour here for parity.
-
 const ESPN_LEADERBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
 const PROXY_URL = '';
 function viaProxy(u){ return PROXY_URL ? PROXY_URL + encodeURIComponent(u) : u; }
 
-function nameKey(n){
-  return (n||'')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g,'')
-    .replace(/ø/g,'o').replace(/æ/g,'ae').replace(/œ/g,'oe')
-    .replace(/ð/g,'d').replace(/þ/g,'th').replace(/ß/g,'ss').replace(/đ/g,'d')
-    .replace(/[^a-z0-9]/g,'');
-}
-const nameAliases = {
-  'mattmccarty':'matthewmccarty',
-  'nicoechavarria':'nicolasechavarria',
-};
 function parseRelScore(v){
   if(v===undefined||v===null) return null;
   if(typeof v==='number') return v;
@@ -218,66 +206,17 @@ function fmtDollars(n){ return '$'+Math.round(n).toLocaleString(); }
 function fmtRel(s){ return s===null?'—':s===0?'E':s<0?String(s):'+'+s; }
 function fmtPL(p){ if(p===0) return '<span class="pl-flat">$0</span>'; if(p>0) return `<span class="pl-up">+${fmtDollars(p)}</span>`; return `<span class="pl-dn">-${fmtDollars(Math.abs(p))}</span>`; }
 function sc(s){ return s===null?'none':s<0?'u':s>0?'o':'e'; }
-const synClass={Nerds:"sp-n",Phil:"sp-ph",Robbie:"sp-ro",JD:"sp-jd",WDC:"sp-wdc",Beaver:"sp-bv"};
-// Syndicate keys stay stable for data lookups; display names are what users
-// see. Currently only WDC has a rename — they go by "Wolfpack".
-const SYN_DISPLAY = { Nerds:'Nerds', Phil:'Phil', Robbie:'Robbie', JD:'JD', WDC:'Wolfpack', Beaver:'Beaver' };
-function synDisplay(s){ return SYN_DISPLAY[s] || s; }
-
-// ============================================================================
-// Auction roster (mirrors index.html allGroups)
-// ============================================================================
-const allGroups = [
-  {num:1,leader:"Scottie Scheffler",partners:["David Puig","Tom McKibbin"],syndicate:"Phil",bid:3400},
-  {num:2,leader:"Rory McIlroy",partners:["Tom Hoge","Rico Hoey"],syndicate:"WDC",bid:3300},
-  {num:3,leader:"Jon Rahm",partners:["Michael Thorbjornsen","Matt Wallace"],syndicate:"Beaver",bid:2500},
-  {num:4,leader:"Cameron Young",partners:["Keegan Bradley","Hao-Tong Li"],syndicate:"JD",bid:3300},
-  {num:5,leader:"Bryson DeChambeau",partners:["Corey Conners","Ricky Castillo","Andy Sullivan"],syndicate:"Phil",bid:2500},
-  {num:6,leader:"Xander Schauffele",partners:["Kristoffer Reitan","Michael Brennan","Chandler Blanchet"],syndicate:"Nerds",bid:2800},
-  {num:7,leader:"Matt Fitzpatrick",partners:["Alex Fitzpatrick","Max Greyserman","Joe Highsmith"],syndicate:"Robbie",bid:2500},
-  {num:8,leader:"Ludvig Aberg",partners:["Sudarshan Yellamaraju","Christiaan Bezuidenhout","Travis Smyth"],syndicate:"Robbie",bid:2700},
-  {num:9,leader:"Tommy Fleetwood",partners:["Harry Hall","Stephan Jaeger","Adam Schenk"],syndicate:"Beaver",bid:1200},
-  {num:10,leader:"Collin Morikawa",partners:["Sungjae Im","Rasmus Neergaard-Petersen","Davis Riley"],syndicate:"Phil",bid:1500},
-  {num:11,leader:"Brooks Koepka",partners:["Alexander Noren","Aldrich Potgieter","Brian Campbell"],syndicate:"Phil",bid:1500},
-  {num:12,leader:"Justin Rose",partners:["Sahith Theegala","Andrew Novak","Martin Kaymer"],syndicate:"WDC",bid:1200},
-  {num:13,leader:"Russell Henley",partners:["Thomas Detry","Patrick Rodgers","Kazuki Higa"],syndicate:"Nerds",bid:1050},
-  {num:14,leader:"Si Woo Kim",partners:["Marco Penge","Daniel Hillier","Padraig Harrington"],syndicate:"JD",bid:700},
-  {num:15,leader:"Justin Thomas",partners:["Sam Stevens","Max McGreevy","Jordan Gumberg"],syndicate:"Beaver",bid:1100},
-  {num:16,leader:"Robert MacIntyre",partners:["Wyndham Clark","Chris Kirk","Jason Dufner"],syndicate:"WDC",bid:800},
-  {num:17,leader:"Viktor Hovland",partners:["Alex Smalley","Billy Horschel","Shaun Micheel"],syndicate:"Phil",bid:1000},
-  {num:18,leader:"Patrick Cantlay",partners:["Keith Mitchell","Casey Jarvis","Jimmy Walker"],syndicate:"JD",bid:950},
-  {num:19,leader:"Tyrrell Hatton",partners:["Daniel Berger","Ian Holt","Luke Donald"],syndicate:"Nerds",bid:950},
-  {num:20,leader:"Jordan Spieth",partners:["Ryan Gerard","John Parry","Y.E. Yang"],syndicate:"Robbie",bid:800},
-  {num:21,leader:"Sam Burns",partners:["Nick Taylor","William Mouw","Austin Hurt"],syndicate:"JD",bid:1050},
-  {num:22,leader:"Hideki Matsuyama",partners:["Rasmus Hojgaard","Steven Fisk","Ben Kern"],syndicate:"Robbie",bid:800},
-  {num:23,leader:"Adam Scott",partners:["Dustin Johnson","Nicolas Echavarria","Ben Polland"],syndicate:"Nerds",bid:750},
-  {num:24,leader:"Rickie Fowler",partners:["Pierceson Coody","Garrick Higgo","Braden Shattuck"],syndicate:"Nerds",bid:1500},
-  {num:25,leader:"Chris Gotterup",partners:["Aaron Rai","John Keefer","Bryce Fisher"],syndicate:"WDC",bid:800},
-  {num:26,leader:"Patrick Reed",partners:["Jordan L. Smith","Austin Smotherman","Chris Gabriele"],syndicate:"WDC",bid:950},
-  {num:27,leader:"Min Woo Lee",partners:["Angel Ayora Fanegas","Matthias Schmid","Derek Berg"],syndicate:"Robbie",bid:450},
-  {num:28,leader:"Ben Griffin",partners:["Bud Cauley","Sami Valimaki","Francisco Bide"],syndicate:"JD",bid:700},
-  {num:29,leader:"Sepp Straka",partners:["Brandt Snedeker","Andrew Putnam","Garrett Sapp"],syndicate:"Beaver",bid:900},
-  {num:30,leader:"Shane Lowry",partners:["Matthew McCarty","Lucas Glover","Jared Jones"],syndicate:"Nerds",bid:600},
-  {num:31,leader:"Akshay Bhatia",partners:["Jayden Trey Schaper","Daniel Brown","Jesse Droemer"],syndicate:"Robbie",bid:500},
-  {num:32,leader:"Maverick McNealy",partners:["Brian Harman","Jhonattan Vegas","Mark Geddes"],syndicate:"Robbie",bid:500},
-  {num:33,leader:"Jacob Bridgeman",partners:["Ryan Fox","Emiliano Grillo","Michael Block"],syndicate:"Nerds",bid:900},
-  {num:34,leader:"Joaquin Niemann",partners:["J.T. Poston","Mikael Lindberg","Michael Kartrude"],syndicate:"Beaver",bid:400},
-  {num:35,leader:"Jason Day",partners:["Taylor Pendrith","Adrien Saddier","Paul McClure"],syndicate:"Nerds",bid:450},
-  {num:36,leader:"J.J. Spaun",partners:["Michael Kim","Bernd Wiesberger","Ryan Lenahan"],syndicate:"Robbie",bid:950},
-  {num:37,leader:"Kurt Kitayama",partners:["Ryo Hisatsune","Elvis Smylie","Ryan Vermeer"],syndicate:"Phil",bid:600},
-  {num:38,leader:"Harris English",partners:["Denny McCarthy","Kota Kaneko","Timothy Wiseman"],syndicate:"Phil",bid:550},
-  {num:39,leader:"Nicolai Hojgaard",partners:["Max Homa","Stewart Cink","Tyler Collet"],syndicate:"Beaver",bid:950},
-  {num:40,leader:"Gary Woodland",partners:["Cameron Smith","David Lipsky","Zach Haynes"],syndicate:"Robbie",bid:600},
-];
 
 // ============================================================================
 // Live data state
 // ============================================================================
 let liveScores = {};
+let liveCut = new Set();
 let currentSort = 'pl';
 let currentFilter = 'all';
 
 function getScore(name){ const v = liveScores[nameKey(name)]; return v===undefined ? null : v; }
+function isCut(name){ return liveCut.has(nameKey(name)); }
 function getBest(g){
   let best = null;
   for(const p of [g.leader, ...g.partners]){
@@ -296,28 +235,12 @@ function getBestGolfer(g){
 }
 
 // ============================================================================
-// Compute each group's current implied value + P/L
+// Compute each golfer's current implied value + P/L
 // ============================================================================
-// PGA-style tie handling: golfers tied at position P share the combined prize
-// money of positions P through P+N-1 equally.
-function tiePayouts(sortedScores){
-  const out = new Array(sortedScores.length).fill(0);
-  let i = 0;
-  while(i < sortedScores.length){
-    const s = sortedScores[i];
-    if(s === null || s === undefined){ i++; continue; }
-    let j = i;
-    while(j < sortedScores.length && sortedScores[j] === s) j++;
-    let pct = 0;
-    for(let k = i; k < j; k++) if(k < PAYOUTS.length) pct += PAYOUTS[k];
-    const each = Math.round(POT * pct / (j - i));
-    for(let k = i; k < j; k++) out[k] = each;
-    i = j;
-  }
-  return out;
-}
-
 function computeMarket(){
+  // Position prize + any special prize they currently lead, via the shared
+  // engine (PGA-standard tie handling + cut-based redistribution).
+  const {payByName} = computeAllPayouts(getScore, isCut);
   // Flatten the 40 groups into ~160 individual rows. Each row keeps a reference
   // to its group's cost and headliner so we can render the group context inline.
   const rows = [];
@@ -342,15 +265,13 @@ function computeMarket(){
     if(b.score===null) return -1;
     return a.score - b.score;
   });
-  // Tie-aware rank AND tie-aware payout (PGA-standard: tied golfers split the
-  // combined prize money of the positions they occupy).
-  const pays = tiePayouts(rows.map(r => r.score));
+  // Tie-aware rank; implied value (incl. specials) from payByName.
   let lastScore=null, lastRank=0;
   rows.forEach((r,i) => {
-    if(r.score===null){ r.rank=null; r.implied=0; r.pl=-r.cost; r.mult=0; return; }
+    if(r.score===null){ r.rank=null; r.implied=(payByName[r.name]||0); r.pl=r.implied-r.cost; r.mult=r.cost>0?r.implied/r.cost:0; return; }
     if(r.score !== lastScore){ lastRank = i+1; lastScore = r.score; }
     r.rank = lastRank;
-    r.implied = pays[i];
+    r.implied = payByName[r.name]||0;
     r.pl = r.implied - r.cost;
     r.mult = r.cost > 0 ? r.implied / r.cost : 0;
   });
@@ -378,26 +299,28 @@ function renderTable(){
     }
   });
   const filtered = sorted.filter(r => {
-    if(currentFilter==='nerds') return r.syndicate==='Nerds';
+    if(currentFilter==='all') return true;
     if(currentFilter==='cash') return r.implied > 0;
-    return true;
+    return r.syndicate===currentFilter;
   });
   const tbody = document.getElementById('mkt-body'); tbody.innerHTML = '';
   filtered.forEach(r => {
-    const isN = r.syndicate==='Nerds';
     const scoreTxt = r.score===null ? '—' : fmtRel(r.score);
-    const rankTxt = r.rank===null ? '—' : (r.rank<=PAYOUTS.length ? `<span class="rank-chip cash">T${r.rank}</span>` : `<span class="rank-chip">T${r.rank}</span>`);
+    const rankTxt = r.rank===null ? '—' : (r.rank<=POSITION_PCT.length ? `<span class="rank-chip cash">T${r.rank}</span>` : `<span class="rank-chip">T${r.rank}</span>`);
     const multTxt = r.cost>0 && r.implied>0 ? `<span class="mult ${r.mult>=1?'up':'dn'}">${r.mult.toFixed(2)}x</span>` : '';
+    let tags = '';
+    if(isAmateur(r.name)) tags += ' <span style="color:#C9A84C;font-size:8px;border:1px solid rgba(201,168,76,0.4);border-radius:3px;padding:0 3px;">AM</span>';
+    if(isEnglish(r.name)) tags += ' <span style="color:#5a9fd4;font-size:8px;border:1px solid rgba(90,159,212,0.4);border-radius:3px;padding:0 3px;">ENG</span>';
+    if(isIslander(r.name)) tags += ' <span style="color:#4fc87a;font-size:8px;border:1px solid rgba(79,200,122,0.4);border-radius:3px;padding:0 3px;">ISL</span>';
     const roleLabel = r.isLeader ? '<span style="color:#C9A84C;font-size:9px;margin-left:6px;text-transform:uppercase;letter-spacing:0.06em;">headliner</span>' : '';
     const tr = document.createElement('tr');
-    if(isN) tr.className='nr';
     tr.innerHTML = `
       <td>
         <div class="grp-cell">
-          <span class="grp-num${isN?' nr':''}">#${r.groupNum}</span>
+          <span class="grp-num">#${r.groupNum}</span>
           <div>
-            <div class="grp-head${isN?' nr':''}">${r.name}${roleLabel}</div>
-            <div class="grp-best${isN?' nr':''}">Grp #${r.groupNum} · ${r.groupLeader}</div>
+            <div class="grp-head">${r.name}${roleLabel}${tags}</div>
+            <div class="grp-best">Grp #${r.groupNum} · ${r.groupLeader}</div>
           </div>
         </div>
       </td>
@@ -444,18 +367,21 @@ async function loadScores(){
     if(!event) throw new Error('no active event');
     const comp = (event.competitions||[])[0] || {};
     const newScores = {};
+    const newCut = new Set();
     const writeBoth = (k,v) => { newScores[k]=v; const a=nameAliases[k]; if(a) newScores[a]=v; };
+    const addCut = (k) => { newCut.add(k); const a=nameAliases[k]; if(a) newCut.add(a); };
     for(const c of (comp.competitors||[])){
       const ath = c.athlete||{};
       const key = nameKey(ath.displayName||ath.fullName||'');
       if(!key) continue;
       const desc = (c.status?.type?.description||'').toUpperCase();
       const missedCut = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
-      if(missedCut) continue;
+      if(missedCut){ addCut(key); continue; }
       const rel = cumulativeToPar(c);
       if(rel !== null) writeBoth(key, rel);
     }
     liveScores = newScores;
+    liveCut = newCut;
     lu.textContent = new Date().toLocaleTimeString();
   } catch(e) {
     console.warn('loadScores failed:', e);

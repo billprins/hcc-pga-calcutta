@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hillwood CC · Mark-to-Market · 2026 U.S. Open Calcutta</title>
+  <title>Hillwood CC · Mark-to-Market · 2026 Open Championship Calcutta</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d1728; font-family: Georgia, 'Times New Roman', serif; padding-bottom: 3rem; }
@@ -93,19 +93,19 @@
 
 <div class="hero-stripe"></div>
 <div class="hero-inner">
-  <div class="hero-eyebrow">Hillwood Country Club · 2026 U.S. Open Calcutta</div>
+  <div class="hero-eyebrow">Hillwood Country Club · 2026 Open Championship Calcutta</div>
   <div class="hero-title">Secondary <span>Mark-to-Market</span></div>
   <div class="hero-sub">Group-level implied values for negotiating buy/sell of shares · Last updated: <span id="last-upd">—</span></div>
 </div>
 <div class="nav">
   <a href="index.html">Leaderboard</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
-  <a href="team.html?team=Robbie">Robbie</a>
   <a href="team.html?team=Nerds">Nerds</a>
-  <a href="team.html?team=Phil">Philoogle</a>
   <a href="team.html?team=JD">JD</a>
-  <a href="team.html?team=WolfPack">Wolf Pack</a>
-  <a href="team.html?team=Virgins">Virgins</a>
+  <a href="team.html?team=Robbie">Robbie</a>
+  <a href="team.html?team=Wolfpack">Wolfpack</a>
+  <a href="team.html?team=Beaver">Beaver</a>
+  <a href="team.html?team=Philoogle">Philoogle</a>
   <span style="color:#1e3050;padding:0 4px;">·</span>
   <a href="stats.html">Stats</a>
   <a href="market.html" class="active">Market</a>
@@ -114,12 +114,12 @@
 <div class="content">
 
   <div class="intro">
-    <b>How to read this:</b> each row is one golfer. <b>Cost</b> is the group's full auction price (same for all 3-4 members of the group). <b>Implied value</b> is what this golfer would individually pay out if they finished at their current individual rank — using the same 20%/15%/12%/… placement schedule that drives the leaderboard, plus any special prize (Low Englishman / Islander / Amateur) they currently lead. <b>P/L</b> is implied value minus the group cost — so partners outside the top 11 will show large negative P/L while a single leader can carry the whole group's potential. Use these as the floor of a negotiation, not a guaranteed price.
+    <b>How to read this:</b> each row is one golfer. <b>Cost</b> is the group's full auction price (same for all 3-4 members of the group). <b>Implied value</b> is what this golfer would individually pay out if they finished at their current individual rank — using the same 19%/14%/11%/… placement schedule that drives the leaderboard, plus any prop (Low 36-Hole Leader / Lefty / Asian / Former Champion / Hump Belly) they currently lead. <b>P/L</b> is implied value minus the group cost — so partners outside the top 12 will show large negative P/L while a single leader can carry the whole group's potential. Use these as the floor of a negotiation, not a guaranteed price.
   </div>
 
   <div class="stat-row">
     <div class="sc gb"><div class="sc-lbl">Total notional</div><div class="sc-val g" id="stat-notional">—</div><div class="sc-sub">sum of all groups' implied values</div></div>
-    <div class="sc"><div class="sc-lbl">Total invested</div><div class="sc-val">$62,950</div><div class="sc-sub">auction pot</div></div>
+    <div class="sc"><div class="sc-lbl">Total invested</div><div class="sc-val">$56,300</div><div class="sc-sub">auction pot</div></div>
     <div class="sc gb"><div class="sc-lbl">Biggest mover ↑</div><div class="sc-val up" id="stat-up">—</div><div class="sc-sub" id="stat-up-sub">—</div></div>
     <div class="sc"><div class="sc-lbl">Biggest mover ↓</div><div class="sc-val dn" id="stat-dn">—</div><div class="sc-sub" id="stat-dn-sub">—</div></div>
   </div>
@@ -134,12 +134,12 @@
     <button class="ctrl-btn" data-sort="grp">Group #</button>
     <span class="ctrl-lbl" style="margin-left:1rem;">Filter</span>
     <button class="ctrl-btn active" data-filter="all">All groups</button>
-    <button class="ctrl-btn" data-filter="Robbie">Robbie</button>
     <button class="ctrl-btn" data-filter="Nerds">Nerds</button>
-    <button class="ctrl-btn" data-filter="Phil">Philoogle</button>
     <button class="ctrl-btn" data-filter="JD">JD</button>
-    <button class="ctrl-btn" data-filter="WolfPack">Wolf Pack</button>
-    <button class="ctrl-btn" data-filter="Virgins">Virgins</button>
+    <button class="ctrl-btn" data-filter="Robbie">Robbie</button>
+    <button class="ctrl-btn" data-filter="Wolfpack">Wolfpack</button>
+    <button class="ctrl-btn" data-filter="Beaver">Beaver</button>
+    <button class="ctrl-btn" data-filter="Philoogle">Philoogle</button>
     <button class="ctrl-btn" data-filter="cash">Currently cashing</button>
   </div>
 
@@ -159,7 +159,7 @@
   </div>
 
   <div class="footer">
-    Hillwood Country Club · 2026 U.S. Open Calcutta · Mark-to-Market<br>
+    Hillwood Country Club · 2026 Open Championship Calcutta · Mark-to-Market<br>
     <span style="margin-top:4px;display:inline-block;">Implied values derived from live ESPN ranks <span class="ab">auto-refresh every 5 min</span></span><br>
     <button class="rbtn" onclick="loadScores()">↻ Refresh now</button>
   </div>
@@ -212,11 +212,13 @@ function sc(s){ return s===null?'none':s<0?'u':s>0?'o':'e'; }
 // ============================================================================
 let liveScores = {};
 let liveCut = new Set();
+let live36 = {};
 let currentSort = 'pl';
 let currentFilter = 'all';
 
 function getScore(name){ const v = liveScores[nameKey(name)]; return v===undefined ? null : v; }
 function isCut(name){ return liveCut.has(nameKey(name)); }
+function get36(name){ const v = live36[nameKey(name)]; return v===undefined ? null : v; }
 function getBest(g){
   let best = null;
   for(const p of [g.leader, ...g.partners]){
@@ -240,7 +242,7 @@ function getBestGolfer(g){
 function computeMarket(){
   // Position prize + any special prize they currently lead, via the shared
   // engine (PGA-standard tie handling + cut-based redistribution).
-  const {payByName} = computeAllPayouts(getScore, isCut);
+  const {payByName} = computeAllPayouts(getScore, isCut, get36);
   // Flatten the 40 groups into ~160 individual rows. Each row keeps a reference
   // to its group's cost and headliner so we can render the group context inline.
   const rows = [];
@@ -309,9 +311,10 @@ function renderTable(){
     const rankTxt = r.rank===null ? '—' : (r.rank<=POSITION_PCT.length ? `<span class="rank-chip cash">T${r.rank}</span>` : `<span class="rank-chip">T${r.rank}</span>`);
     const multTxt = r.cost>0 && r.implied>0 ? `<span class="mult ${r.mult>=1?'up':'dn'}">${r.mult.toFixed(2)}x</span>` : '';
     let tags = '';
-    if(isAmateur(r.name)) tags += ' <span style="color:#C9A84C;font-size:8px;border:1px solid rgba(201,168,76,0.4);border-radius:3px;padding:0 3px;">AM</span>';
-    if(isEnglish(r.name)) tags += ' <span style="color:#5a9fd4;font-size:8px;border:1px solid rgba(90,159,212,0.4);border-radius:3px;padding:0 3px;">ENG</span>';
-    if(isIslander(r.name)) tags += ' <span style="color:#4fc87a;font-size:8px;border:1px solid rgba(79,200,122,0.4);border-radius:3px;padding:0 3px;">ISL</span>';
+    if(isLefty(r.name)) tags += ' <span style="color:#5a9fd4;font-size:8px;border:1px solid rgba(90,159,212,0.4);border-radius:3px;padding:0 3px;">LEFTY</span>';
+    if(isAsian(r.name)) tags += ' <span style="color:#4fc87a;font-size:8px;border:1px solid rgba(79,200,122,0.4);border-radius:3px;padding:0 3px;">ASIA</span>';
+    if(isFormerChamp(r.name)) tags += ' <span style="color:#e0a85a;font-size:8px;border:1px solid rgba(224,168,90,0.45);border-radius:3px;padding:0 3px;">CHAMP</span>';
+    if(isHumpBelly(r.name)) tags += ' <span style="color:#e05a5a;font-size:8px;border:1px solid rgba(224,90,90,0.4);border-radius:3px;padding:0 3px;">45+</span>';
     const roleLabel = r.isLeader ? '<span style="color:#C9A84C;font-size:9px;margin-left:6px;text-transform:uppercase;letter-spacing:0.06em;">headliner</span>' : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -368,12 +371,17 @@ async function loadScores(){
     const comp = (event.competitions||[])[0] || {};
     const newScores = {};
     const newCut = new Set();
+    const newLive36 = {};
     const writeBoth = (k,v) => { newScores[k]=v; const a=nameAliases[k]; if(a) newScores[a]=v; };
+    const write36 = (k,v) => { newLive36[k]=v; const a=nameAliases[k]; if(a) newLive36[a]=v; };
     const addCut = (k) => { newCut.add(k); const a=nameAliases[k]; if(a) newCut.add(a); };
     for(const c of (comp.competitors||[])){
       const ath = c.athlete||{};
       const key = nameKey(ath.displayName||ath.fullName||'');
       if(!key) continue;
+      const l1=(c.linescores||[]).find(ls=>ls.period===1), l2=(c.linescores||[]).find(ls=>ls.period===2);
+      const r1=l1?parseRelScore(l1.displayValue):null, r2=l2?parseRelScore(l2.displayValue):null;
+      if(r1!==null && r2!==null) write36(key, r1+r2);
       const desc = (c.status?.type?.description||'').toUpperCase();
       const missedCut = !!c.status?.cut || desc.includes('CUT') || desc.includes('WD') || desc.includes('WITHDR') || desc.includes('DISQ');
       if(missedCut){ addCut(key); continue; }
@@ -382,6 +390,7 @@ async function loadScores(){
     }
     liveScores = newScores;
     liveCut = newCut;
+    live36 = newLive36;
     lu.textContent = new Date().toLocaleTimeString();
   } catch(e) {
     console.warn('loadScores failed:', e);

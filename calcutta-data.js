@@ -174,6 +174,20 @@ function lowOf(scoreFn, set){
   return {names, score:best};
 }
 
+// The n lowest-scoring scored golfers under scoreFn, optionally restricted to a
+// set. Returns [{name, score}] ascending (ties broken by name for stable order).
+function topN(scoreFn, set, n){
+  const arr=[];
+  _rosterNames().forEach(nm=>{
+    if(set && !set.has(nameKey(nm))) return;
+    const s=scoreFn(nm);
+    if(s===null||s===undefined) return;
+    arr.push({name:nm, score:s});
+  });
+  arr.sort((a,b)=> a.score-b.score || a.name.localeCompare(b.name));
+  return arr.slice(0, n);
+}
+
 // PGA-style tie handling: golfers tied at position P split the combined money of
 // positions P..P+N-1 equally. sortedScores ascending, nulls treated as no-pay.
 function tiePayouts(sortedScores, pct){
@@ -220,21 +234,23 @@ function computeAllPayouts(scoreFn, isCutFn, score36Fn){
 
   const specials = {};
   SPECIALS.forEach(sp=>{
-    let live, low;
+    let live, low, top;
     if(sp.kind === 'compute'){
       // 36-hole leader: lowest score through 36 holes across the whole field.
       live = true;
       low = score36Fn ? lowOf(score36Fn) : {names:[], score:null};
+      top = score36Fn ? topN(score36Fn, null, 3) : [];
     } else {
       live = catLive(sp.set, isCutFn);
       low = live ? lowOf(scoreFn, sp.set) : {names:[], score:null};
+      top = live ? topN(scoreFn, sp.set, 3) : [];
     }
     let each = 0;
     if(low.score !== null){
       each = Math.round(POT * sp.pct / low.names.length);
       low.names.forEach(n => payByName[n] = (payByName[n]||0) + each);
     }
-    specials[sp.key] = { label:sp.label, pct:sp.pct, live, names:low.names, score:low.score, each };
+    specials[sp.key] = { label:sp.label, pct:sp.pct, live, names:low.names, score:low.score, each, top };
   });
 
   const synPayouts = {};

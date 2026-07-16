@@ -588,16 +588,21 @@ function renderSpecials(specials){
   grid.innerHTML = order.map(k=>{
     const sp=specials[k]; if(!sp) return '';
     const pctTxt=Math.round(sp.pct*100)+'%';
+    const fmtS=v=>v===0?'E':v<0?String(v):'+'+v;
+    const col=v=>v<0?'#4fc87a':v>0?'#e05a5a':'#8fa3c0';
     let body;
     if(!sp.live){
       body=`<div class="tvd-slot" style="color:#e05a5a;">No eligible golfer made the cut — ${pctTxt} to 1st.</div>`;
-    } else if(sp.score===null){
+    } else if(!sp.top || !sp.top.length){
       body=`<div class="tvd-slot">Awaiting scores · ${pctTxt} of pot</div>`;
     } else {
-      const sv=sp.score===0?'E':sp.score<0?String(sp.score):'+'+sp.score;
-      const names=sp.names.join(' / ');
-      const each='$'+sp.each.toLocaleString()+(sp.names.length>1?' ea':'');
-      body=`<div class="tvd-slot"><b>${names}</b> &nbsp;<span style="color:${sp.score<0?'#4fc87a':sp.score>0?'#e05a5a':'#8fa3c0'};">${sv}</span></div><div class="tvd-slot" style="color:#4fc87a;">${each} &nbsp;<span style="color:#5a7090;">(${pctTxt} of pot)</span></div>`;
+      const rows=sp.top.map((g,i)=>{
+        const isWin = g.score===sp.score;
+        const prize = isWin ? ` <span style="color:#4fc87a;">$${sp.each.toLocaleString()}${sp.names.length>1?' ea':''}</span>` : '';
+        const nm = isWin ? `<b>${g.name}</b>` : g.name;
+        return `<div class="tvd-slot"><span style="color:#5a7090;">${i+1}.</span> ${nm} <span style="color:${col(g.score)};">${fmtS(g.score)}</span>${prize}</div>`;
+      }).join('');
+      body=rows+`<div class="tvd-slot" style="color:#5a7090;font-size:10px;border-bottom:none;">winner takes ${pctTxt} of pot</div>`;
     }
     return `<div class="tvd"><div class="tvd-name">${sp.label}</div>${body}</div>`;
   }).join('');

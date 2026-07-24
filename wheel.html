@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hillwood CC · Flatbelly 2026 Calcutta Auction</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0d1728; --navy2: #152035; --navy3: #08111e;
+      --line: #1e3050; --gold: #C9A84C; --mut: #7a8faf; --dim: #5a7090;
+      --wc: #b07ae8;
+    }
+    html, body { height: 100%; }
+    body { background: var(--navy); font-family: Georgia, 'Times New Roman', serif; color: #fff; overflow-x: hidden; }
+    .hero-stripe { height: 6px; background: var(--gold); }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.6rem 1.2rem; border-bottom: 1px solid var(--gold); background: var(--navy); flex-wrap: wrap; }
+    .brand { display: flex; flex-direction: column; }
+    .brand-eyebrow { font-size: clamp(9px, 0.8vw, 12px); letter-spacing: 0.18em; color: var(--gold); font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 500; text-transform: uppercase; }
+    .brand-title { font-size: clamp(18px, 1.8vw, 28px); font-weight: normal; letter-spacing: 0.02em; }
+    .brand-title span { color: var(--gold); }
+    .top-status { display: flex; align-items: center; gap: 1.2rem; }
+    .pickcount { text-align: right; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .pickcount .n { font-size: clamp(20px, 2vw, 30px); color: var(--gold); font-weight: 500; line-height: 1; }
+    .pickcount .l { font-size: clamp(8px, 0.7vw, 11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-top: 2px; }
+    .ctl { display: flex; gap: 6px; }
+    .cbtn { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--navy2); color: var(--mut); cursor: pointer; }
+    .cbtn:hover { color: #c8d4e8; border-color: #2e4570; }
+    .cbtn:disabled { opacity: 0.35; cursor: default; }
+    .cbtn.danger:hover { color: #e05a5a; border-color: #6a2a2a; }
+
+    .stage { display: grid; grid-template-columns: clamp(200px, 15vw, 280px) 1fr minmax(440px, 42vw); gap: 1rem; padding: 1rem 1.2rem; align-items: start; height: calc(100vh - 88px); }
+    @media (max-width: 1100px) { .stage { grid-template-columns: 1fr; height: auto; } }
+
+    /* ---------- left: sold stream ---------- */
+    .stream { border: 1px solid var(--line); border-radius: 10px; background: var(--navy3); display: flex; flex-direction: column; max-height: 100%; overflow: hidden; }
+    .stream-head { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--line); font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); display: flex; justify-content: space-between; align-items: center; }
+    .stream-count { color: var(--dim); }
+    .stream-list { overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+    .s-item { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 7px; background: rgba(255,255,255,0.03); border-left: 3px solid var(--fc, var(--line)); font-family: 'Helvetica Neue', Arial, sans-serif; animation: slidein 0.35s ease; }
+    @keyframes slidein { from { transform: translateX(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .s-no { font-size: clamp(11px, 1.3vh, 14px); font-weight: 600; color: var(--fc, var(--gold)); min-width: 22px; text-align: right; }
+    .s-name { font-size: clamp(12px, 1.5vh, 16px); color: #e8eef8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .s-sub { font-size: clamp(8px, 1vh, 11px); color: var(--dim); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .s-body { min-width: 0; flex: 1; }
+    .s-amt { font-size: clamp(12px, 1.5vh, 16px); font-weight: 600; color: var(--gold); flex-shrink: 0; }
+    .s-item { cursor: pointer; }
+    .s-item:hover { background: rgba(255,255,255,0.08); }
+    .s-item.editing { cursor: default; flex-wrap: wrap; }
+    .s-edit { display: flex; gap: 5px; width: 100%; margin-top: 5px; }
+    .s-edit input { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; padding: 4px 7px; border-radius: 6px; border: 1px solid var(--line); background: var(--navy2); color: #fff; min-width: 0; outline: none; }
+    .s-edit input:focus { border-color: var(--gold); }
+    .s-edit .se-amt { width: 34%; text-align: center; }
+    .s-edit .se-buyer { flex: 1; }
+    .s-edit button { font-size: 12px; padding: 4px 9px; border-radius: 6px; border: 1px solid var(--gold); background: rgba(201,168,76,0.15); color: var(--gold); cursor: pointer; }
+    .stream-empty { padding: 1rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: var(--dim); text-align: center; }
+
+    /* ---------- center ---------- */
+    .center { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; min-width: 0; max-height: 100%; }
+
+    .block-card { width: 100%; text-align: center; border-radius: 16px; border: 2px solid var(--fc, var(--gold)); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.25)), var(--navy2); box-shadow: 0 0 60px -18px var(--fc, var(--gold)); padding: 1.4rem 1.5rem 1.2rem; display: none; animation: pop 0.35s cubic-bezier(0.2, 1.5, 0.4, 1); }
+    .block-card.show { display: block; }
+    .bc-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(10px, 1.4vh, 15px); letter-spacing: 0.24em; text-transform: uppercase; color: var(--fc, var(--gold)); margin-bottom: 0.5rem; }
+    .bc-eyebrow .gnum { color: var(--mut); letter-spacing: 0.08em; }
+    .bc-leader { font-size: clamp(28px, 6.6vh, 74px); line-height: 1.08; color: #fff; text-shadow: 0 3px 18px rgba(0,0,0,0.5); }
+    .bc-leader .amp { color: var(--fc, var(--gold)); font-size: 0.7em; }
+    .bc-partners { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(12px, 2.2vh, 22px); color: var(--mut); margin-top: 0.7rem; line-height: 1.45; }
+    .bc-sale { display: none; justify-content: center; gap: 10px; margin-top: 1.1rem; }
+    .bc-sale.show { display: flex; }
+    .bc-sale input { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(14px, 2.2vh, 22px); padding: 0.45em 0.7em; border-radius: 9px; border: 1px solid var(--line); background: var(--navy3); color: #fff; text-align: center; outline: none; }
+    .bc-sale input:focus { border-color: var(--fc, var(--gold)); box-shadow: 0 0 0 1px var(--fc, var(--gold)); }
+    .bc-sale input::placeholder { color: var(--dim); }
+    #amtInput { width: clamp(110px, 15vh, 190px); }
+    #buyerInput { width: clamp(150px, 22vh, 280px); }
+    #amtInput::-webkit-outer-spin-button, #amtInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #amtInput { -moz-appearance: textfield; appearance: textfield; }
+    .bc-hint { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(9px, 1.2vh, 13px); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin-top: 1rem; }
+    .bc-hint b { color: var(--fc, var(--gold)); font-weight: 600; border: 1px solid var(--fc, var(--gold)); border-radius: 5px; padding: 1px 8px; margin-right: 4px; }
+    .block-card.wildmode .bc-leader { color: var(--wc); font-size: clamp(26px, 5.8vh, 62px); }
+
+    .wheel-zone { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; width: 100%; flex: 1; min-height: 0; justify-content: center; }
+    .wheel-wrap { position: relative; width: min(100%, 46vh); aspect-ratio: 1; transition: width 0.4s ease; }
+    body.auctioning .wheel-wrap { width: min(55%, 22vh); }
+    #wheel { width: 100%; height: 100%; display: block; cursor: pointer; filter: drop-shadow(0 6px 24px rgba(0,0,0,0.55)); }
+    #wheel.locked { cursor: default; }
+    .pointer { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid var(--gold); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); z-index: 3; }
+    .hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 22%; height: 22%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #1e3050, var(--navy3) 70%); border: 3px solid var(--gold); display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; }
+    .hub-txt { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(8px, 1.3vh, 13px); letter-spacing: 0.14em; color: var(--gold); font-weight: 600; text-transform: uppercase; }
+    .spin-btn { width: min(100%, 46vh); font-family: Georgia, serif; font-size: clamp(15px, 2.1vh, 22px); letter-spacing: 0.08em; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--gold); background: rgba(201,168,76,0.12); color: var(--gold); cursor: pointer; text-transform: uppercase; }
+    .spin-btn:hover:not(:disabled) { background: rgba(201,168,76,0.22); }
+    .spin-btn:disabled { opacity: 0.3; cursor: default; }
+    body.auctioning .spin-btn { display: none; }
+    .status-sub-line { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(10px, 1.3vh, 14px); color: var(--mut); text-align: center; }
+
+    /* ---------- right: board (11 flights, masonry columns) ---------- */
+    .board-wrap { max-height: 100%; overflow-y: auto; }
+    .board { columns: 3; column-gap: 0.7rem; }
+    @media (max-width: 1500px) { .board { columns: 2; } }
+    @media (max-width: 1100px) { .board { columns: 2; } }
+    @media (max-width: 700px) { .board { columns: 1; } }
+    .flight { border: 1px solid var(--line); border-radius: 10px; background: var(--navy2); overflow: hidden; transition: box-shadow 0.25s, border-color 0.25s, opacity 0.25s; break-inside: avoid; margin-bottom: 0.7rem; }
+    .flight.active { border-color: var(--fc); box-shadow: 0 0 0 1px var(--fc), 0 0 26px -8px var(--fc); }
+    .flight.spent { opacity: 0.5; }
+    .fl-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0.4rem 0.65rem; border-bottom: 1px solid var(--line); background: rgba(0,0,0,0.22); }
+    .fl-name { font-size: clamp(12px, 1.5vh, 16px); color: var(--fc); }
+    .fl-tag { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 9px; color: var(--navy); background: var(--fc); font-weight: 600; display: none; }
+    .flight.active .fl-tag { display: inline-block; animation: pulse 1.4s infinite; }
+    .fl-count { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10px; color: var(--dim); }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+    @keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .teams { padding: 4px; display: flex; flex-direction: column; gap: 3px; }
+    .team { display: flex; align-items: center; gap: 6px; padding: 3px 7px; border-radius: 6px; border: 1px solid transparent; background: rgba(255,255,255,0.03); font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none; }
+    .team .tinfo { flex: 1; min-width: 0; }
+    .team .tleader { font-size: clamp(11px, 1.4vh, 14px); color: #c8d4e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .team .pickno { font-size: 9px; font-weight: 600; color: var(--navy); background: var(--fc); border-radius: 8px; padding: 1px 6px; flex-shrink: 0; display: none; }
+    .team.pickable { cursor: pointer; border-color: var(--fc); background: rgba(255,255,255,0.05); }
+    .team.pickable:hover { background: rgba(255,255,255,0.12); transform: translateX(2px); }
+    .team.pickable .tleader { color: #fff; }
+    .team.wildable { cursor: pointer; border-color: var(--wc); box-shadow: 0 0 8px -3px var(--wc); }
+    .team.wildable:hover { background: rgba(176,122,232,0.15); }
+    .team.current { background: var(--fc); }
+    .team.current .tleader { color: var(--navy); font-weight: 600; }
+    .team.picked { opacity: 0.4; }
+    .team.picked .tleader { text-decoration: line-through; color: var(--dim); }
+    .team.picked .pickno { display: inline-block; }
+    .team.picked.wild-pick .pickno { background: var(--wc); }
+
+    /* ---------- result overlay ---------- */
+    .overlay { position: fixed; inset: 0; background: rgba(5,10,20,0.82); display: none; align-items: center; justify-content: center; z-index: 50; cursor: pointer; }
+    .overlay.show { display: flex; }
+    .result-card { text-align: center; padding: 3rem 4.5rem; border-radius: 18px; background: var(--navy2); border: 2px solid var(--rc, var(--gold)); box-shadow: 0 0 80px -10px var(--rc, var(--gold)); animation: pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
+    .result-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(10px, 1.3vh, 14px); letter-spacing: 0.22em; text-transform: uppercase; color: var(--mut); margin-bottom: 0.6rem; }
+    .result-name { font-size: clamp(40px, 9vh, 92px); color: var(--rc, var(--gold)); line-height: 1.05; }
+    .result-sub { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(12px, 1.6vh, 17px); color: var(--mut); margin-top: 0.9rem; }
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+
+    .done-card { width: 100%; text-align: center; border: 1px solid var(--gold); border-radius: 16px; background: rgba(201,168,76,0.1); padding: 2.2rem 1rem; font-size: clamp(20px, 3.6vh, 40px); color: var(--gold); display: none; }
+    body.done .done-card { display: block; }
+  </style>
+</head>
+<body>
+  <div class="hero-stripe"></div>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-eyebrow">Hillwood Country Club · Nashville, Tennessee</div>
+      <div class="brand-title">Flatbelly 2026 <span>Calcutta Auction</span></div>
+    </div>
+    <div class="top-status">
+      <div class="pickcount"><div class="n" id="potN">$0</div><div class="l">Pot</div></div>
+      <div class="pickcount"><div class="n" id="pickN">0 / 66</div><div class="l">Teams Sold</div></div>
+      <div class="ctl">
+        <button class="cbtn" id="soundBtn">🔊 Sound</button>
+        <button class="cbtn" id="undoBtn">↩ Undo</button>
+        <button class="cbtn" id="fsBtn">⛶ Fullscreen</button>
+        <button class="cbtn danger" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <!-- left: running sold stream -->
+    <div class="stream">
+      <div class="stream-head"><span>Sold — Auction Order</span><span class="stream-count" id="streamCount"></span></div>
+      <div class="stream-list" id="streamList"><div class="stream-empty">No teams sold yet.</div></div>
+    </div>
+
+    <!-- center: current team + wheel -->
+    <div class="center">
+      <div class="block-card" id="blockCard">
+        <div class="bc-eyebrow" id="bcEyebrow"></div>
+        <div class="bc-leader" id="bcLeader"></div>
+        <div class="bc-partners" id="bcPartners"></div>
+        <div class="bc-sale" id="bcSale">
+          <input id="amtInput" type="number" min="0" step="5" placeholder="$ amount" autocomplete="off">
+          <input id="buyerInput" list="buyerList" placeholder="Purchaser" autocomplete="off">
+          <datalist id="buyerList"></datalist>
+        </div>
+        <div class="bc-hint" id="bcHint"></div>
+      </div>
+      <div class="done-card">🏆 That's the board — all 66 teams sold.<br><span style="font-size:0.55em;color:var(--mut);font-family:'Helvetica Neue',Arial,sans-serif;">See you Saturday at the shootout.</span></div>
+      <div class="wheel-zone">
+        <div class="wheel-wrap">
+          <div class="pointer"></div>
+          <canvas id="wheel"></canvas>
+          <div class="hub"><div class="hub-txt" id="hubTxt">Spin</div></div>
+        </div>
+        <button class="spin-btn" id="spinBtn">Spin the Wheel</button>
+        <div class="status-sub-line" id="statusSub">Click the wheel to draw the first flight</div>
+      </div>
+    </div>
+
+    <!-- right: flight board -->
+    <div class="board-wrap"><div class="board" id="board"></div></div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="result-card" id="resultCard">
+      <div class="result-eyebrow">The wheel says</div>
+      <div class="result-name" id="resultName"></div>
+      <div class="result-sub" id="resultSub"></div>
+    </div>
+  </div>
+  <canvas id="confetti"></canvas>
+
+<script>
+/* ============================================================================
+   EDIT HERE — flights & teams. 2026 Flatbelly: 66 member/guest teams, eleven
+   flights of six (official flight sheet, updated July 23 — Jimmy Magic in for
+   Robert Turk alongside Prins). member = Hillwood CC; club = guest's club;
+   hcp = combined team index shown on the field page.
+   WILD_CARDS = number of Wild Card slices on the wheel (a Wild Card lets the
+   room auction ANY remaining team from any flight, then spin again).
+   ========================================================================== */
+const WILD_CARDS = 1;
+const FLIGHT_DEFS = [
+  { key:'1',  name:'Flight 1',  color:'#C9A84C' },
+  { key:'2',  name:'Flight 2',  color:'#4fc87a' },
+  { key:'3',  name:'Flight 3',  color:'#7acce8' },
+  { key:'4',  name:'Flight 4',  color:'#e08a5a' },
+  { key:'5',  name:'Flight 5',  color:'#e87ab8' },
+  { key:'6',  name:'Flight 6',  color:'#4ec9b0' },
+  { key:'7',  name:'Flight 7',  color:'#e05a5a' },
+  { key:'8',  name:'Flight 8',  color:'#d8c86a' },
+  { key:'9',  name:'Flight 9',  color:'#6a8ae8' },
+  { key:'10', name:'Flight 10', color:'#a8e86a' },
+  { key:'11', name:'Flight 11', color:'#e8e8e8' },
+];
+const TEAMS = [
+  // ---- Flight 1 -----------------------------------------------------------
+  {flight:'1',  num:1,  member:"Chris Morris",       guest:"Gray Hunter",        club:"Tucson CC",             hcp:"+2.2"},
+  {flight:'1',  num:2,  member:"Eddie Ryan",         guest:"Kevin Ryan",         club:"Richland CC",           hcp:"+2.1"},
+  {flight:'1',  num:3,  member:"Nathaniel Beaver",   guest:"Drew Jones",         club:"Club TBA",              hcp:"+1.6"},
+  {flight:'1',  num:4,  member:"Roe Moore",          guest:"Will Robson",        club:"Coldstream CC",         hcp:"0.7"},
+  {flight:'1',  num:5,  member:"Curt Casali",        guest:"Kevin Wilson",       club:"Golf Club of TN",       hcp:"3.9"},
+  {flight:'1',  num:6,  member:"Sean Buck",          guest:"Warren Goodrich",    club:"Richland CC",           hcp:"6.4"},
+  // ---- Flight 2 -----------------------------------------------------------
+  {flight:'2',  num:7,  member:"Cris Goddard",       guest:"Clay Goddard",       club:"Horseshoe Bend CC",     hcp:"6.5"},
+  {flight:'2',  num:8,  member:"Josh Robinson",      guest:"Luke Fredrickson",   club:"Towhee Club",           hcp:"6.7"},
+  {flight:'2',  num:9,  member:"Jonathan Williams",  guest:"Matt McGill",        club:"The Club at Olde Stone",hcp:"8.0"},
+  {flight:'2',  num:10, member:"Morgan Anderson",    guest:"Justin Hill",        club:"Golden Eagle GC",       hcp:"8.3"},
+  {flight:'2',  num:11, member:"Mike Hassen",        guest:"Clay Bentley",       club:"NCGA",                  hcp:"8.6"},
+  {flight:'2',  num:12, member:"Brandon Bannock",    guest:"William Mayfield",   club:"Brentwood CC",          hcp:"9.1"},
+  // ---- Flight 3 -----------------------------------------------------------
+  {flight:'3',  num:13, member:"Nate Fend",          guest:"David Lubnik",       club:"Richland CC",           hcp:"9.2"},
+  {flight:'3',  num:14, member:"Kyle Strongin",      guest:"Logan Young",        club:"Towhee Club",           hcp:"10.4"},
+  {flight:'3',  num:15, member:"Patrick Baird",      guest:"Matt Ruppenthal",    club:"TGA",                   hcp:"11.1"},
+  {flight:'3',  num:16, member:"Evan Malone",        guest:"Colin Anthony",      club:"The Grove",             hcp:"11.6"},
+  {flight:'3',  num:17, member:"Billy May",          guest:"Alan Kirby",         club:"Westhaven GC",          hcp:"12.1"},
+  {flight:'3',  num:18, member:"Ryan Youngerman",    guest:"Cole Blassey",       club:"Hedingham GC",          hcp:"12.6"},
+  // ---- Flight 4 -----------------------------------------------------------
+  {flight:'4',  num:19, member:"Jay Fulmer",         guest:"David Tudor",        club:"Belle Meade CC",        hcp:"13.2"},
+  {flight:'4',  num:20, member:"Kevin Murphy",       guest:"Brian Urness",       club:"Spring Hill GC",        hcp:"13.2"},
+  {flight:'4',  num:21, member:"Zachary Hall",       guest:"Landon Meier",       club:"Old Natchez",           hcp:"14.0"},
+  {flight:'4',  num:22, member:"Walker Cox",         guest:"Jody Glover",        club:"TGA",                   hcp:"14.5"},
+  {flight:'4',  num:23, member:"Lee Lewis",          guest:"Will Peffen",        club:"TGA",                   hcp:"14.6"},
+  {flight:'4',  num:24, member:"Jim Jacobs",         guest:"Jonathan Harris",    club:"Belle Meade CC",        hcp:"14.7"},
+  // ---- Flight 5 -----------------------------------------------------------
+  {flight:'5',  num:25, member:"Tyler Pinson",       guest:"Cam Arnold",         club:"Old Natchez",           hcp:"14.9"},
+  {flight:'5',  num:26, member:"Will Hatfield",      guest:"Mark Butrico",       club:"GAP GC",                hcp:"15.2"},
+  {flight:'5',  num:27, member:"Michael Bash",       guest:"Brad Price",         club:"Indian Hills CC",       hcp:"15.3"},
+  {flight:'5',  num:28, member:"Rob Leathers",       guest:"Kerry Oakley",       club:"Belle Meade CC",        hcp:"15.6"},
+  {flight:'5',  num:29, member:"Kellen Moore",       guest:"Clint Ing",          club:"Legacy Golf Club",      hcp:"15.9"},
+  {flight:'5',  num:30, member:"Matthew VanArsdale", guest:"Justin Smith",       club:"Links at Stono Ferry",  hcp:"15.9"},
+  // ---- Flight 6 -----------------------------------------------------------
+  {flight:'6',  num:31, member:"Clark Malloy",       guest:"Daniel Byrd",        club:"Greystone G&CC",        hcp:"16.2"},
+  {flight:'6',  num:32, member:"Edward Poirier",     guest:"Julian Scruggs",     club:"Belle Meade CC",        hcp:"16.4"},
+  {flight:'6',  num:33, member:"Chris Fowler",       guest:"Clay Fowler",        club:"Jackson CC",            hcp:"16.6"},
+  {flight:'6',  num:34, member:"Cary Leaman",        guest:"Joe Cox",            club:"Richland CC",           hcp:"16.6"},
+  {flight:'6',  num:35, member:"Andrew Quinn",       guest:"Richard Howell",     club:"TGA",                   hcp:"16.8"},
+  {flight:'6',  num:36, member:"Nick Harb",          guest:"Andrew Moreton",     club:"Richland CC",           hcp:"16.9"},
+  // ---- Flight 7 -----------------------------------------------------------
+  {flight:'7',  num:37, member:"Mitch Carrington",   guest:"Sam Baber",          club:"CC of Little Rock",     hcp:"17.7"},
+  {flight:'7',  num:38, member:"Will David Coleman", guest:"Caleb Morris",       club:"Grasslands Club",       hcp:"17.8"},
+  {flight:'7',  num:39, member:"Pete Arsenault",     guest:"David Taylor",       club:"TGA",                   hcp:"18.3"},
+  {flight:'7',  num:40, member:"Adam Burke",         guest:"Brandon Johnson",    club:"TGA",                   hcp:"18.5"},
+  {flight:'7',  num:41, member:"Andrew Kelly",       guest:"Cody Eaton",         club:"Temple Hills Club",     hcp:"18.7"},
+  {flight:'7',  num:42, member:"Jim Hughes",         guest:"Grant Fee",          club:"FSGA",                  hcp:"19.6"},
+  // ---- Flight 8 -----------------------------------------------------------
+  {flight:'8',  num:43, member:"Michael Ribas",      guest:"Matt Cooper",        club:"TGA",                   hcp:"19.9"},
+  {flight:'8',  num:44, member:"Nathan Lyons",       guest:"Jeremy Lyons",       club:"Old Natchez",           hcp:"20.1"},
+  {flight:'8',  num:45, member:"Peter Casey",        guest:"William Carpenter",  club:"Richland CC",           hcp:"20.3"},
+  {flight:'8',  num:46, member:"Shaun Bivens",       guest:"Michael Brumm",      club:"Belleair CC",           hcp:"20.6"},
+  {flight:'8',  num:47, member:"Dan Martin",         guest:"Thomas Pilcher",     club:"Lakewood GC",           hcp:"20.6"},
+  {flight:'8',  num:48, member:"Brian Tolbert",      guest:"Colin Crosby",       club:"Belle Meade CC",        hcp:"20.7"},
+  // ---- Flight 9 -----------------------------------------------------------
+  {flight:'9',  num:49, member:"Tyler Augusty",      guest:"Bryan Schivera",     club:"Savannah GC",           hcp:"22.0"},
+  {flight:'9',  num:50, member:"Ben Wagonfield",     guest:"Michael Streams",    club:"TGA",                   hcp:"22.1"},
+  {flight:'9',  num:51, member:"Travis Hollett",     guest:"Ben Flick",          club:"McCabe GC",             hcp:"22.6"},
+  {flight:'9',  num:52, member:"Brent Blackburn",    guest:"David Schadel",      club:"Old Natchez",           hcp:"24.3"},
+  {flight:'9',  num:53, member:"Reece Lovell",       guest:"Jake Ogle",          club:"Cherokee CC",           hcp:"24.8"},
+  {flight:'9',  num:54, member:"Blake Wilson",       guest:"Richard Jacques",    club:"Belle Meade CC",        hcp:"26.4"},
+  // ---- Flight 10 ----------------------------------------------------------
+  {flight:'10', num:55, member:"Raoul Richardson",   guest:"Chase Miller",       club:"Belle Meade CC",        hcp:"27.2"},
+  {flight:'10', num:56, member:"Jason Roberson",     guest:"David Pemberton",    club:"Brentwood CC",          hcp:"28.0"},
+  {flight:'10', num:57, member:"Nick Reasoner",      guest:"Scott Houdek",       club:"Glenview Park GC",      hcp:"28.2"},
+  {flight:'10', num:58, member:"Russell Riebeling",  guest:"Daniel Terrell",     club:"Ted Rhodes",            hcp:"29.7"},
+  {flight:'10', num:59, member:"Greg Schiefer",      guest:"Cochrane Jamison",   club:"TGA",                   hcp:"30.2"},
+  {flight:'10', num:60, member:"Lee White",          guest:"Davis Bond",         club:"Masters Club",          hcp:"30.8"},
+  // ---- Flight 11 ----------------------------------------------------------
+  {flight:'11', num:61, member:"Zack Samples",       guest:"Andrew Walker",      club:"Gaylord Springs",       hcp:"32.7"},
+  {flight:'11', num:62, member:"Frederick Grace",    guest:"Kevin Galligan",     club:"Meadow Brook Club",     hcp:"33.0"},
+  {flight:'11', num:63, member:"Jeremy Hutzel",      guest:"David Hutzel",       club:"GSGA",                  hcp:"33.4"},
+  {flight:'11', num:64, member:"Clint Cady",         guest:"Nick Nicholson",     club:"Lexington CC",          hcp:"37.3"},
+  {flight:'11', num:65, member:"William Prins",      guest:"Jimmy Magic",        club:"Club TBA",              hcp:"29.4"},
+  {flight:'11', num:66, member:"Steven Ludlam",      guest:"Thomas Sinowski",    club:"GSGA",                  hcp:"42.0"},
+];
+/* ========================== end of editable config ========================= */
+
+const WC_KEY = '__WILD__';
+const WC_COLOR = '#b07ae8';
+const STORE_KEY = 'flatbelly-calcutta-wheel-v1';
+const flightByKey = {}; FLIGHT_DEFS.forEach(f => flightByKey[f.key] = f);
+const teamByNum = {}; TEAMS.forEach(t => teamByNum[t.num] = t);
+function lastName(n){ return n.trim().split(' ').pop(); }
+function shortLabel(t){ return `${lastName(t.member)} / ${lastName(t.guest)}`; }
+
+/* ---------------- state ---------------- */
+// phase: 'idle' | 'flight' | 'wild' | 'done'
+// current: team num up on the block (null when nothing is up)
+let state = freshState();
+let history = [];           // snapshots for undo
+let spinning = false;
+let soundOn = true;
+
+function freshState(){
+  return { phase:'idle', activeFlight:null, spunFlights:[], wildUsed:0, picks:[], current:null };
+}
+function pickedSet(){ return new Set(state.picks.map(p => p.num)); }
+function unpickedIn(fk){ const ps = pickedSet(); return TEAMS.filter(t => t.flight===fk && !ps.has(t.num)); }
+function wheelOptions(){
+  const opts = FLIGHT_DEFS.filter(f => !state.spunFlights.includes(f.key))
+    .map(f => ({ key:f.key, label:f.name.toUpperCase(), color:f.color }));
+  for(let i = state.wildUsed; i < WILD_CARDS; i++)
+    opts.push({ key:WC_KEY, label:'WILD CARD', color:WC_COLOR });
+  return opts;
+}
+
+function save(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ state, history, soundOn })); } catch(e){}
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    if(d && d.state && Array.isArray(d.state.picks)) { state = d.state; history = d.history || []; }
+    if(d && typeof d.soundOn === 'boolean') soundOn = d.soundOn;
+  } catch(e){}
+}
+function snapshot(){ history.push(JSON.stringify(state)); if(history.length > 200) history.shift(); }
+function undo(){
+  if(spinning || !history.length) return;
+  state = JSON.parse(history.pop());
+  if(typeof editingIdx !== 'undefined') editingIdx = null;
+  save(); render(); drawWheel(rot);
+}
+
+/* ---------------- audio ---------------- */
+let actx = null;
+function ac(){ if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); return actx; }
+function tick(){
+  if(!soundOn) return;
+  try {
+    const a = ac(), o = a.createOscillator(), g = a.createGain();
+    o.type = 'square'; o.frequency.value = 950;
+    g.gain.setValueAtTime(0.06, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.05);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.06);
+  } catch(e){}
+}
+function fanfare(wild){
+  if(!soundOn) return;
+  try {
+    const a = ac();
+    const notes = wild ? [523, 659, 784, 1047, 1319] : [523, 659, 784];
+    notes.forEach((f, i) => {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = 'triangle'; o.frequency.value = f;
+      const t = a.currentTime + i * 0.12;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.14, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.55);
+    });
+  } catch(e){}
+}
+function gavel(){
+  if(!soundOn) return;
+  try {
+    const a = ac(), o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(700, a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(180, a.currentTime + 0.12);
+    g.gain.setValueAtTime(0.14, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.15);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.16);
+  } catch(e){}
+}
+
+/* ---------------- wheel ---------------- */
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+let rot = 0;       // current rotation in radians
+let spinToken = 0; // invalidates stale animation frames/watchdogs
+
+function sizeCanvas(){
+  const r = canvas.getBoundingClientRect();
+  const px = Math.max(2, Math.floor(r.width * (window.devicePixelRatio || 1)));
+  if(canvas.width !== px){ canvas.width = px; canvas.height = px; }
+}
+function drawWheel(rotation){
+  sizeCanvas();
+  const W = canvas.width, R = W/2;
+  ctx.clearRect(0,0,W,W);
+  const opts = wheelOptions();
+  ctx.save();
+  ctx.translate(R,R);
+  ctx.rotate(rotation);
+  if(!opts.length){
+    ctx.beginPath(); ctx.arc(0,0,R-4,0,Math.PI*2);
+    ctx.fillStyle = '#152035'; ctx.fill();
+    ctx.lineWidth = 4; ctx.strokeStyle = '#C9A84C'; ctx.stroke();
+    ctx.restore(); return;
+  }
+  const seg = (Math.PI*2)/opts.length;
+  opts.forEach((o,i)=>{
+    const a0 = -Math.PI/2 + i*seg, a1 = a0 + seg;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R-4,a0,a1); ctx.closePath();
+    ctx.fillStyle = o.color; ctx.fill();
+    const grad = ctx.createRadialGradient(0,0,R*0.2, 0,0,R);
+    grad.addColorStop(0,'rgba(255,255,255,0.10)'); grad.addColorStop(1,'rgba(0,0,0,0.28)');
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.lineWidth = Math.max(2, W*0.004); ctx.strokeStyle = '#0d1728'; ctx.stroke();
+    ctx.save();
+    ctx.rotate(a0 + seg/2);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0d1728';
+    ctx.font = `600 ${Math.max(10, W*0.036)}px 'Helvetica Neue', Arial, sans-serif`;
+    ctx.fillText(o.label, R*0.92, 0);
+    ctx.restore();
+  });
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(R,R,R-3,0,Math.PI*2);
+  ctx.lineWidth = Math.max(3, W*0.008); ctx.strokeStyle = '#C9A84C'; ctx.stroke();
+}
+
+function currentSliceIndex(rotation, n){
+  const seg = (Math.PI*2)/n;
+  let a = -rotation;
+  a = ((a % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  return Math.floor(a/seg) % n;
+}
+
+function spin(){
+  if(spinning || state.phase !== 'idle') return;
+  const opts = wheelOptions();
+  if(!opts.length) return;
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('spinBtn').blur();
+  canvas.classList.add('locked');
+
+  const n = opts.length;
+  const seg = (Math.PI*2)/n;
+  const target = Math.floor(Math.random()*n);
+  const jitter = seg * (0.15 + Math.random()*0.7);
+  const landing = -(target*seg + jitter);
+  const base = ((rot % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  let delta = ((landing - base) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+  delta += (Math.PI*2) * (5 + Math.floor(Math.random()*3)); // 5–7 extra turns
+  const dur = 4600 + Math.random()*900;
+  const start = performance.now(), r0 = rot;
+  let lastIdx = currentSliceIndex(rot, n);
+  const my = ++spinToken;
+
+  function finish(){
+    if(my !== spinToken || !spinning) return;
+    rot = r0 + delta;
+    drawWheel(rot);
+    finishSpin(opts[currentSliceIndex(rot, n)]);
+  }
+  function frame(now){
+    if(my !== spinToken || !spinning) return;
+    const t = Math.min(1, (now - start)/dur);
+    const ease = 1 - Math.pow(1 - t, 3);
+    rot = r0 + delta * ease;
+    drawWheel(rot);
+    const idx = currentSliceIndex(rot, n);
+    if(idx !== lastIdx){ tick(); lastIdx = idx; }
+    if(t < 1) requestAnimationFrame(frame);
+    else finish();
+  }
+  requestAnimationFrame(frame);
+  // rAF is suspended in hidden/backgrounded tabs — guarantee the spin resolves.
+  setTimeout(finish, dur + 300);
+}
+
+function finishSpin(opt){
+  spinning = false;
+  canvas.classList.remove('locked');
+  snapshot();
+  if(opt.key === WC_KEY){
+    state.wildUsed++;
+    state.phase = 'wild';
+    state.current = null; // room's choice — click any team to put it up
+    if(!TEAMS.some(t => !pickedSet().has(t.num))) advancePhase();
+  } else {
+    state.spunFlights.push(opt.key);
+    state.activeFlight = opt.key;
+    state.phase = 'flight';
+    const q = unpickedIn(opt.key);
+    state.current = q.length ? q[0].num : null;
+    if(!q.length) advancePhase(); // flight already emptied by wild cards
+  }
+  save(); render(); drawWheel(rot);
+  showResult(opt);
+  fanfare(opt.key === WC_KEY);
+  if(opt.key === WC_KEY) confettiBurst();
+}
+
+/* ---------------- auction actions ---------------- */
+// Click a team on the board: puts it up on the block (doesn't sell it).
+function putUp(num){
+  const t = teamByNum[num];
+  if(!t || spinning || pickedSet().has(num)) return;
+  if(state.phase === 'flight' && t.flight !== state.activeFlight) return;
+  if(state.phase !== 'flight' && state.phase !== 'wild') return;
+  snapshot();
+  state.current = num;
+  save(); render();
+}
+// SPACE / ENTER: winning bid — sell the team on the block with whatever amount
+// and purchaser are typed in, then bring up the next one.
+function sellCurrent(){
+  if(spinning || state.current === null) return;
+  if(state.phase !== 'flight' && state.phase !== 'wild') return;
+  const t = teamByNum[state.current];
+  if(!t || pickedSet().has(t.num)) return;
+  const amtRaw = document.getElementById('amtInput').value;
+  const amount = amtRaw === '' ? null : Math.max(0, Math.round(parseFloat(amtRaw)) || 0);
+  const buyer = document.getElementById('buyerInput').value.trim();
+  snapshot();
+  state.picks.push({ num: t.num, via: state.phase === 'wild' ? 'wild' : t.flight, amount, buyer });
+  document.getElementById('amtInput').value = '';
+  document.getElementById('buyerInput').value = '';
+  document.getElementById('amtInput').blur();
+  document.getElementById('buyerInput').blur();
+  gavel();
+  if(state.phase === 'wild'){
+    state.phase = 'idle'; state.current = null;
+  } else {
+    // next unsold team in this flight, preferring the next team number up
+    const q = unpickedIn(state.activeFlight);
+    if(q.length){
+      const next = q.find(x => x.num > t.num) || q[0];
+      state.current = next.num;
+    } else advancePhase();
+  }
+  maybeDone();
+  save(); render(); drawWheel(rot);
+}
+function advancePhase(){
+  state.activeFlight = null;
+  state.current = null;
+  state.phase = 'idle';
+}
+function maybeDone(){
+  if(TEAMS.every(t => pickedSet().has(t.num))){
+    state.phase = 'done'; state.activeFlight = null; state.current = null;
+  }
+}
+
+/* ---------------- render ---------------- */
+const boardEl = document.getElementById('board');
+let lastBlockTeam = null; // clears the sale inputs when a new team comes up
+let editingIdx = null;    // stream row being edited (transient)
+
+function potTotal(){ return state.picks.reduce((s,p)=> s + (p.amount || 0), 0); }
+function buyersSeen(){
+  const out = [];
+  state.picks.forEach(p => { if(p.buyer && !out.includes(p.buyer)) out.push(p.buyer); });
+  return out;
+}
+
+function render(){
+  const ps = pickedSet();
+  const pickNoByNum = {}; state.picks.forEach((p,i)=> pickNoByNum[p.num] = i+1);
+  const auctioning = (state.phase === 'flight' || state.phase === 'wild');
+  document.body.classList.toggle('auctioning', auctioning);
+  document.body.classList.toggle('done', state.phase === 'done');
+
+  // ---- big "on the block" card ----
+  const bc = document.getElementById('blockCard');
+  const bcSale = document.getElementById('bcSale');
+  bc.classList.remove('show','wildmode');
+  bcSale.classList.remove('show');
+  if(auctioning){
+    bc.classList.add('show');
+    if(state.current !== null){
+      const t = teamByNum[state.current];
+      const wild = state.phase === 'wild';
+      const color = wild ? WC_COLOR : flightByKey[t.flight].color;
+      bc.style.setProperty('--fc', color);
+      document.getElementById('bcEyebrow').innerHTML =
+        `${wild ? '★ Wild Card' : flightByKey[t.flight].name} · Now on the Block · <span class="gnum">Team #${t.num}</span>`;
+      document.getElementById('bcLeader').innerHTML =
+        `${t.member} <span class="amp">&amp;</span> ${t.guest}`;
+      document.getElementById('bcPartners').textContent =
+        `Hillwood CC · ${t.club} · Team index ${t.hcp}`;
+      document.getElementById('bcHint').innerHTML = `<b>SPACE</b> or <b>ENTER</b> Sold — next team`;
+      bcSale.classList.add('show');
+      if(state.current !== lastBlockTeam){
+        document.getElementById('amtInput').value = '';
+        document.getElementById('buyerInput').value = '';
+        document.getElementById('amtInput').focus();
+      }
+    } else {
+      // wild card, nothing chosen yet
+      bc.classList.add('wildmode');
+      bc.style.setProperty('--fc', WC_COLOR);
+      document.getElementById('bcEyebrow').textContent = '★ Wild Card ★';
+      document.getElementById('bcLeader').textContent = 'Pick any team';
+      document.getElementById('bcPartners').textContent = 'Click any remaining team on the board to put it up';
+      document.getElementById('bcHint').innerHTML = `then <b>SPACE</b> to sell`;
+    }
+  }
+  lastBlockTeam = state.current;
+
+  // buyer autocomplete from everyone who has bought so far
+  document.getElementById('buyerList').innerHTML =
+    buyersSeen().map(b => `<option value="${b.replace(/"/g,'&quot;')}"></option>`).join('');
+
+  // ---- board ----
+  boardEl.innerHTML = '';
+  FLIGHT_DEFS.forEach(f=>{
+    const teams = TEAMS.filter(t => t.flight === f.key);
+    const remaining = teams.filter(t => !ps.has(t.num)).length;
+    const div = document.createElement('div');
+    div.className = 'flight';
+    div.style.setProperty('--fc', f.color);
+    if(state.phase === 'flight' && state.activeFlight === f.key) div.classList.add('active');
+    if(state.spunFlights.includes(f.key) && !(state.phase==='flight' && state.activeFlight===f.key) && remaining===0) div.classList.add('spent');
+    div.innerHTML = `<div class="fl-head">
+        <span class="fl-name">${f.name}</span>
+        <span class="fl-tag">On the Block</span>
+        <span class="fl-count">${teams.length - remaining}/${teams.length} sold</span>
+      </div><div class="teams"></div>`;
+    const wrap = div.querySelector('.teams');
+    teams.forEach(t=>{
+      const el = document.createElement('div');
+      el.className = 'team';
+      const picked = ps.has(t.num);
+      if(picked){
+        el.classList.add('picked');
+        if(state.picks[pickNoByNum[t.num]-1].via === 'wild') el.classList.add('wild-pick');
+      } else if(!spinning && state.phase === 'flight' && t.flight === state.activeFlight){
+        el.classList.add(t.num === state.current ? 'current' : 'pickable');
+      } else if(!spinning && state.phase === 'wild'){
+        el.classList.add(t.num === state.current ? 'current' : 'wildable');
+      }
+      el.innerHTML = `<span class="tinfo"><span class="tleader">${shortLabel(t)}</span></span>
+        <span class="pickno">${picked ? pickNoByNum[t.num] : ''}</span>`;
+      el.title = `${t.member} & ${t.guest} — ${t.club} — team index ${t.hcp}`;
+      el.addEventListener('click', ()=> putUp(t.num));
+      wrap.appendChild(el);
+    });
+    boardEl.appendChild(div);
+  });
+
+  // ---- left stream (newest on top; click a row to fix amount/purchaser) ----
+  const list = document.getElementById('streamList');
+  document.getElementById('streamCount').textContent = state.picks.length ? `${state.picks.length} sold` : '';
+  if(!state.picks.length){
+    list.innerHTML = '<div class="stream-empty">No teams sold yet.</div>';
+  } else {
+    list.innerHTML = '';
+    for(let i = state.picks.length - 1; i >= 0; i--){
+      const p = state.picks[i], t = teamByNum[p.num];
+      const wild = p.via === 'wild';
+      const color = wild ? WC_COLOR : flightByKey[t.flight].color;
+      const item = document.createElement('div');
+      item.className = 's-item';
+      item.style.setProperty('--fc', color);
+      const subBits = [flightByKey[t.flight].name];
+      if(p.buyer) subBits.push(p.buyer);
+      const amtHtml = p.amount != null ? `<span class="s-amt">$${p.amount.toLocaleString()}</span>` : '';
+      item.innerHTML = `<span class="s-no">${i+1}</span>
+        <span class="s-body"><span class="s-name">${shortLabel(t)}${wild ? ' ★' : ''}</span>
+        <div class="s-sub">${subBits.join(' · ')}</div></span>${amtHtml}`;
+      if(editingIdx === i){
+        item.classList.add('editing');
+        const ed = document.createElement('div');
+        ed.className = 's-edit';
+        ed.innerHTML = `<input class="se-amt" type="number" min="0" placeholder="$" value="${p.amount != null ? p.amount : ''}">
+          <input class="se-buyer" placeholder="Purchaser" value="${(p.buyer||'').replace(/"/g,'&quot;')}">
+          <button>Save</button>`;
+        const commit = ()=>{
+          const amtRaw = ed.querySelector('.se-amt').value;
+          snapshot();
+          p.amount = amtRaw === '' ? null : Math.max(0, Math.round(parseFloat(amtRaw)) || 0);
+          p.buyer = ed.querySelector('.se-buyer').value.trim();
+          editingIdx = null;
+          save(); render();
+        };
+        ed.querySelector('button').addEventListener('click', ev=>{ ev.stopPropagation(); commit(); });
+        ed.querySelectorAll('input').forEach(inp=>{
+          inp.addEventListener('click', ev=> ev.stopPropagation());
+          inp.addEventListener('keydown', ev=>{
+            ev.stopPropagation();
+            if(ev.key === 'Enter') commit();
+            if(ev.key === 'Escape'){ editingIdx = null; render(); }
+          });
+        });
+        item.appendChild(ed);
+        setTimeout(()=> ed.querySelector('.se-amt').focus(), 0);
+      } else {
+        item.addEventListener('click', ()=>{ editingIdx = i; render(); });
+        item.title = 'Click to edit amount / purchaser';
+      }
+      list.appendChild(item);
+    }
+    list.scrollTop = 0;
+  }
+
+  // ---- counts + controls ----
+  document.getElementById('pickN').textContent = `${state.picks.length} / ${TEAMS.length}`;
+  document.getElementById('potN').textContent = '$' + potTotal().toLocaleString();
+  document.getElementById('undoBtn').disabled = !history.length || spinning;
+  document.getElementById('soundBtn').textContent = soundOn ? '🔊 Sound' : '🔇 Muted';
+  const canSpin = state.phase === 'idle' && wheelOptions().length > 0 && !spinning;
+  document.getElementById('spinBtn').disabled = !canSpin;
+  document.getElementById('hubTxt').textContent = canSpin ? 'Spin' : (state.phase === 'done' ? 'Done' : '·');
+
+  const sub = document.getElementById('statusSub');
+  if(state.phase === 'flight'){
+    const f = flightByKey[state.activeFlight];
+    const rem = unpickedIn(state.activeFlight).length;
+    sub.textContent = `${f.name}: ${rem} team${rem===1?'':'s'} left — sell them all to unlock the wheel`;
+  } else if(state.phase === 'wild'){
+    sub.textContent = 'Wild Card — one team, anyone\'s pick, then spin again';
+  } else if(state.phase === 'done'){
+    sub.textContent = 'Auction complete';
+  } else {
+    const n = wheelOptions().length;
+    sub.textContent = n ? `Ready — ${n} slice${n===1?'':'s'} on the wheel. Click to spin.` : '';
+  }
+}
+
+/* ---------------- result overlay + confetti ---------------- */
+const overlay = document.getElementById('overlay');
+function showResult(opt){
+  const card = document.getElementById('resultCard');
+  card.style.setProperty('--rc', opt.color);
+  document.getElementById('resultName').textContent = opt.key === WC_KEY ? '★ WILD CARD ★' : opt.label;
+  document.getElementById('resultSub').textContent = opt.key === WC_KEY
+    ? 'Any remaining team may be auctioned'
+    : 'Sell every team in this flight before the next spin';
+  overlay.classList.add('show');
+}
+overlay.addEventListener('click', ()=> overlay.classList.remove('show'));
+
+const cCanvas = document.getElementById('confetti');
+const cCtx = cCanvas.getContext('2d');
+let confetti = [];
+function confettiBurst(){
+  cCanvas.width = innerWidth; cCanvas.height = innerHeight;
+  const colors = ['#C9A84C','#b07ae8','#4fc87a','#7acce8','#ffffff'];
+  for(let i=0;i<160;i++){
+    confetti.push({
+      x: innerWidth/2, y: innerHeight*0.35,
+      vx: (Math.random()-0.5)*14, vy: -Math.random()*11 - 3,
+      s: 4 + Math.random()*6, c: colors[i % colors.length],
+      a: Math.random()*Math.PI, va: (Math.random()-0.5)*0.3, life: 1
+    });
+  }
+  requestAnimationFrame(confettiFrame);
+}
+function confettiFrame(){
+  cCtx.clearRect(0,0,cCanvas.width,cCanvas.height);
+  confetti.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.vy += 0.28; p.a += p.va; p.life -= 0.006;
+    cCtx.save(); cCtx.translate(p.x,p.y); cCtx.rotate(p.a);
+    cCtx.globalAlpha = Math.max(0, p.life);
+    cCtx.fillStyle = p.c; cCtx.fillRect(-p.s/2,-p.s/2,p.s,p.s);
+    cCtx.restore();
+  });
+  confetti = confetti.filter(p => p.life > 0 && p.y < cCanvas.height + 40);
+  if(confetti.length) requestAnimationFrame(confettiFrame);
+  else cCtx.clearRect(0,0,cCanvas.width,cCanvas.height);
+}
+
+/* ---------------- controls ---------------- */
+document.getElementById('spinBtn').addEventListener('click', spin);
+canvas.addEventListener('click', spin);
+document.getElementById('undoBtn').addEventListener('click', e=>{ undo(); e.currentTarget.blur(); });
+document.getElementById('soundBtn').addEventListener('click', e=>{ soundOn = !soundOn; save(); render(); e.currentTarget.blur(); });
+document.getElementById('resetBtn').addEventListener('click', e=>{
+  e.currentTarget.blur();
+  if(!confirm('Reset the whole auction board? This clears every pick and spin.')) return;
+  state = freshState(); history = []; editingIdx = null;
+  save(); render(); drawWheel(rot);
+});
+document.getElementById('fsBtn').addEventListener('click', e=>{
+  e.currentTarget.blur();
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen();
+});
+document.addEventListener('keydown', e=>{
+  const inInput = e.target && e.target.tagName === 'INPUT';
+  if(e.code === 'Space'){
+    // space in the amount field sells too (numbers never contain spaces);
+    // only the purchaser field keeps space as a typed character
+    if(inInput && e.target.id !== 'amtInput') return;
+    e.preventDefault(); // keep space from scrolling / re-clicking focused buttons
+    if(overlay.classList.contains('show')) overlay.classList.remove('show');
+    else sellCurrent();
+  } else if(e.key === 'Enter'){
+    if(overlay.classList.contains('show')){ overlay.classList.remove('show'); return; }
+    // Enter inside the sale inputs also closes the deal
+    if(inInput && (e.target.id === 'amtInput' || e.target.id === 'buyerInput')){
+      e.preventDefault(); sellCurrent();
+    }
+  } else if(e.key === 'Escape'){
+    overlay.classList.remove('show');
+  } else if((e.key === 'z' || e.key === 'Z') && (e.ctrlKey || e.metaKey) && !inInput){
+    e.preventDefault(); undo();
+  }
+});
+window.addEventListener('resize', ()=> drawWheel(rot));
+// The pane/TV may lay the canvas out at 0px first (hidden tab, casting handoff);
+// redraw whenever its box actually changes size.
+new ResizeObserver(()=> drawWheel(rot)).observe(canvas);
+
+/* ---------------- boot ---------------- */
+load();
+render();
+drawWheel(rot);
+</script>
+</body>
+</html>
